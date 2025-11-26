@@ -41,7 +41,7 @@ const getFieldZodType = (field: FieldMetadataEntity): z.ZodTypeAny => {
       return z.string().datetime();
 
     case FieldMetadataType.DATE:
-      return z.date();
+      return z.string().date();
 
     case FieldMetadataType.NUMBER: {
       const settings =
