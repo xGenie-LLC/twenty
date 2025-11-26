@@ -12338,7 +12338,7 @@ export const mockedStandardObjectMetadataQueryResult: ObjectMetadataItemsQuery =
               "__typename": "Field",
               "id": "6811b55c-5670-42c5-bd3e-72e57f5bb701",
               "type": "RELATION",
-              "name": "accountOwner",
+              "name": "ownerWorkspaceMember",
               "isCustom": false,
               "isActive": true,
               "isSystem": false,
@@ -12352,11 +12352,11 @@ export const mockedStandardObjectMetadataQueryResult: ObjectMetadataItemsQuery =
               "settings": {
                 "onDelete": "SET_NULL",
                 "relationType": "MANY_TO_ONE",
-                "joinColumnName": "accountOwnerId"
+                "joinColumnName": "ownerWorkspaceMemberId"
               },
               "isLabelSyncedWithName": false,
-              "label": "Account Owner",
-              "description": "Your team member responsible for managing the company account",
+              "label": "Owner",
+              "description": "Workspace member responsible for this company",
               "icon": "IconUserCircle",
               "relation": {
                 "__typename": "Relation",
@@ -12376,12 +12376,12 @@ export const mockedStandardObjectMetadataQueryResult: ObjectMetadataItemsQuery =
                 "sourceFieldMetadata": {
                   "__typename": "Field",
                   "id": "6811b55c-5670-42c5-bd3e-72e57f5bb701",
-                  "name": "accountOwner"
+                  "name": "ownerWorkspaceMember"
                 },
                 "targetFieldMetadata": {
                   "__typename": "Field",
                   "id": "4a7eb4da-02ca-4999-a0da-9453c41c787b",
-                  "name": "accountOwnerForCompanies"
+                  "name": "companyOwner"
                 }
               }
             },
@@ -15921,7 +15921,7 @@ export const mockedStandardObjectMetadataQueryResult: ObjectMetadataItemsQuery =
               "__typename": "Field",
               "id": "4a7eb4da-02ca-4999-a0da-9453c41c787b",
               "type": "RELATION",
-              "name": "accountOwnerForCompanies",
+              "name": "companyOwner",
               "isCustom": false,
               "isActive": true,
               "isSystem": true,
@@ -15957,12 +15957,12 @@ export const mockedStandardObjectMetadataQueryResult: ObjectMetadataItemsQuery =
                 "sourceFieldMetadata": {
                   "__typename": "Field",
                   "id": "4a7eb4da-02ca-4999-a0da-9453c41c787b",
-                  "name": "accountOwnerForCompanies"
+                  "name": "companyOwner"
                 },
                 "targetFieldMetadata": {
                   "__typename": "Field",
                   "id": "6811b55c-5670-42c5-bd3e-72e57f5bb701",
-                  "name": "accountOwner"
+                  "name": "ownerWorkspaceMember"
                 }
               }
             },

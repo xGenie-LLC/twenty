@@ -1100,7 +1100,7 @@ export const workflowQueryResult = {
                                 {
                                   id: 'cba9e1df-1122-45d2-8932-17cc755c0e2f',
                                   icon: 'IconUserCircle',
-                                  name: 'accountOwnerId',
+                                  name: 'ownerWorkspaceMemberId',
                                   type: 'UUID',
                                   label: 'Account Owner id (foreign key)',
                                   options: null,
@@ -1128,7 +1128,7 @@ export const workflowQueryResult = {
                                 {
                                   id: '929e94d6-5a22-4c35-bb63-b6db11182213',
                                   icon: 'IconUserCircle',
-                                  name: 'accountOwner',
+                                  name: 'ownerWorkspaceMember',
                                   type: 'RELATION',
                                   label: 'Account Owner',
                                   options: null,

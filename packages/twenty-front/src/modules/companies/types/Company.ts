@@ -24,7 +24,7 @@ export type Company = {
     addressLat: number | null;
     addressLng: number | null;
   };
-  accountOwnerId?: string | null;
+  ownerWorkspaceMemberId?: string | null;
   position?: number;
   linkedinLink: {
     __typename?: 'Links';

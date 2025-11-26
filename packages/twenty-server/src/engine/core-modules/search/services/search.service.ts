@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { isNonEmptyString } from '@sniptt/guards';
 import chunk from 'lodash.chunk';
 import { FieldMetadataType, ObjectRecord } from 'twenty-shared/types';
 import { getLogoUrlFromDomainName } from 'twenty-shared/utils';
 import { Brackets, type ObjectLiteral } from 'typeorm';
+
+import { PermissionsException } from 'src/engine/metadata-modules/permissions/permissions.exception';
 
 import { type ObjectRecordFilter } from 'src/engine/api/graphql/workspace-query-builder/interfaces/object-record.interface';
 
@@ -43,6 +45,8 @@ const OBJECT_METADATA_ITEMS_CHUNK_SIZE = 5;
 
 @Injectable()
 export class SearchService {
+  private readonly logger = new Logger(SearchService.name);
+
   constructor(
     private readonly twentyORMManager: TwentyORMManager,
     private readonly fileService: FileService,
@@ -76,23 +80,37 @@ export class SearchService {
     for (const objectMetadataItemChunk of filteredObjectMetadataItemsChunks) {
       const recordsWithObjectMetadataItems = await Promise.all(
         objectMetadataItemChunk.map(async (objectMetadataItem) => {
-          const repository =
-            await this.twentyORMManager.getRepository<ObjectRecord>(
-              objectMetadataItem.nameSingular,
-            );
+          try {
+            const repository =
+              await this.twentyORMManager.getRepository<ObjectRecord>(
+                objectMetadataItem.nameSingular,
+              );
 
-          return {
-            objectMetadataItem,
-            records: await this.buildSearchQueryAndGetRecords({
-              entityManager: repository,
+            return {
               objectMetadataItem,
-              searchTerms: formatSearchTerms(searchInput, 'and'),
-              searchTermsOr: formatSearchTerms(searchInput, 'or'),
-              limit: limit as number,
-              filter: filter ?? ({} as ObjectRecordFilter),
-              after,
-            }),
-          };
+              records: await this.buildSearchQueryAndGetRecords({
+                entityManager: repository,
+                objectMetadataItem,
+                searchTerms: formatSearchTerms(searchInput, 'and'),
+                searchTermsOr: formatSearchTerms(searchInput, 'or'),
+                limit: limit as number,
+                filter: filter ?? ({} as ObjectRecordFilter),
+                after,
+              }),
+            };
+          } catch (error) {
+            if (error instanceof PermissionsException) {
+              this.logger.debug(
+                `Skipping search for ${objectMetadataItem.nameSingular} due to permission restrictions`,
+              );
+
+              return {
+                objectMetadataItem,
+                records: [],
+              };
+            }
+            throw error;
+          }
         }),
       );
 

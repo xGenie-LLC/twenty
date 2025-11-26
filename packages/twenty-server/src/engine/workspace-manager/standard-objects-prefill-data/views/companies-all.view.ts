@@ -89,7 +89,8 @@ export const companiesAllView = ({
         fieldMetadataId:
           companyObjectMetadata.fields.find(
             (field) =>
-              field.standardId === COMPANY_STANDARD_FIELD_IDS.accountOwner,
+              field.standardId ===
+              COMPANY_STANDARD_FIELD_IDS.ownerWorkspaceMember,
           )?.id ?? '',
         position: 3,
         isVisible: true,

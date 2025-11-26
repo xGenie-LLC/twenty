@@ -54,6 +54,7 @@ import { transformRichTextV2Value } from 'src/engine/core-modules/record-transfo
 import { WorkspaceNotFoundDefaultError } from 'src/engine/core-modules/workspace/workspace.exception';
 import { FieldMetadataEntity } from 'src/engine/metadata-modules/field-metadata/field-metadata.entity';
 import { ObjectMetadataItemWithFieldMaps } from 'src/engine/metadata-modules/types/object-metadata-item-with-field-maps';
+import { isWorkspaceAuthContext } from 'src/engine/api/common/utils/is-workspace-auth-context.util';
 
 @Injectable()
 export class DataArgProcessor {
@@ -129,6 +130,40 @@ export class DataArgProcessor {
           isNullEquivalenceEnabled,
         );
       }
+
+      if (isWorkspaceAuthContext(authContext)) {
+        const ownerFieldMetadataId =
+          objectMetadataItemWithFieldMaps.fieldIdByJoinColumnName[
+            'ownerWorkspaceMemberId'
+          ] ??
+          objectMetadataItemWithFieldMaps.fieldIdByName['ownerWorkspaceMember'];
+
+        if (isDefined(ownerFieldMetadataId)) {
+          const ownerFieldMetadata =
+            objectMetadataItemWithFieldMaps.fieldsById[ownerFieldMetadataId];
+
+          const ownerJoinColumnName =
+            (
+              ownerFieldMetadata.settings as
+                | { joinColumnName?: string }
+                | null
+                | undefined
+            )?.joinColumnName ?? 'ownerWorkspaceMemberId';
+
+          const ownerValue =
+            processedRecord[ownerJoinColumnName] ??
+            processedRecord[ownerFieldMetadata.name];
+
+          if (
+            isDefined(authContext.workspaceMemberId) &&
+            (isUndefined(ownerValue) || isNull(ownerValue))
+          ) {
+            processedRecord[ownerJoinColumnName] =
+              authContext.workspaceMemberId;
+          }
+        }
+      }
+
       processedRecords.push(processedRecord);
     }
 

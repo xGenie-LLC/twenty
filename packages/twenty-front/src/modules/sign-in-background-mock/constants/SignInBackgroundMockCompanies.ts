@@ -31,7 +31,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [
@@ -85,7 +85,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -125,7 +125,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [
@@ -307,7 +307,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -347,7 +347,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [
@@ -453,7 +453,7 @@ const baseMock = [
         },
       ],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -493,7 +493,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [],
@@ -514,7 +514,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -554,7 +554,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [
@@ -711,7 +711,7 @@ const baseMock = [
         },
       ],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -751,7 +751,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [],
@@ -772,7 +772,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -812,7 +812,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [],
@@ -833,7 +833,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -873,7 +873,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [],
@@ -894,7 +894,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -934,7 +934,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [
@@ -988,7 +988,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -1028,7 +1028,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [
@@ -1082,7 +1082,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -1122,7 +1122,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [],
@@ -1143,7 +1143,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -1183,7 +1183,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [],
@@ -1204,7 +1204,7 @@ const baseMock = [
       __typename: 'OpportunityConnection',
       edges: [],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,
@@ -1244,7 +1244,7 @@ const baseMock = [
       addressLng: null,
       __typename: 'Address',
     },
-    accountOwner: null,
+    ownerWorkspaceMember: null,
     people: {
       __typename: 'PersonConnection',
       edges: [
@@ -1350,7 +1350,7 @@ const baseMock = [
         },
       ],
     },
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     xLink: {
       primaryLinkLabel: null,
       primaryLinkUrl: null,

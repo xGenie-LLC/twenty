@@ -2,6 +2,7 @@ import { useObjectMetadataItemById } from '@/object-metadata/hooks/useObjectMeta
 import { SettingsPageContainer } from '@/settings/components/SettingsPageContainer';
 import { SettingsRolePermissionsObjectLevelObjectFieldPermissionTable } from '@/settings/roles/role-permissions/object-level-permissions/field-permissions/components/SettingsRolePermissionsObjectLevelObjectFieldPermissionTable';
 import { SettingsRolePermissionsObjectLevelObjectFormObjectLevel } from '@/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelObjectFormObjectLevel';
+import { SettingsRolePermissionsObjectLevelRecordAccess } from '@/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess';
 import { settingsDraftRoleFamilyState } from '@/settings/roles/states/settingsDraftRoleFamilyState';
 import { SubMenuTopBarContainer } from '@/ui/layout/page/components/SubMenuTopBarContainer';
 import { t } from '@lingui/core/macro';
@@ -106,6 +107,10 @@ export const SettingsRolePermissionsObjectLevelObjectForm = ({
     >
       <SettingsPageContainer>
         <SettingsRolePermissionsObjectLevelObjectFormObjectLevel
+          objectMetadataItem={objectMetadataItem}
+          roleId={roleId}
+        />
+        <SettingsRolePermissionsObjectLevelRecordAccess
           objectMetadataItem={objectMetadataItem}
           roleId={roleId}
         />

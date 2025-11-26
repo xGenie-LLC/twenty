@@ -183,20 +183,20 @@ export class CompanyWorkspaceEntity extends BaseWorkspaceEntity {
   people: Relation<PersonWorkspaceEntity[]>;
 
   @WorkspaceRelation({
-    standardId: COMPANY_STANDARD_FIELD_IDS.accountOwner,
+    standardId: COMPANY_STANDARD_FIELD_IDS.ownerWorkspaceMember,
     type: RelationType.MANY_TO_ONE,
-    label: msg`Account Owner`,
-    description: msg`Your team member responsible for managing the company account`,
+    label: msg`Owner`,
+    description: msg`Your team member responsible for this company`,
     icon: 'IconUserCircle',
     inverseSideTarget: () => WorkspaceMemberWorkspaceEntity,
-    inverseSideFieldKey: 'accountOwnerForCompanies',
+    inverseSideFieldKey: 'companyOwner',
     onDelete: RelationOnDeleteAction.SET_NULL,
   })
   @WorkspaceIsNullable()
-  accountOwner: Relation<WorkspaceMemberWorkspaceEntity> | null;
+  ownerWorkspaceMember: Relation<WorkspaceMemberWorkspaceEntity> | null;
 
-  @WorkspaceJoinColumn('accountOwner')
-  accountOwnerId: string | null;
+  @WorkspaceJoinColumn('ownerWorkspaceMember')
+  ownerWorkspaceMemberId: string | null;
 
   @WorkspaceRelation({
     standardId: COMPANY_STANDARD_FIELD_IDS.taskTargets,

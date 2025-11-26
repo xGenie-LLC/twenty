@@ -1,5 +1,9 @@
-import { type ObjectsPermissions } from 'twenty-shared/types';
 import {
+  RecordAccessLevel,
+  type ObjectsPermissions,
+} from 'twenty-shared/types';
+import {
+  Brackets,
   type EntityTarget,
   type ObjectLiteral,
   SelectQueryBuilder,
@@ -13,6 +17,7 @@ import { type AuthContext } from 'src/engine/core-modules/auth/types/auth-contex
 import {
   PermissionsException,
   PermissionsExceptionCode,
+  PermissionsExceptionMessage,
 } from 'src/engine/metadata-modules/permissions/permissions.exception';
 import { computeTwentyORMException } from 'src/engine/twenty-orm/error-handling/compute-twenty-orm-exception';
 import {
@@ -35,6 +40,7 @@ export class WorkspaceSelectQueryBuilder<
   internalContext: WorkspaceInternalContext;
   authContext: AuthContext;
   featureFlagMap: FeatureFlagMap;
+  private recordAccessFilterApplied = false;
   constructor(
     queryBuilder: SelectQueryBuilder<T>,
     objectRecordsPermissions: ObjectsPermissions,
@@ -71,6 +77,7 @@ export class WorkspaceSelectQueryBuilder<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   override async execute(): Promise<any> {
     try {
+      this.applyRecordAccessFilter();
       this.validatePermissions();
 
       const mainAliasTarget = this.getMainAliasTarget();
@@ -100,6 +107,7 @@ export class WorkspaceSelectQueryBuilder<
 
   override async getMany(): Promise<T[]> {
     try {
+      this.applyRecordAccessFilter();
       this.validatePermissions();
 
       const mainAliasTarget = this.getMainAliasTarget();
@@ -126,6 +134,7 @@ export class WorkspaceSelectQueryBuilder<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   override getRawOne<U = any>(): Promise<U | undefined> {
     try {
+      this.applyRecordAccessFilter();
       this.validatePermissions();
 
       return super.getRawOne();
@@ -137,6 +146,7 @@ export class WorkspaceSelectQueryBuilder<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   override getRawMany<U = any>(): Promise<U[]> {
     try {
+      this.applyRecordAccessFilter();
       this.validatePermissions();
 
       return super.getRawMany();
@@ -147,6 +157,7 @@ export class WorkspaceSelectQueryBuilder<
 
   override async getOne(): Promise<T | null> {
     try {
+      this.applyRecordAccessFilter();
       this.validatePermissions();
 
       const mainAliasTarget = this.getMainAliasTarget();
@@ -174,6 +185,7 @@ export class WorkspaceSelectQueryBuilder<
 
   override async getOneOrFail(): Promise<T> {
     try {
+      this.applyRecordAccessFilter();
       this.validatePermissions();
 
       const mainAliasTarget = this.getMainAliasTarget();
@@ -199,6 +211,7 @@ export class WorkspaceSelectQueryBuilder<
 
   override getCount(): Promise<number> {
     try {
+      this.applyRecordAccessFilter();
       this.validatePermissions();
 
       return super.getCount();
@@ -216,6 +229,7 @@ export class WorkspaceSelectQueryBuilder<
 
   override async getManyAndCount(): Promise<[T[], number]> {
     try {
+      this.applyRecordAccessFilter();
       this.validatePermissions();
 
       const mainAliasTarget = this.getMainAliasTarget();
@@ -328,6 +342,108 @@ export class WorkspaceSelectQueryBuilder<
       objectMetadataMaps: this.internalContext.objectMetadataMaps,
       shouldBypassPermissionChecks: this.shouldBypassPermissionChecks,
     });
+  }
+
+  private applyRecordAccessFilter(): void {
+    if (this.shouldBypassPermissionChecks || this.recordAccessFilterApplied) {
+      return;
+    }
+
+    const mainAliasTarget = this.expressionMap.mainAlias?.target;
+
+    if (!mainAliasTarget) {
+      throw new TwentyORMException(
+        'Main alias target is missing',
+        TwentyORMExceptionCode.MISSING_MAIN_ALIAS_TARGET,
+      );
+    }
+
+    const objectMetadata = getObjectMetadataFromEntityTarget(
+      mainAliasTarget,
+      this.internalContext,
+    );
+
+    const objectPermissions = this.objectRecordsPermissions[objectMetadata.id];
+
+    if (
+      !objectPermissions ||
+      objectPermissions.recordAccessLevel !== RecordAccessLevel.OWNED_ONLY ||
+      objectMetadata.isSystem === true
+    ) {
+      return;
+    }
+
+    const workspaceMemberId = this.authContext?.workspaceMemberId;
+
+    if (!workspaceMemberId) {
+      throw new PermissionsException(
+        PermissionsExceptionMessage.PERMISSION_DENIED,
+        PermissionsExceptionCode.PERMISSION_DENIED,
+      );
+    }
+
+    const ownershipFieldNames =
+      objectPermissions.ownershipFieldNames?.length &&
+      objectPermissions.ownershipFieldNames.length > 0
+        ? objectPermissions.ownershipFieldNames
+        : ['ownerWorkspaceMemberId'];
+
+    const ownershipColumns = ownershipFieldNames
+      .map((fieldName) => {
+        const fieldId =
+          objectMetadata.fieldIdByName[fieldName] ??
+          objectMetadata.fieldIdByJoinColumnName[fieldName];
+
+        if (!fieldId) {
+          return null;
+        }
+
+        const fieldMetadata = objectMetadata.fieldsById[fieldId];
+        const joinColumnName =
+          // Settings is loosely typed; joinColumnName exists for relation fields
+          (
+            fieldMetadata.settings as
+              | { joinColumnName?: string }
+              | null
+              | undefined
+          )?.joinColumnName;
+
+        return joinColumnName ?? fieldName;
+      })
+      .filter((columnName): columnName is string => columnName !== null)
+      .filter(
+        (columnName, index, array) =>
+          array.findIndex((value) => value === columnName) === index,
+      );
+
+    if (ownershipColumns.length === 0) {
+      throw new PermissionsException(
+        PermissionsExceptionMessage.PERMISSION_DENIED,
+        PermissionsExceptionCode.PERMISSION_DENIED,
+      );
+    }
+
+    const alias = this.expressionMap.mainAlias?.name ?? this.alias;
+
+    this.andWhere(
+      new Brackets((qb) => {
+        ownershipColumns.forEach((columnName, index) => {
+          const condition = `"${alias}"."${columnName}" = :recordAccessWorkspaceMemberId`;
+
+          if (index === 0) {
+            qb.where(condition, {
+              recordAccessWorkspaceMemberId: workspaceMemberId,
+            });
+          } else {
+            qb.orWhere(condition, {
+              recordAccessWorkspaceMemberId: workspaceMemberId,
+            });
+          }
+        });
+      }),
+    );
+
+    this.recordAccessFilterApplied = true;
   }
 
   private getMainAliasTarget(): EntityTarget<T> {

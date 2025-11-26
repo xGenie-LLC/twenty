@@ -85,9 +85,20 @@ export const opportunitiesAllView = ({
         fieldMetadataId:
           opportunityObjectMetadata.fields.find(
             (field) =>
-              field.standardId === OPPORTUNITY_STANDARD_FIELD_IDS.closeDate,
+              field.standardId ===
+              OPPORTUNITY_STANDARD_FIELD_IDS.ownerWorkspaceMember,
           )?.id ?? '',
         position: 3,
+        isVisible: true,
+        size: 150,
+      },
+      {
+        fieldMetadataId:
+          opportunityObjectMetadata.fields.find(
+            (field) =>
+              field.standardId === OPPORTUNITY_STANDARD_FIELD_IDS.closeDate,
+          )?.id ?? '',
+        position: 4,
         isVisible: true,
         size: 150,
         aggregateOperation: AggregateOperations.MIN,
@@ -101,7 +112,7 @@ export const opportunitiesAllView = ({
             (field) =>
               field.standardId === OPPORTUNITY_STANDARD_FIELD_IDS.company,
           )?.id ?? '',
-        position: 4,
+        position: 5,
         isVisible: true,
         size: 150,
         universalIdentifier:
@@ -115,7 +126,7 @@ export const opportunitiesAllView = ({
               field.standardId ===
               OPPORTUNITY_STANDARD_FIELD_IDS.pointOfContact,
           )?.id ?? '',
-        position: 5,
+        position: 6,
         isVisible: true,
         size: 150,
         universalIdentifier:

@@ -176,7 +176,7 @@ export const Select = <Value extends SelectValue>({
       ) : (
         <Dropdown
           dropdownId={dropdownId}
-          dropdownPlacement="bottom-start"
+          dropdownPlacement="bottom-end"
           dropdownOffset={dropdownOffset}
           onOpen={handleDropdownOpen}
           clickableComponent={

@@ -23,7 +23,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6MSwiaWQiOiIyMDIwMjAyMC0zZWMzLTRmZTMtODk5Ny1iNzZhYTBiZmE0MDgifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -236,7 +236,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6MiwiaWQiOiIyMDIwMjAyMC01ZDgxLTQ2ZDYtYmY4My1mN2ZkMzNlYTYxMDIifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -326,7 +326,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6MywiaWQiOiIyMDIwMjAyMC0wNzEzLTQwYTUtODIxNi04MjgwMjQwMWQzM2UifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -510,7 +510,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6NCwiaWQiOiIyMDIwMjAyMC1lZDg5LTQxM2EtYjMxYS05NjI5ODZlNjdiYjQifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -812,7 +812,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6NSwiaWQiOiIyMDIwMjAyMC0xNzFlLTRiY2MtOWNmNy00MzQ0OGQ2ZmIyNzgifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -1057,7 +1057,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6NiwiaWQiOiIyMDIwMjAyMC1jMjFlLTRlYzItODczYi1kZTQyNjRkODkwMjUifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -1424,7 +1424,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6NywiaWQiOiIyMDIwMjAyMC03MDdlLTQ0ZGMtYTFkMi0zMDAzMGJmMWE5NDQifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -1485,7 +1485,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6OCwiaWQiOiIyMDIwMjAyMC0zZjc0LTQ5MmQtYTEwMS0yYTcwZjUwYTE2NDUifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -1546,7 +1546,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6OSwiaWQiOiIyMDIwMjAyMC1jZmJmLTQxNTYtYTc5MC1lMzk4NTRkY2Q0ZWIifQ==',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -1607,7 +1607,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6MTAsImlkIjoiMjAyMDIwMjAtZjg2Yi00MTlmLWI3OTQtMDIzMTlhYmU4NjM3In0=',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -1668,7 +1668,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6MTEsImlkIjoiMjAyMDIwMjAtNTUxOC00NTUzLTk0MzMtNDJkOGViODI4MzRiIn0=',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -1729,7 +1729,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6MTIsImlkIjoiMjAyMDIwMjAtZjc5ZS00MGRkLWJkMDYtYzM2ZTZhYmI0Njc4In0=',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,
@@ -1790,7 +1790,7 @@ const FIND_MANY_COMPANIES_WITH_RELATION_QUERY_RESULT = {
             'eyJwb3NpdGlvbiI6MTMsImlkIjoiMjAyMDIwMjAtMTQ1NS00YzU3LWFmYWYtZGQ1ZGMwODYzNjFkIn0=',
           node: {
             __typename: 'Company',
-            accountOwner: null,
+            ownerWorkspaceMember: null,
             createdAt: '2025-02-16T08:21:51.715Z',
             deletedAt: null,
             employees: null,

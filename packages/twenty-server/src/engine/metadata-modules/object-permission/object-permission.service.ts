@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { msg } from '@lingui/core/macro';
+import { RecordAccessLevel } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { In, Repository } from 'typeorm';
 
@@ -89,6 +90,11 @@ export class ObjectPermissionService {
       const objectPermissions = input.objectPermissions.map(
         (objectPermission) => ({
           ...objectPermission,
+          recordAccessLevel:
+            objectPermission.recordAccessLevel ?? RecordAccessLevel.EVERYTHING,
+          ownershipFieldNames: objectPermission.ownershipFieldNames ?? [
+            'ownerWorkspaceMemberId',
+          ],
           roleId: input.roleId,
           workspaceId,
         }),

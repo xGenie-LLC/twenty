@@ -6,6 +6,7 @@ import {
   type ObjectsPermissions,
   type ObjectsPermissionsByRoleId,
   type RestrictedFieldsPermissions,
+  RecordAccessLevel,
 } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { In, IsNull, Not, Repository } from 'typeorm';
@@ -217,6 +218,8 @@ export class WorkspacePermissionsCacheService {
         let canUpdate = role.canUpdateAllObjectRecords;
         let canSoftDelete = role.canSoftDeleteAllObjectRecords;
         let canDestroy = role.canDestroyAllObjectRecords;
+        let recordAccessLevel = RecordAccessLevel.EVERYTHING;
+        let ownershipFieldNames: string[] = ['ownerWorkspaceMemberId'];
         const restrictedFields: RestrictedFieldsPermissions = {};
 
         if (
@@ -258,6 +261,18 @@ export class WorkspacePermissionsCacheService {
             objectRecordPermissionsOverride?.canDestroyObjectRecords,
             canDestroy,
           );
+          if (isDefined(objectRecordPermissionsOverride?.recordAccessLevel)) {
+            recordAccessLevel =
+              objectRecordPermissionsOverride.recordAccessLevel;
+          }
+
+          if (
+            isDefined(objectRecordPermissionsOverride?.ownershipFieldNames) &&
+            objectRecordPermissionsOverride?.ownershipFieldNames.length > 0
+          ) {
+            ownershipFieldNames =
+              objectRecordPermissionsOverride.ownershipFieldNames;
+          }
 
           const fieldPermissions = role.fieldPermissions.filter(
             (fieldPermission) =>
@@ -288,6 +303,8 @@ export class WorkspacePermissionsCacheService {
           canUpdateObjectRecords: canUpdate,
           canSoftDeleteObjectRecords: canSoftDelete,
           canDestroyObjectRecords: canDestroy,
+          recordAccessLevel,
+          ownershipFieldNames,
           restrictedFields,
         };
 

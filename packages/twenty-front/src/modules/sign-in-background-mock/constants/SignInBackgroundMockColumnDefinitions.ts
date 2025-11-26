@@ -108,13 +108,14 @@ export const SIGN_IN_BACKGROUND_MOCK_COLUMN_DEFINITIONS = (
     {
       position: 5,
       fieldMetadataId:
-        COMPANY_MOCK_OBJECT.fields.find(findByProperty('name', 'accountOwner'))
-          ?.id ?? '',
+        COMPANY_MOCK_OBJECT.fields.find(
+          findByProperty('name', 'ownerWorkspaceMember'),
+        )?.id ?? '',
       label: 'Account Owner',
       size: 100,
       type: FieldMetadataType.RELATION,
       metadata: {
-        fieldName: 'accountOwner',
+        fieldName: 'ownerWorkspaceMember',
         relationType: RelationType.MANY_TO_ONE,
         relationObjectMetadataNameSingular: 'workspaceMember',
         relationObjectMetadataNamePlural: 'workspaceMembers',

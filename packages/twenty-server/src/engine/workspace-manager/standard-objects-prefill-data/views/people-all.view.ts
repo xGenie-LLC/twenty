@@ -85,7 +85,9 @@ export const peopleAllView = ({
       {
         fieldMetadataId:
           personObjectMetadata.fields.find(
-            (field) => field.standardId === PERSON_STANDARD_FIELD_IDS.company,
+            (field) =>
+              field.standardId ===
+              PERSON_STANDARD_FIELD_IDS.ownerWorkspaceMember,
           )?.id ?? '',
         position: 3,
         isVisible: true,
@@ -97,9 +99,18 @@ export const peopleAllView = ({
       {
         fieldMetadataId:
           personObjectMetadata.fields.find(
-            (field) => field.standardId === PERSON_STANDARD_FIELD_IDS.phones,
+            (field) => field.standardId === PERSON_STANDARD_FIELD_IDS.company,
           )?.id ?? '',
         position: 4,
+        isVisible: true,
+        size: 150,
+      },
+      {
+        fieldMetadataId:
+          personObjectMetadata.fields.find(
+            (field) => field.standardId === PERSON_STANDARD_FIELD_IDS.phones,
+          )?.id ?? '',
+        position: 5,
         isVisible: true,
         size: 150,
         aggregateOperation: AggregateOperations.PERCENTAGE_EMPTY,
@@ -113,7 +124,7 @@ export const peopleAllView = ({
             (field) =>
               field.standardId === BASE_OBJECT_STANDARD_FIELD_IDS.createdAt,
           )?.id ?? '',
-        position: 5,
+        position: 6,
         isVisible: true,
         size: 150,
         aggregateOperation: AggregateOperations.MIN,
@@ -126,7 +137,7 @@ export const peopleAllView = ({
           personObjectMetadata.fields.find(
             (field) => field.standardId === PERSON_STANDARD_FIELD_IDS.city,
           )?.id ?? '',
-        position: 6,
+        position: 7,
         isVisible: true,
         size: 150,
         universalIdentifier:
@@ -138,7 +149,7 @@ export const peopleAllView = ({
           personObjectMetadata.fields.find(
             (field) => field.standardId === PERSON_STANDARD_FIELD_IDS.jobTitle,
           )?.id ?? '',
-        position: 7,
+        position: 8,
         isVisible: true,
         size: 150,
         universalIdentifier:
@@ -151,7 +162,7 @@ export const peopleAllView = ({
             (field) =>
               field.standardId === PERSON_STANDARD_FIELD_IDS.linkedinLink,
           )?.id ?? '',
-        position: 8,
+        position: 9,
         isVisible: true,
         size: 150,
         universalIdentifier:
@@ -163,7 +174,7 @@ export const peopleAllView = ({
           personObjectMetadata.fields.find(
             (field) => field.standardId === PERSON_STANDARD_FIELD_IDS.xLink,
           )?.id ?? '',
-        position: 9,
+        position: 10,
         isVisible: true,
         size: 150,
         universalIdentifier:

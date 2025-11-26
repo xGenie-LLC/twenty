@@ -4,10 +4,12 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsUUID,
 } from 'class-validator';
+import { RecordAccessLevel } from 'twenty-shared/types';
 
 import { UUIDScalarType } from 'src/engine/api/graphql/workspace-schema-builder/graphql-types/scalars';
 
@@ -51,4 +53,14 @@ export class ObjectPermissionInput {
   @IsOptional()
   @Field({ nullable: true })
   canDestroyObjectRecords?: boolean;
+
+  @IsEnum(RecordAccessLevel)
+  @IsOptional()
+  @Field(() => RecordAccessLevel, { nullable: true })
+  recordAccessLevel?: RecordAccessLevel;
+
+  @IsOptional()
+  @IsArray()
+  @Field(() => [String], { nullable: true })
+  ownershipFieldNames?: string[];
 }

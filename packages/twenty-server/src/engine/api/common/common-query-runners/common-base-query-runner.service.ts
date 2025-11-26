@@ -360,10 +360,11 @@ export abstract class CommonBaseQueryRunnerService<
         workspaceId: authContext.workspace.id,
       });
 
-    const { roleId } = await this.getRoleIdAndObjectsPermissions(
-      authContext,
-      authContext.workspace.id,
-    );
+    const { roleId, objectsPermissions } =
+      await this.getRoleIdAndObjectsPermissions(
+        authContext,
+        authContext.workspace.id,
+      );
 
     const rolePermissionConfig = { unionOf: [roleId] };
 
@@ -379,6 +380,7 @@ export abstract class CommonBaseQueryRunnerService<
       workspaceDataSource,
       rolePermissionConfig,
       repository,
+      objectsPermissions,
     };
   }
 
@@ -388,10 +390,8 @@ export abstract class CommonBaseQueryRunnerService<
   ): Promise<Omit<CommonExtendedQueryRunnerContext, 'commonQueryParser'>> {
     const workspaceId = authContext.workspace.id;
 
-    const { roleId } = await this.getRoleIdAndObjectsPermissions(
-      authContext,
-      workspaceId,
-    );
+    const { roleId, objectsPermissions } =
+      await this.getRoleIdAndObjectsPermissions(authContext, workspaceId);
 
     const rolePermissionConfig = { unionOf: [roleId] };
 
@@ -399,6 +399,7 @@ export abstract class CommonBaseQueryRunnerService<
       workspaceId,
       queryRunnerContext.objectMetadataItemWithFieldMaps.nameSingular,
       rolePermissionConfig,
+      authContext,
     );
 
     const globalWorkspaceDataSource =
@@ -411,6 +412,7 @@ export abstract class CommonBaseQueryRunnerService<
         globalWorkspaceDataSource as unknown as WorkspaceDataSource,
       rolePermissionConfig,
       repository,
+      objectsPermissions,
     };
   }
 

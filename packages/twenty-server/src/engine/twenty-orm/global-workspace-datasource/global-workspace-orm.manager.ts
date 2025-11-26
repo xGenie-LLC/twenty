@@ -5,6 +5,7 @@ import { EntitySchema, ObjectLiteral } from 'typeorm';
 
 import { WorkspaceAuthContext } from 'src/engine/api/common/interfaces/workspace-auth-context.interface';
 
+import { type AuthContext } from 'src/engine/core-modules/auth/types/auth-context.type';
 import { WorkspaceManyOrAllFlatEntityMapsCacheService } from 'src/engine/metadata-modules/flat-entity/services/workspace-many-or-all-flat-entity-maps-cache.service';
 import { buildObjectIdByNameMaps } from 'src/engine/metadata-modules/flat-object-metadata/utils/build-object-id-by-name-maps.util';
 import { buildObjectMetadataItemWithFieldMaps } from 'src/engine/metadata-modules/flat-object-metadata/utils/build-object-metadata-item-with-field-maps.util';
@@ -37,18 +38,21 @@ export class GlobalWorkspaceOrmManager {
     workspaceId: string,
     workspaceEntity: Type<T>,
     permissionOptions?: RolePermissionConfig,
+    authContext?: AuthContext,
   ): Promise<WorkspaceRepository<T>>;
 
   async getRepository<T extends ObjectLiteral>(
     workspaceId: string,
     objectMetadataName: string,
     permissionOptions?: RolePermissionConfig,
+    authContext?: AuthContext,
   ): Promise<WorkspaceRepository<T>>;
 
   async getRepository<T extends ObjectLiteral>(
     workspaceId: string,
     workspaceEntityOrObjectMetadataName: Type<T> | string,
     permissionOptions?: RolePermissionConfig,
+    authContext?: AuthContext,
   ): Promise<WorkspaceRepository<T>> {
     let objectMetadataName: string;
 
@@ -66,6 +70,7 @@ export class GlobalWorkspaceOrmManager {
     return globalDataSource.getRepository<T>(
       objectMetadataName,
       permissionOptions,
+      authContext,
     );
   }
 

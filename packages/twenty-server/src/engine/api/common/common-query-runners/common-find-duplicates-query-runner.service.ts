@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import isEmpty from 'lodash.isempty';
 import { QUERY_MAX_RECORDS } from 'twenty-shared/constants';
 import { ObjectRecord, OrderByDirection } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { FindOptionsRelations, In, ObjectLiteral } from 'typeorm';
+
+import { PermissionsException } from 'src/engine/metadata-modules/permissions/permissions.exception';
 
 import { WorkspaceAuthContext } from 'src/engine/api/common/interfaces/workspace-auth-context.interface';
 
@@ -33,6 +35,9 @@ export class CommonFindDuplicatesQueryRunnerService extends CommonBaseQueryRunne
   CommonFindDuplicatesOutputItem[]
 > {
   protected readonly operationName = CommonQueryNames.FIND_DUPLICATES;
+  private readonly logger = new Logger(
+    CommonFindDuplicatesQueryRunnerService.name,
+  );
 
   async run(
     args: CommonExtendedInput<FindDuplicatesQueryArgs>,
@@ -75,58 +80,76 @@ export class CommonFindDuplicatesQueryRunnerService extends CommonBaseQueryRunne
     const findDuplicatesOutput: CommonFindDuplicatesOutputItem[] =
       await Promise.all(
         objectRecords.map(async (record) => {
-          const duplicateConditions = buildDuplicateConditions(
-            objectMetadataItemWithFieldMaps,
-            [record],
-            record.id,
-          );
+          try {
+            const duplicateConditions = buildDuplicateConditions(
+              objectMetadataItemWithFieldMaps,
+              [record],
+              record.id,
+            );
 
-          if (isEmpty(duplicateConditions)) {
+            if (isEmpty(duplicateConditions)) {
+              return {
+                records: [],
+                totalCount: 0,
+                hasNextPage: false,
+                hasPreviousPage: false,
+                startCursor: null,
+                endCursor: null,
+              };
+            }
+
+            const duplicateRecordsQueryBuilder = repository.createQueryBuilder(
+              objectMetadataItemWithFieldMaps.nameSingular,
+            );
+
+            commonQueryParser.applyFilterToBuilder(
+              duplicateRecordsQueryBuilder,
+              objectMetadataItemWithFieldMaps.nameSingular,
+              duplicateConditions,
+            );
+
+            const duplicates = (await duplicateRecordsQueryBuilder
+              .setFindOptions({
+                select: columnsToSelect,
+              })
+              .take(QUERY_MAX_RECORDS)
+              .getMany()) as ObjectRecord[];
+
+            const aggregateQueryBuilder = duplicateRecordsQueryBuilder.clone();
+            const totalCount = await aggregateQueryBuilder.getCount();
+
+            const { startCursor, endCursor } = getPageInfo(
+              duplicates,
+              [{ id: OrderByDirection.AscNullsFirst }],
+              QUERY_MAX_RECORDS,
+              true,
+            );
+
             return {
-              records: [],
-              totalCount: 0,
+              records: duplicates,
+              totalCount,
               hasNextPage: false,
               hasPreviousPage: false,
-              startCursor: null,
-              endCursor: null,
+              startCursor,
+              endCursor,
             };
+          } catch (error) {
+            if (error instanceof PermissionsException) {
+              this.logger.debug(
+                `Skipping duplicate search for record ${record.id} due to permission restrictions`,
+              );
+
+              return {
+                records: [],
+                totalCount: 0,
+                hasNextPage: false,
+                hasPreviousPage: false,
+                startCursor: null,
+                endCursor: null,
+              };
+            }
+            throw error;
           }
-
-          const duplicateRecordsQueryBuilder = repository.createQueryBuilder(
-            objectMetadataItemWithFieldMaps.nameSingular,
-          );
-
-          commonQueryParser.applyFilterToBuilder(
-            duplicateRecordsQueryBuilder,
-            objectMetadataItemWithFieldMaps.nameSingular,
-            duplicateConditions,
-          );
-
-          const duplicates = (await duplicateRecordsQueryBuilder
-            .setFindOptions({
-              select: columnsToSelect,
-            })
-            .take(QUERY_MAX_RECORDS)
-            .getMany()) as ObjectRecord[];
-
-          const aggregateQueryBuilder = duplicateRecordsQueryBuilder.clone();
-          const totalCount = await aggregateQueryBuilder.getCount();
-
-          const { startCursor, endCursor } = getPageInfo(
-            duplicates,
-            [{ id: OrderByDirection.AscNullsFirst }],
-            QUERY_MAX_RECORDS,
-            true,
-          );
-
-          return {
-            records: duplicates,
-            totalCount,
-            hasNextPage: false,
-            hasPreviousPage: false,
-            startCursor,
-            endCursor,
-          };
         }),
       );
 

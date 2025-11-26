@@ -27,7 +27,7 @@ const FIND_MANY_COMPANIES = gql`
       edges {
         node {
           __typename
-          accountOwnerId
+          ownerWorkspaceMemberId
           address {
             addressStreet1
             addressStreet2

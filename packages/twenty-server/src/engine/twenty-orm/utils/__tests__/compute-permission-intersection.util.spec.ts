@@ -1,4 +1,7 @@
-import { type ObjectsPermissions } from 'twenty-shared/types';
+import {
+  RecordAccessLevel,
+  type ObjectsPermissions,
+} from 'twenty-shared/types';
 
 import { computePermissionIntersection } from 'src/engine/twenty-orm/utils/compute-permission-intersection.util';
 
@@ -20,6 +23,8 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: false,
           canDestroyObjectRecords: false,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
+          ownershipFieldNames: ['ownerWorkspaceMemberId'],
           restrictedFields: {},
         },
       };
@@ -38,6 +43,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -48,6 +54,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -62,6 +69,8 @@ describe('computePermissionIntersection', () => {
         canUpdateObjectRecords: true,
         canSoftDeleteObjectRecords: true,
         canDestroyObjectRecords: true,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
+        ownershipFieldNames: ['ownerWorkspaceMemberId'],
         restrictedFields: {},
       });
     });
@@ -73,6 +82,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -83,6 +93,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: false,
           canSoftDeleteObjectRecords: false,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -97,8 +108,89 @@ describe('computePermissionIntersection', () => {
         canUpdateObjectRecords: false,
         canSoftDeleteObjectRecords: false,
         canDestroyObjectRecords: true,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
+        ownershipFieldNames: ['ownerWorkspaceMemberId'],
         restrictedFields: {},
       });
+    });
+
+    it('should keep the most restrictive record access when roles differ', () => {
+      const role1Permissions: ObjectsPermissions = {
+        [objectMetadataId1]: {
+          canReadObjectRecords: true,
+          canUpdateObjectRecords: true,
+          canSoftDeleteObjectRecords: true,
+          canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.OWNED_ONLY,
+          ownershipFieldNames: ['ownerWorkspaceMemberId'],
+          restrictedFields: {},
+        },
+      };
+
+      const role2Permissions: ObjectsPermissions = {
+        [objectMetadataId1]: {
+          canReadObjectRecords: true,
+          canUpdateObjectRecords: true,
+          canSoftDeleteObjectRecords: true,
+          canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
+          ownershipFieldNames: ['ownerWorkspaceMemberId'],
+          restrictedFields: {},
+        },
+      };
+
+      const result = computePermissionIntersection([
+        role1Permissions,
+        role2Permissions,
+      ]);
+
+      expect(result[objectMetadataId1].recordAccessLevel).toBe(
+        RecordAccessLevel.OWNED_ONLY,
+      );
+      expect(result[objectMetadataId1].ownershipFieldNames).toEqual([
+        'ownerWorkspaceMemberId',
+      ]);
+    });
+
+    it('should intersect ownershipFieldNames across roles', () => {
+      const role1Permissions: ObjectsPermissions = {
+        [objectMetadataId1]: {
+          canReadObjectRecords: true,
+          canUpdateObjectRecords: true,
+          canSoftDeleteObjectRecords: true,
+          canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.OWNED_ONLY,
+          ownershipFieldNames: ['ownerWorkspaceMemberId', 'workspaceMemberId'],
+          restrictedFields: {},
+        },
+      };
+
+      const role2Permissions: ObjectsPermissions = {
+        [objectMetadataId1]: {
+          canReadObjectRecords: true,
+          canUpdateObjectRecords: true,
+          canSoftDeleteObjectRecords: true,
+          canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.OWNED_ONLY,
+          ownershipFieldNames: [
+            'workspaceMemberId',
+            'assigneeWorkspaceMemberId',
+          ],
+          restrictedFields: {},
+        },
+      };
+
+      const result = computePermissionIntersection([
+        role1Permissions,
+        role2Permissions,
+      ]);
+
+      expect(result[objectMetadataId1].recordAccessLevel).toBe(
+        RecordAccessLevel.OWNED_ONLY,
+      );
+      expect(result[objectMetadataId1].ownershipFieldNames).toEqual([
+        'workspaceMemberId',
+      ]);
     });
 
     it('should deny all permissions if role lacks access to object entirely', () => {
@@ -108,6 +200,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -124,6 +217,8 @@ describe('computePermissionIntersection', () => {
         canUpdateObjectRecords: false,
         canSoftDeleteObjectRecords: false,
         canDestroyObjectRecords: false,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
+        ownershipFieldNames: ['ownerWorkspaceMemberId'],
         restrictedFields: {},
       });
     });
@@ -137,6 +232,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: false,
           canDestroyObjectRecords: false,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
         [objectMetadataId2]: {
@@ -144,6 +240,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: false,
           canSoftDeleteObjectRecords: false,
           canDestroyObjectRecords: false,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -154,6 +251,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: false,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: false,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
         [objectMetadataId2]: {
@@ -161,6 +259,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: false,
           canDestroyObjectRecords: false,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -175,6 +274,8 @@ describe('computePermissionIntersection', () => {
         canUpdateObjectRecords: false,
         canSoftDeleteObjectRecords: false,
         canDestroyObjectRecords: false,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
+        ownershipFieldNames: ['ownerWorkspaceMemberId'],
         restrictedFields: {},
       });
 
@@ -183,6 +284,8 @@ describe('computePermissionIntersection', () => {
         canUpdateObjectRecords: false,
         canSoftDeleteObjectRecords: false,
         canDestroyObjectRecords: false,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
+        ownershipFieldNames: ['ownerWorkspaceMemberId'],
         restrictedFields: {},
       });
     });
@@ -196,6 +299,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {
             email: {
               canRead: null,
@@ -215,6 +319,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {
             email: {
               canRead: null,
@@ -243,6 +348,9 @@ describe('computePermissionIntersection', () => {
           canUpdate: false,
         },
       });
+      expect(result[objectMetadataId1].ownershipFieldNames).toEqual([
+        'ownerWorkspaceMemberId',
+      ]);
     });
 
     it('should handle fields that only exist in some roles', () => {
@@ -252,6 +360,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {
             email: {
               canRead: false,
@@ -267,6 +376,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {
             salary: {
               canRead: false,
@@ -291,6 +401,9 @@ describe('computePermissionIntersection', () => {
           canUpdate: false,
         },
       });
+      expect(result[objectMetadataId1].ownershipFieldNames).toEqual([
+        'ownerWorkspaceMemberId',
+      ]);
     });
   });
 
@@ -302,6 +415,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -312,6 +426,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: true,
           canSoftDeleteObjectRecords: false,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -322,6 +437,7 @@ describe('computePermissionIntersection', () => {
           canUpdateObjectRecords: false,
           canSoftDeleteObjectRecords: true,
           canDestroyObjectRecords: true,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       };
@@ -333,6 +449,8 @@ describe('computePermissionIntersection', () => {
         canUpdateObjectRecords: false,
         canSoftDeleteObjectRecords: false,
         canDestroyObjectRecords: true,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
+        ownershipFieldNames: ['ownerWorkspaceMemberId'],
         restrictedFields: {},
       });
     });

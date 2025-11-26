@@ -291,7 +291,7 @@ export const graphqlMocks = {
                   edges: [],
                   __typename: 'CommentConnection',
                 },
-                accountOwnerForCompanies: {
+                companyOwner: {
                   edges: [],
                   __typename: 'CompanyConnection',
                 },
@@ -597,7 +597,7 @@ export const graphqlMocks = {
                   edges: [],
                   __typename: 'CommentConnection',
                 },
-                accountOwnerForCompanies: {
+                companyOwner: {
                   edges: [],
                   __typename: 'CompanyConnection',
                 },

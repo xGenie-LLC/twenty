@@ -1,6 +1,8 @@
 import { settingsDraftRoleFamilyState } from '@/settings/roles/states/settingsDraftRoleFamilyState';
 import { useRecoilValue } from 'recoil';
-import { isDefined } from 'twenty-shared/utils';
+import { RecordAccessLevel } from 'twenty-shared/types';
+import { isDefined, isNonEmptyArray } from 'twenty-shared/utils';
+import { isDeeplyEqual } from '~/utils/isDeeplyEqual';
 
 export const useGetObjectPermissionDerivedStates = ({
   roleId,
@@ -18,6 +20,20 @@ export const useGetObjectPermissionDerivedStates = ({
     );
 
     const isObjectPermissionDefined = isDefined(objectPermission);
+
+    const recordAccessLevel =
+      objectPermission?.recordAccessLevel ?? RecordAccessLevel.EVERYTHING;
+
+    const hasOwnershipOverride =
+      recordAccessLevel === RecordAccessLevel.OWNED_ONLY &&
+      isNonEmptyArray(objectPermission?.ownershipFieldNames) &&
+      !isDeeplyEqual(objectPermission?.ownershipFieldNames, [
+        'ownerWorkspaceMemberId',
+      ]);
+
+    const hasRecordAccessOverride =
+      recordAccessLevel === RecordAccessLevel.OWNED_ONLY ||
+      hasOwnershipOverride;
 
     const objectPermissionHasOnlyNullPermissions =
       isObjectPermissionDefined &&
@@ -110,7 +126,8 @@ export const useGetObjectPermissionDerivedStates = ({
       objectHasNoOverrideOnRead &&
       objectHasNoOverrideOnUpdate &&
       objectHasNoOverrideOnDelete &&
-      objectHasNoOverrideOnDestroy;
+      objectHasNoOverrideOnDestroy &&
+      !hasRecordAccessOverride;
 
     const objectReadIsRestricted =
       (readIsRestrictedOnAllObjectsByDefault && objectHasNoOverrideOnRead) ||
@@ -164,7 +181,7 @@ export const useGetObjectPermissionDerivedStates = ({
         (isThereAnyFieldPermissionThatRevokeUpdate && canRestrictFieldUpdate));
 
     const objectHasOverrideOnObjectPermissions =
-      !objectHasNoOverrideOnObjectPermission;
+      !objectHasNoOverrideOnObjectPermission || hasRecordAccessOverride;
 
     return {
       objectReadIsRestricted,

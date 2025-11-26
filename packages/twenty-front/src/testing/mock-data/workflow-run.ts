@@ -805,7 +805,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                       {
                         id: 'a6f9558c-76df-49d1-9011-16f2f3b8dbe2',
                         icon: 'IconUserCircle',
-                        name: 'accountOwnerId',
+                        name: 'ownerWorkspaceMemberId',
                         type: 'UUID',
                         label: 'Account Owner id (foreign key)',
                         options: null,
@@ -831,7 +831,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                       {
                         id: '20e60c1f-2dd8-4f1f-a1eb-b4c179cbcd4a',
                         icon: 'IconUserCircle',
-                        name: 'accountOwner',
+                        name: 'ownerWorkspaceMember',
                         type: 'RELATION',
                         label: 'Account Owner',
                         options: null,
@@ -1595,7 +1595,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                 workPolicy: null,
                 attachments: [],
                 noteTargets: [],
-                accountOwner: null,
+                ownerWorkspaceMember: null,
                 linkedinLink: {
                   primaryLinkUrl: '',
                   secondaryLinks: [],
@@ -1603,7 +1603,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                 },
                 searchVector: '',
                 opportunities: [],
-                accountOwnerId: null,
+                ownerWorkspaceMemberId: null,
                 visaSponsorship: false,
                 idealCustomerProfile: false,
                 annualRecurringRevenue: {
@@ -1972,7 +1972,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                 {
                   id: 'a6f9558c-76df-49d1-9011-16f2f3b8dbe2',
                   icon: 'IconUserCircle',
-                  name: 'accountOwnerId',
+                  name: 'ownerWorkspaceMemberId',
                   type: 'UUID',
                   label: 'Account Owner id (foreign key)',
                   options: null,
@@ -1999,7 +1999,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                 {
                   id: '20e60c1f-2dd8-4f1f-a1eb-b4c179cbcd4a',
                   icon: 'IconUserCircle',
-                  name: 'accountOwner',
+                  name: 'ownerWorkspaceMember',
                   type: 'RELATION',
                   label: 'Account Owner',
                   options: null,
@@ -2667,7 +2667,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                 '20e60c1f-2dd8-4f1f-a1eb-b4c179cbcd4a': {
                   id: '20e60c1f-2dd8-4f1f-a1eb-b4c179cbcd4a',
                   icon: 'IconUserCircle',
-                  name: 'accountOwner',
+                  name: 'ownerWorkspaceMember',
                   type: 'RELATION',
                   label: 'Account Owner',
                   options: null,
@@ -3203,7 +3203,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                 'a6f9558c-76df-49d1-9011-16f2f3b8dbe2': {
                   id: 'a6f9558c-76df-49d1-9011-16f2f3b8dbe2',
                   icon: 'IconUserCircle',
-                  name: 'accountOwnerId',
+                  name: 'ownerWorkspaceMemberId',
                   type: 'UUID',
                   label: 'Account Owner id (foreign key)',
                   options: null,
@@ -4019,10 +4019,10 @@ export const oneSucceededWorkflowRunQueryResult = {
                   relationTargetFieldMetadataId: null,
                   relationTargetObjectMetadataId: null,
                 },
-                accountOwner: {
+                ownerWorkspaceMember: {
                   id: '20e60c1f-2dd8-4f1f-a1eb-b4c179cbcd4a',
                   icon: 'IconUserCircle',
-                  name: 'accountOwner',
+                  name: 'ownerWorkspaceMember',
                   type: 'RELATION',
                   label: 'Account Owner',
                   options: null,
@@ -4152,10 +4152,10 @@ export const oneSucceededWorkflowRunQueryResult = {
                   relationTargetFieldMetadataId: null,
                   relationTargetObjectMetadataId: null,
                 },
-                accountOwnerId: {
+                ownerWorkspaceMemberId: {
                   id: 'a6f9558c-76df-49d1-9011-16f2f3b8dbe2',
                   icon: 'IconUserCircle',
-                  name: 'accountOwnerId',
+                  name: 'ownerWorkspaceMemberId',
                   type: 'UUID',
                   label: 'Account Owner id (foreign key)',
                   options: null,
@@ -5258,7 +5258,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                     {
                       id: 'a6f9558c-76df-49d1-9011-16f2f3b8dbe2',
                       icon: 'IconUserCircle',
-                      name: 'accountOwnerId',
+                      name: 'ownerWorkspaceMemberId',
                       type: 'UUID',
                       label: 'Account Owner id (foreign key)',
                       options: null,
@@ -5283,7 +5283,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                     {
                       id: '20e60c1f-2dd8-4f1f-a1eb-b4c179cbcd4a',
                       icon: 'IconUserCircle',
-                      name: 'accountOwner',
+                      name: 'ownerWorkspaceMember',
                       type: 'RELATION',
                       label: 'Account Owner',
                       options: null,

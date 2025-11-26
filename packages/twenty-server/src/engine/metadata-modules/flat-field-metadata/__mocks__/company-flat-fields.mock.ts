@@ -422,23 +422,22 @@ export const COMPANY_FLAT_FIELDS_MOCK = {
     relationTargetObjectMetadataId: '843e0b67-9619-4628-91c4-2fa62256a611',
     universalIdentifier: '20202020-3213-4ddf-9494-6422bcff8d7c',
   }),
-  accountOwner: getFlatFieldMetadataMock({
+  ownerWorkspaceMember: getFlatFieldMetadataMock({
     id: '86c6692b-bed5-4ef1-bad0-657e56a85eba',
     standardId: '20202020-95b8-4e10-9881-edb5d4765f9d',
     objectMetadataId: '7f5c2c7a-bb23-46fb-b59d-9b7a52a8d1cc',
     type: FieldMetadataType.RELATION,
-    name: 'accountOwner',
-    label: 'Account Owner',
+    name: 'ownerWorkspaceMember',
+    label: 'Owner',
     defaultValue: null,
-    description:
-      'Your team member responsible for managing the company account',
+    description: 'Workspace member responsible for this company',
     icon: 'IconUserCircle',
     standardOverrides: null,
     options: null,
     settings: {
       onDelete: RelationOnDeleteAction.SET_NULL,
       relationType: RelationType.MANY_TO_ONE,
-      joinColumnName: 'accountOwnerId',
+      joinColumnName: 'ownerWorkspaceMemberId',
     },
     isCustom: false,
     isActive: true,

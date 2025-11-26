@@ -1808,9 +1808,8 @@ export const STANDARD_OBJECTS = {
       favorites: {
         universalIdentifier: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.favorites,
       },
-      accountOwnerForCompanies: {
-        universalIdentifier:
-          WORKSPACE_MEMBER_STANDARD_FIELD_IDS.accountOwnerForCompanies,
+      companyOwner: {
+        universalIdentifier: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.companyOwner,
       },
       authoredAttachments: {
         universalIdentifier:

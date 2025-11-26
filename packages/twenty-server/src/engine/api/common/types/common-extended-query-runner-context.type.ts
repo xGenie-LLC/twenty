@@ -1,4 +1,5 @@
 import { type ObjectLiteral } from 'typeorm';
+import { type ObjectsPermissions } from 'twenty-shared/types';
 
 import { type WorkspaceAuthContext } from 'src/engine/api/common/interfaces/workspace-auth-context.interface';
 
@@ -17,4 +18,5 @@ export type CommonExtendedQueryRunnerContext = Omit<
   repository: WorkspaceRepository<ObjectLiteral>;
   commonQueryParser: GraphqlQueryParser;
   workspaceDataSource: WorkspaceDataSource;
+  objectsPermissions: ObjectsPermissions;
 };

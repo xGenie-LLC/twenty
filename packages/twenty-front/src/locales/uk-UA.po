@@ -223,6 +223,16 @@ msgstr "{jobCount, plural, one {Це повторить обране завда�
 msgid "{num, selectordinal, one {{num}st} two {{num}nd} few {{num}rd} other {{num}th}}"
 msgstr "{num, selectordinal, one {{num}-й} few {{num}-й} many {{num}-й} other {{num}-й}}"
 
+#. js-lingui-id: doQYU7
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
+msgid "{numberOfRestrictedFieldMetadataItemsOnRead} of {numberOfRestrictableFieldMetadataItemsOnRead} fields hidden."
+msgstr ""
+
+#. js-lingui-id: JzdxHJ
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject.tsx
+msgid "{numberOfRestrictedFieldMetadataItemsOnUpdate} of {numberOfRestrictableFieldMetadataItems} fields read-only."
+msgstr ""
+
 #. js-lingui-id: 5d0hY6
 #: src/modules/settings/admin-panel/health-status/hooks/useRetryJobs.ts
 #: src/modules/settings/admin-panel/health-status/hooks/useRetryJobs.ts
@@ -884,8 +894,7 @@ msgstr "Схема відповіді ІІ"
 
 #. js-lingui-id: N40H+G
 #: src/modules/settings/roles/role-permissions/object-level-permissions/field-permissions/components/SettingsRolePermissionsObjectLevelObjectFieldPermissionTableAllHeaderRow.tsx
-#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject.tsx
-#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelRecordValue.tsx
 #: src/modules/object-record/record-board/record-board-column/utils/getAggregateOperationShortLabel.ts
 #: src/modules/activities/timeline-activities/components/TimelineCard.tsx
 #: src/modules/activities/notes/components/NotesCard.tsx
@@ -897,6 +906,12 @@ msgstr "Всі"
 #: src/modules/object-record/record-field-list/record-detail-section/relation/components/RecordDetailRelationSection.tsx
 msgid "All ({relationRecordsCount})"
 msgstr "Всі ({relationRecordsCount})"
+
+#. js-lingui-id: gBlxjb
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject.tsx
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
+msgid "All (default)"
+msgstr ""
 
 #. js-lingui-id: Hn61nE
 #: src/modules/settings/roles/role-permissions/permission-flags/components/SettingsRolePermissionsToolSection.tsx
@@ -917,6 +932,16 @@ msgstr "Усі невдалі завдання було повторено"
 #: src/modules/spreadsheet-import/components/MatchColumnSelectFieldSelectDropdownContent.tsx
 msgid "All fields"
 msgstr "Всі поля"
+
+#. js-lingui-id: IBnOQ/
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
+msgid "All fields hidden."
+msgstr ""
+
+#. js-lingui-id: IxsMrS
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject.tsx
+msgid "All fields read-only."
+msgstr ""
 
 #. js-lingui-id: 623MHa
 #: src/modules/settings/data-model/fields/forms/components/text/constants/TextDataModelSelectOptions.ts
@@ -1881,6 +1906,11 @@ msgstr "Виберіть поля, які будуть ідентифікува�
 msgid "Choose the format used to display date value"
 msgstr "Оберіть формат для відображення значення дати"
 
+#. js-lingui-id: 8vwca+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Choose whether members with this role can see every record or only records they own (selected owner fields)."
+msgstr ""
+
 #. js-lingui-id: 02EFne
 #: src/pages/settings/security/SettingsSecurity.tsx
 msgid "Choose which profile fields users with the Edit Profile permission can modify"
@@ -2588,6 +2618,8 @@ msgid "Current workspace member not found."
 msgstr "Поточний учасник робочого простору не знайдений."
 
 #. js-lingui-id: 8Tg/JR
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject.tsx
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
 #: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelObjectPicker.tsx
 #: src/modules/settings/data-model/fields/forms/date/utils/getDisplayFormatLabel.ts
 msgid "Custom"
@@ -5632,6 +5664,11 @@ msgstr "Управління своїми інтернет-акаунтами."
 msgid "Match Columns"
 msgstr "Відповідність стовпців"
 
+#. js-lingui-id: QthfhV
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Matches the member set in {fieldLabel}"
+msgstr ""
+
 #. js-lingui-id: CK1KXz
 #: src/modules/object-record/record-board/record-board-column/utils/getAggregateOperationShortLabel.ts
 #: src/modules/object-record/record-board/record-board-column/utils/getAggregateOperationLabel.ts
@@ -6236,6 +6273,16 @@ msgstr "Опис відсутній"
 msgid "No email exchange has occurred with this record yet."
 msgstr "Обмін електронними листами з цим записом ще не відбувся."
 
+#. js-lingui-id: nVOImq
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject.tsx
+msgid "No field-level overrides; inherits default editability."
+msgstr ""
+
+#. js-lingui-id: 8l9zBt
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
+msgid "No field-level overrides; inherits default visibility."
+msgstr ""
+
 #. js-lingui-id: RM6uKY
 #: src/modules/settings/security/components/SettingsSecurityEditableProfileFields.tsx
 msgid "No fields selected"
@@ -6281,6 +6328,11 @@ msgstr "Жодне завдання не було повторено{errorDetail
 #: src/modules/settings/admin-panel/components/SettingsAdminVersionContainer.tsx
 msgid "No latest version found"
 msgstr "Нову версію не знайдено"
+
+#. js-lingui-id: snLZTw
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "No member fields found. Add an Owner (Workspace Member) field in Data model to enable owned visibility."
+msgstr ""
 
 #. js-lingui-id: UwvrGq
 #: src/pages/settings/SettingsWorkspaceMembers.tsx
@@ -6773,6 +6825,11 @@ msgstr "Поле результату {fieldNumber}"
 msgid "Override Draft"
 msgstr "Перезаписати нарис"
 
+#. js-lingui-id: qEAgqe
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelRecordValue.tsx
+msgid "Owned"
+msgstr ""
+
 #. js-lingui-id: y3tCDg
 #: src/modules/advanced-text-editor/extensions/slash-command/DefaultSlashCommands.ts
 msgid "p"
@@ -7247,10 +7304,20 @@ msgstr "Сторінка запису"
 msgid "Record Selection"
 msgstr "Вибір запису"
 
+#. js-lingui-id: 7pRzO+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Record visibility"
+msgstr ""
+
 #. js-lingui-id: PWlTvh
 #: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelTableHeader.tsx
 msgid "Records"
 msgstr "Записи"
+
+#. js-lingui-id: a/3qoC
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Records are treated as owned when this field matches the member."
+msgstr ""
 
 #. js-lingui-id: LfH+Ea
 #: src/modules/settings/security/components/SSO/SettingsSSOOIDCForm.tsx
@@ -7826,6 +7893,11 @@ msgstr "Переглянути {objectLabelPlural}"
 msgid "See active version"
 msgstr "Переглянути активну версію"
 
+#. js-lingui-id: B5odfQ
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See all records"
+msgstr ""
+
 #. js-lingui-id: 8O9AJI
 #: src/modules/action-menu/actions/record-actions/constants/WorkspaceMembersActionsConfig.tsx
 msgid "See deleted members"
@@ -7850,6 +7922,11 @@ msgstr "Переглянути видалені робочі процеси"
 #: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelTableHeader.tsx
 msgid "See Fields"
 msgstr "Перегляд полів"
+
+#. js-lingui-id: GJ85XG
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See owned records only"
+msgstr ""
 
 #. js-lingui-id: irbH/8
 #: src/modules/settings/roles/role-permissions/objects-permissions/components/SettingsRolePermissionsObjectsSection.tsx
@@ -7978,6 +8055,11 @@ msgstr "Оберіть події, які хочете надіслати до �
 #: src/modules/spreadsheet-import/steps/components/SelectSheetStep/SelectSheetStep.tsx
 msgid "Select the sheet to use"
 msgstr "Виберіть аркуш для використання"
+
+#. js-lingui-id: HVJ7kw
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Select which fields count as ownership for this object."
+msgstr ""
 
 #. js-lingui-id: AXTJAW
 #: src/pages/settings/profile/appearance/components/SettingsExperience.tsx
@@ -8284,12 +8366,6 @@ msgstr "Ім'я користувача SMTP"
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 msgid "smtp.example.com"
 msgstr "smtp.example.com"
-
-#. js-lingui-id: zfjcH5
-#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject.tsx
-#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
-msgid "Some"
-msgstr "Деякі"
 
 #. js-lingui-id: RwCYVZ
 #: src/modules/settings/accounts/components/SettingsAccountsMessageFolderCard.tsx

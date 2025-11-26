@@ -37,6 +37,9 @@ import { CompanyWorkspaceEntity } from 'src/modules/company/standard-objects/com
 import { ConnectedAccountWorkspaceEntity } from 'src/modules/connected-account/standard-objects/connected-account.workspace-entity';
 import { FavoriteWorkspaceEntity } from 'src/modules/favorite/standard-objects/favorite.workspace-entity';
 import { MessageParticipantWorkspaceEntity } from 'src/modules/messaging/common/standard-objects/message-participant.workspace-entity';
+import { NoteWorkspaceEntity } from 'src/modules/note/standard-objects/note.workspace-entity';
+import { OpportunityWorkspaceEntity } from 'src/modules/opportunity/standard-objects/opportunity.workspace-entity';
+import { PersonWorkspaceEntity } from 'src/modules/person/standard-objects/person.workspace-entity';
 import { TaskWorkspaceEntity } from 'src/modules/task/standard-objects/task.workspace-entity';
 import { TimelineActivityWorkspaceEntity } from 'src/modules/timeline/standard-objects/timeline-activity.workspace-entity';
 
@@ -290,16 +293,52 @@ export class WorkspaceMemberWorkspaceEntity extends BaseWorkspaceEntity {
   favorites: Relation<FavoriteWorkspaceEntity[]>;
 
   @WorkspaceRelation({
-    standardId: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.accountOwnerForCompanies,
+    standardId: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.companyOwner,
     type: RelationType.ONE_TO_MANY,
-    label: msg`Account Owner For Companies`,
-    description: msg`Account owner for companies`,
+    label: msg`Owner for Companies`,
+    description: msg`Companies owned by this workspace member`,
     icon: 'IconBriefcase',
     inverseSideTarget: () => CompanyWorkspaceEntity,
-    inverseSideFieldKey: 'accountOwner',
+    inverseSideFieldKey: 'ownerWorkspaceMember',
     onDelete: RelationOnDeleteAction.SET_NULL,
   })
-  accountOwnerForCompanies: Relation<CompanyWorkspaceEntity[]>;
+  companyOwner: Relation<CompanyWorkspaceEntity[]>;
+
+  @WorkspaceRelation({
+    standardId: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.opportunityOwner,
+    type: RelationType.ONE_TO_MANY,
+    label: msg`Owner for Opportunities`,
+    description: msg`Opportunities owned by this workspace member`,
+    icon: 'IconTargetArrow',
+    inverseSideTarget: () => OpportunityWorkspaceEntity,
+    inverseSideFieldKey: 'ownerWorkspaceMember',
+    onDelete: RelationOnDeleteAction.SET_NULL,
+  })
+  opportunityOwner: Relation<OpportunityWorkspaceEntity[]>;
+
+  @WorkspaceRelation({
+    standardId: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.personOwner,
+    type: RelationType.ONE_TO_MANY,
+    label: msg`Owner for People`,
+    description: msg`People owned by this workspace member`,
+    icon: 'IconUserCircle',
+    inverseSideTarget: () => PersonWorkspaceEntity,
+    inverseSideFieldKey: 'ownerWorkspaceMember',
+    onDelete: RelationOnDeleteAction.SET_NULL,
+  })
+  personOwner: Relation<PersonWorkspaceEntity[]>;
+
+  @WorkspaceRelation({
+    standardId: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.noteOwner,
+    type: RelationType.ONE_TO_MANY,
+    label: msg`Owner for Notes`,
+    description: msg`Notes owned by this workspace member`,
+    icon: 'IconNotes',
+    inverseSideTarget: () => NoteWorkspaceEntity,
+    inverseSideFieldKey: 'ownerWorkspaceMember',
+    onDelete: RelationOnDeleteAction.SET_NULL,
+  })
+  noteOwner: Relation<NoteWorkspaceEntity[]>;
 
   @WorkspaceRelation({
     standardId: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.authoredAttachments,

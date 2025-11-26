@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { FieldMetadataType, type ObjectRecord } from 'twenty-shared/types';
 import { type FindOptionsRelations, type ObjectLiteral } from 'typeorm';
 
 import { RelationType } from 'src/engine/metadata-modules/field-metadata/interfaces/relation-type.interface';
+import { PermissionsException } from 'src/engine/metadata-modules/permissions/permissions.exception';
 
 import {
   GraphqlQueryRunnerException,
@@ -25,6 +26,8 @@ import { isFieldMetadataEntityOfType } from 'src/engine/utils/is-field-metadata-
 
 @Injectable()
 export class ProcessNestedRelationsV2Helper {
+  private readonly logger = new Logger(ProcessNestedRelationsV2Helper.name);
+
   constructor() {}
 
   public async processNestedRelations<T extends ObjectRecord = ObjectRecord>({
@@ -55,24 +58,36 @@ export class ProcessNestedRelationsV2Helper {
     selectedFields: Record<string, any>;
   }): Promise<void> {
     const processRelationTasks = Object.entries(relations).map(
-      ([sourceFieldName, nestedRelations]) =>
-        this.processRelation({
-          objectMetadataMaps,
-          parentObjectMetadataItem,
-          parentObjectRecords,
-          parentObjectRecordsAggregatedValues,
-          sourceFieldName,
-          nestedRelations,
-          aggregate,
-          limit,
-          authContext,
-          workspaceDataSource,
-          rolePermissionConfig,
-          selectedFields:
-            selectedFields[sourceFieldName] instanceof Object
-              ? selectedFields[sourceFieldName]
-              : undefined,
-        }),
+      async ([sourceFieldName, nestedRelations]) => {
+        try {
+          await this.processRelation({
+            objectMetadataMaps,
+            parentObjectMetadataItem,
+            parentObjectRecords,
+            parentObjectRecordsAggregatedValues,
+            sourceFieldName,
+            nestedRelations,
+            aggregate,
+            limit,
+            authContext,
+            workspaceDataSource,
+            rolePermissionConfig,
+            selectedFields:
+              selectedFields[sourceFieldName] instanceof Object
+                ? selectedFields[sourceFieldName]
+                : undefined,
+          });
+        } catch (error) {
+          if (error instanceof PermissionsException) {
+            this.logger.debug(
+              `Skipping relation ${sourceFieldName} due to permission restrictions`,
+            );
+
+            return;
+          }
+          throw error;
+        }
+      },
     );
 
     await Promise.all(processRelationTasks);
@@ -144,6 +159,7 @@ export class ProcessNestedRelationsV2Helper {
     const targetObjectRepository = workspaceDataSource.getRepository(
       targetObjectMetadata.nameSingular,
       rolePermissionConfig,
+      authContext,
     );
 
     const targetObjectNameSingular = targetObjectMetadata.nameSingular;

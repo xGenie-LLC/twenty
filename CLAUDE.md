@@ -21,10 +21,20 @@ npx nx run twenty-server:worker  # Start background worker
 
 ### Testing
 ```bash
-# Run tests
+# Run all tests for a project
 npx nx test twenty-front      # Frontend unit tests
 npx nx test twenty-server     # Backend unit tests
 npx nx run twenty-server:test:integration:with-db-reset  # Integration tests with DB reset
+
+# Run a single test file (PREFERRED - Fast & Efficient)
+npx jest path/to/test.test.ts --config=packages/PROJECT/jest.config.mjs
+
+# Examples:
+npx jest packages/twenty-front/src/modules/localization/utils/detection/detectNumberFormat.test.ts --config=packages/twenty-front/jest.config.mjs
+npx jest packages/twenty-server/src/utils/__test__/is-work-email.spec.ts --config=packages/twenty-server/jest.config.mjs
+
+# Run with watch mode for development
+npx jest path/to/test.test.ts --config=packages/twenty-front/jest.config.mjs --watch
 
 # Storybook
 npx nx storybook:build twenty-front         # Build Storybook
@@ -125,8 +135,6 @@ packages/
 
 ## Development Workflow
 
-IMPORTANT: Use Context7 for code generation, setup or configuration steps, or library/API documentation. Automatically use the Context7 MCP tools to resolve library IDs and get library docs without waiting for explicit requests.
-
 ### Before Making Changes
 1. Always run linting and type checking after code changes
 2. Test changes with relevant test suites
@@ -136,17 +144,131 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 ### Code Style Notes
 - Use **Emotion** for styling with styled-components pattern
 - Follow **Nx** workspace conventions for imports
-- Use **Lingui** for internationalization
+- Use **Lingui** for internationalization (`@lingui/react` with `t` macro)
 - Components should be in their own directories with tests and stories
+- **Naming Conventions**:
+  - Variables and functions: `camelCase`
+  - Constants: `SCREAMING_SNAKE_CASE`
+  - Types and Classes: `PascalCase`
+  - Component props suffix with `Props` (e.g., `ButtonProps`)
+  - Files and directories: `kebab-case`
+- **Never use abbreviations** in variable names (e.g., use `user` not `u`, `fieldMetadataItem` not `f`)
+- **Import order**: External libraries → Internal modules (absolute paths) → Relative imports
+- **Comments**: Use short-form `//` comments for business logic, not JSDoc blocks. Explain WHY, not WHAT
+- **No 'any' type allowed** - use proper TypeScript types
+- Use utility helpers: `isDefined()`, `isNonEmptyString()`, `isNonEmptyArray()` from `@sniptt/guards`
 
 ### Testing Strategy
 - **Unit tests** with Jest for both frontend and backend
 - **Integration tests** for critical backend workflows
 - **Storybook** for component development and testing
 - **E2E tests** with Playwright for critical user flows
+- Follow **AAA pattern** (Arrange, Act, Assert) in tests
+- Test user behavior, not implementation details
+
+### React Component Guidelines
+- **Functional components only** (no class components)
+- **Named exports only** (no default exports)
+- **Event handlers preferred over useEffect** for state updates
+- Destructure props in component parameters
+- Small, focused components following single responsibility principle
+- Use composition over inheritance
+
+### TypeScript Conventions
+- **Types over interfaces** (except when extending third-party interfaces)
+- **String literals over enums** (except for GraphQL enums)
+- Use `type` for all type definitions
+- Leverage type inference when types are clear
+- Use discriminated unions with type guards
+- Component props should be suffixed with `Props`
 
 ## Important Files
 - `nx.json` - Nx workspace configuration with task definitions
 - `tsconfig.base.json` - Base TypeScript configuration
 - `package.json` - Root package with workspace definitions
 - `.cursor/rules/` - Development guidelines and best practices
+
+## Troubleshooting
+
+### GraphQL Types Out of Sync (Frontend/Backend Mismatch)
+
+**Symptoms:**
+- Features in Settings (like object-level permissions) don't work properly
+- API returns data but UI shows empty or missing fields
+- Fields exist in database but not in API response
+
+**Cause:**
+Twenty uses GraphQL Code Generator to create TypeScript types from the backend schema. These generated files are committed to the repository. If someone modifies the backend GraphQL schema but forgets to regenerate frontend types, they will be out of sync.
+
+**Solution:**
+```bash
+# Regenerate metadata types (requires running backend OR production URL)
+# Option 1: Point to production server
+export REACT_APP_SERVER_BASE_URL=https://your-twenty-instance.com
+npx graphql-codegen --config=packages/twenty-front/codegen-metadata.cjs
+
+# Option 2: Point to local backend (must be running on localhost:3000)
+npx nx run twenty-front:graphql:generate
+
+# After regenerating, commit the changes
+git add packages/twenty-front/src/generated-metadata/graphql.ts
+git commit -m "fix: regenerate GraphQL metadata types"
+```
+
+**Files involved:**
+- `packages/twenty-front/src/generated-metadata/graphql.ts` - Generated types for /metadata endpoint
+- `packages/twenty-front/src/generated/graphql.ts` - Generated types for /graphql endpoint
+- `packages/twenty-front/codegen-metadata.cjs` - Config for metadata codegen
+- `packages/twenty-front/codegen.cjs` - Config for main graphql codegen
+
+**Prevention:**
+When modifying backend GraphQL schema (DTOs, resolvers), always regenerate frontend types before committing.
+
+### After Syncing Fork with Upstream (IMPORTANT)
+
+**Problem:**
+This is a forked repository with custom features (e.g., `recordAccessLevel`, `ownershipFieldNames` for record visibility). When syncing/merging from upstream, generated files get overwritten by upstream's version which doesn't have our custom fields.
+
+**Affected files:**
+- `packages/twenty-front/src/generated-metadata/graphql.ts` - GraphQL types
+- `packages/twenty-front/src/generated/graphql.ts` - GraphQL types
+- `packages/twenty-front/src/locales/generated/*.ts` - Lingui translations
+
+**After every `git merge upstream/main` or fork sync, run:**
+```bash
+# 1. Switch to Node 24 (required by project)
+nvm use 24
+yarn install
+
+# 2. Start backend server (in background)
+npx nx start twenty-server &
+# Wait ~40 seconds for server to be ready
+
+# 3. Regenerate GraphQL types (both data and metadata)
+npx nx run twenty-front:graphql:generate
+
+# 4. Stop backend server
+# pkill -f "nest start"
+
+# 5. Make recordAccessLevel optional (to match shared types)
+sed -i '' 's/recordAccessLevel: RecordAccessLevel;/recordAccessLevel?: Maybe<RecordAccessLevel>;/g' \
+  packages/twenty-front/src/generated/graphql.ts \
+  packages/twenty-front/src/generated-metadata/graphql.ts
+
+# 6. Compile translations
+npx lingui compile --config packages/twenty-front/lingui.config.ts
+
+# 7. Verify TypeScript compiles
+npx nx typecheck twenty-front
+
+# 8. Commit changes
+git add -A
+git commit -m "fix: regenerate types and translations after upstream sync"
+```
+
+**Custom fields that may be overwritten:**
+- `ObjectPermission.recordAccessLevel` - Record visibility level (EVERYTHING/OWNED_ONLY)
+- `ObjectPermission.ownershipFieldNames` - Fields used for ownership-based visibility
+- `RecordAccessLevel` enum - Enum for record access levels
+
+**If GraphQL generation fails** (server not running), manually add missing fields to the generated files by referencing commit `ef67c6ca27` which has the correct types.

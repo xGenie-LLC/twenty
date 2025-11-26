@@ -10,6 +10,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { RecordAccessLevel } from 'twenty-shared/types';
 
 import { ObjectMetadataEntity } from 'src/engine/metadata-modules/object-metadata/object-metadata.entity';
 import { RoleEntity } from 'src/engine/metadata-modules/role/role.entity';
@@ -57,6 +58,20 @@ export class ObjectPermissionEntity {
 
   @Column({ nullable: true, type: 'boolean' })
   canDestroyObjectRecords?: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: RecordAccessLevel,
+    default: RecordAccessLevel.EVERYTHING,
+  })
+  recordAccessLevel: RecordAccessLevel;
+
+  @Column({
+    type: 'text',
+    array: true,
+    default: () => `'{ownerWorkspaceMemberId}'`,
+  })
+  ownershipFieldNames: string[];
 
   @Column({ nullable: false, type: 'uuid' })
   workspaceId: string;

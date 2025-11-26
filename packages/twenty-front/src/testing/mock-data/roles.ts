@@ -1,4 +1,8 @@
-import { PermissionFlagType, type Role } from '~/generated/graphql';
+import {
+  PermissionFlagType,
+  RecordAccessLevel,
+  type Role,
+} from '~/generated/graphql';
 import { mockWorkspaceMembers } from '~/testing/mock-data/workspace-members';
 
 const rolesMock: Role[] = [
@@ -37,6 +41,7 @@ const rolesMock: Role[] = [
         canUpdateObjectRecords: true,
         canSoftDeleteObjectRecords: true,
         canDestroyObjectRecords: true,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
       },
     ],
   },
@@ -68,6 +73,7 @@ const rolesMock: Role[] = [
         canUpdateObjectRecords: false,
         canSoftDeleteObjectRecords: false,
         canDestroyObjectRecords: false,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
       },
     ],
   },

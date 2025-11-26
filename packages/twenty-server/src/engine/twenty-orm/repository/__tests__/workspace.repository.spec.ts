@@ -1,4 +1,7 @@
-import { type ObjectsPermissions } from 'twenty-shared/types';
+import {
+  RecordAccessLevel,
+  type ObjectsPermissions,
+} from 'twenty-shared/types';
 import {
   type DeepPartial,
   type FindManyOptions,
@@ -75,6 +78,7 @@ describe('WorkspaceRepository', () => {
         canUpdateObjectRecords: false,
         canSoftDeleteObjectRecords: false,
         canDestroyObjectRecords: false,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
         restrictedFields: {},
       },
     };

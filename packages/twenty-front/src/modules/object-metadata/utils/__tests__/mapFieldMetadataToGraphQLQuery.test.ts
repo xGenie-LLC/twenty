@@ -90,7 +90,7 @@ address
 }
 updatedAt
 name
-accountOwnerId
+ownerWorkspaceMemberId
 employees
 id
 idealCustomerProfile
@@ -102,7 +102,7 @@ idealCustomerProfile
     const res = mapFieldMetadataToGraphQLQuery({
       objectMetadataItems: generatedMockObjectMetadataItems,
       relationRecordGqlFields: {
-        accountOwner: { id: true, name: true },
+        ownerWorkspaceMember: { id: true, name: true },
         people: true,
         xLink: true,
         linkedinLink: true,
@@ -116,7 +116,7 @@ idealCustomerProfile
         address: { addressStreet1: true },
         updatedAt: true,
         name: true,
-        accountOwnerId: true,
+        ownerWorkspaceMemberId: true,
         employees: true,
         id: true,
         idealCustomerProfile: true,
@@ -137,7 +137,7 @@ xLink
   primaryLinkLabel
   secondaryLinks
 }
-accountOwner
+ownerWorkspaceMember
 {
 __typename
 name
@@ -221,7 +221,7 @@ companyId
   }
 }
 name
-accountOwnerId
+ownerWorkspaceMemberId
 employees
 id
 idealCustomerProfile

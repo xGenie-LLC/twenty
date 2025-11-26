@@ -5,7 +5,7 @@ import {
   evaluateTabVisibility,
 } from '@/object-record/record-show/utils/evaluateTabVisibility';
 import { type ObjectPermissions } from 'twenty-shared/types';
-import { FeatureFlagKey, FieldMetadataType } from '~/generated/graphql';
+import { FeatureFlagKey, FieldMetadataType, RecordAccessLevel } from '~/generated/graphql';
 
 const makeObjectMetadataItem = (
   overrides: Partial<ObjectMetadataItem> = {},

@@ -4,6 +4,7 @@ export enum ModelProvider {
   ANTHROPIC = 'anthropic',
   OPENAI_COMPATIBLE = 'open_ai_compatible',
   XAI = 'xai',
+  GOOGLE = 'google',
 }
 
 export const DEFAULT_FAST_MODEL = 'default-fast-model' as const;
@@ -15,12 +16,19 @@ export type ModelId =
   | 'gpt-4o'
   | 'gpt-4o-mini'
   | 'gpt-4-turbo'
+  | 'gpt-5.1'
+  | 'gpt-5.1-mini'
   | 'claude-opus-4-20250514'
+  | 'claude-opus-4-5-20251101'
   | 'claude-sonnet-4-20250514'
+  | 'claude-sonnet-4-5-20250929'
   | 'claude-3-5-haiku-20241022'
   | 'grok-3'
   | 'grok-3-mini'
   | 'grok-4'
+  | 'gemini-3-pro-preview'
+  | 'gemini-2.5-pro'
+  | 'gemini-2.5-flash'
   | string; // Allow custom model names
 
 export type SupportedFileType =
@@ -218,6 +226,162 @@ export const AI_MODELS: AIModelConfig[] = [
     nativeCapabilities: {
       webSearch: true,
       twitterSearch: true,
+    },
+  },
+  {
+    modelId: 'claude-sonnet-4-5-20250929',
+    label: 'Claude Sonnet 4.5',
+    description:
+      'Latest Claude model with exceptional reasoning, coding, and multimodal capabilities',
+    provider: ModelProvider.ANTHROPIC,
+    inputCostPer1kTokensInCents: 0.3,
+    outputCostPer1kTokensInCents: 1.5,
+    contextWindowTokens: 200000,
+    maxOutputTokens: 8192,
+    supportedFileTypes: [
+      'image/png',
+      'image/jpeg',
+      'image/gif',
+      'image/webp',
+      'application/pdf',
+      'text/plain',
+      'text/html',
+      'text/csv',
+    ],
+    doesSupportThinking: true,
+    nativeCapabilities: {
+      webSearch: true,
+    },
+  },
+  {
+    modelId: 'claude-opus-4-5-20251101',
+    label: 'Claude Opus 4.5',
+    description:
+      'Most powerful Claude model with advanced reasoning and extended thinking for complex tasks',
+    provider: ModelProvider.ANTHROPIC,
+    inputCostPer1kTokensInCents: 0.5,
+    outputCostPer1kTokensInCents: 2.5,
+    contextWindowTokens: 200000,
+    maxOutputTokens: 8192,
+    supportedFileTypes: [
+      'image/png',
+      'image/jpeg',
+      'image/gif',
+      'image/webp',
+      'application/pdf',
+      'text/plain',
+      'text/html',
+      'text/csv',
+    ],
+    doesSupportThinking: true,
+    nativeCapabilities: {
+      webSearch: true,
+    },
+  },
+  {
+    modelId: 'gpt-5.1',
+    label: 'GPT-5.1',
+    description:
+      'Most capable OpenAI model with advanced reasoning and adaptive thinking',
+    provider: ModelProvider.OPENAI,
+    inputCostPer1kTokensInCents: 0.5,
+    outputCostPer1kTokensInCents: 2.0,
+    contextWindowTokens: 128000,
+    maxOutputTokens: 16384,
+    supportedFileTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+    doesSupportThinking: true,
+    nativeCapabilities: {
+      webSearch: true,
+    },
+  },
+  {
+    modelId: 'gpt-5.1-mini',
+    label: 'GPT-5.1 Mini',
+    description:
+      'Balanced GPT-5.1 variant optimized for speed and cost-effectiveness',
+    provider: ModelProvider.OPENAI,
+    inputCostPer1kTokensInCents: 0.1,
+    outputCostPer1kTokensInCents: 0.4,
+    contextWindowTokens: 128000,
+    maxOutputTokens: 16384,
+    supportedFileTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+    nativeCapabilities: {
+      webSearch: true,
+    },
+  },
+  {
+    modelId: 'gemini-3-pro-preview',
+    label: 'Gemini 3 Pro Preview',
+    description:
+      'Most intelligent Google model with advanced reasoning across modalities',
+    provider: ModelProvider.GOOGLE,
+    inputCostPer1kTokensInCents: 0.2,
+    outputCostPer1kTokensInCents: 1.2,
+    contextWindowTokens: 1000000,
+    maxOutputTokens: 8192,
+    supportedFileTypes: [
+      'image/png',
+      'image/jpeg',
+      'image/gif',
+      'image/webp',
+      'application/pdf',
+      'text/plain',
+      'text/html',
+      'text/csv',
+    ],
+    doesSupportThinking: true,
+    nativeCapabilities: {
+      webSearch: true,
+    },
+  },
+  {
+    modelId: 'gemini-2.5-pro',
+    label: 'Gemini 2.5 Pro',
+    description:
+      'Advanced Google model with strong reasoning and multimodal capabilities',
+    provider: ModelProvider.GOOGLE,
+    inputCostPer1kTokensInCents: 0.125,
+    outputCostPer1kTokensInCents: 0.5,
+    contextWindowTokens: 1000000,
+    maxOutputTokens: 8192,
+    supportedFileTypes: [
+      'image/png',
+      'image/jpeg',
+      'image/gif',
+      'image/webp',
+      'application/pdf',
+      'text/plain',
+      'text/html',
+      'text/csv',
+    ],
+    doesSupportThinking: true,
+    nativeCapabilities: {
+      webSearch: true,
+    },
+  },
+  {
+    modelId: 'gemini-2.5-flash',
+    label: 'Gemini 2.5 Flash',
+    description:
+      'Fast and efficient Google model optimized for speed and cost',
+    provider: ModelProvider.GOOGLE,
+    inputCostPer1kTokensInCents: 0.015,
+    outputCostPer1kTokensInCents: 0.06,
+    contextWindowTokens: 1000000,
+    maxOutputTokens: 8192,
+    supportedFileTypes: [
+      'image/png',
+      'image/jpeg',
+      'image/gif',
+      'image/webp',
+      'application/pdf',
+      'text/plain',
+      'text/html',
+      'text/csv',
+    ],
+    doesSupportThinking: true,
+    nativeCapabilities: {
+      webSearch: true,
     },
   },
 ];

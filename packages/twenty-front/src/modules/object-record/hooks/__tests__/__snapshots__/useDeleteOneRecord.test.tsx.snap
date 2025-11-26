@@ -81,7 +81,6 @@ exports[`useDeleteOneRecord B. Starting from filled cache 1. Should handle succe
 exports[`useDeleteOneRecord B. Starting from filled cache 1. Should handle successfull record deletion 2`] = `
 {
   "__typename": "Company",
-  "accountOwner": null,
   "address": {
     "__typename": "Address",
     "addressCity": "Dublin",
@@ -121,6 +120,7 @@ exports[`useDeleteOneRecord B. Starting from filled cache 1. Should handle succe
   "opportunities": [
     {},
   ],
+  "ownerWorkspaceMember": null,
   "people": [
     {
       "__typename": "Person",
@@ -220,7 +220,6 @@ exports[`useDeleteOneRecord B. Starting from filled cache 2. Should handle optim
 exports[`useDeleteOneRecord B. Starting from filled cache 2. Should handle optimistic cache on record deletion 2`] = `
 {
   "__typename": "Company",
-  "accountOwner": null,
   "address": {
     "__typename": "Address",
     "addressCity": "Dublin",
@@ -260,6 +259,7 @@ exports[`useDeleteOneRecord B. Starting from filled cache 2. Should handle optim
   "opportunities": [
     {},
   ],
+  "ownerWorkspaceMember": null,
   "people": [
     {
       "__typename": "Person",
@@ -359,7 +359,6 @@ exports[`useDeleteOneRecord B. Starting from filled cache 3. Should handle optim
 exports[`useDeleteOneRecord B. Starting from filled cache 3. Should handle optimistic cache rollback on record deletion failure 2`] = `
 {
   "__typename": "Company",
-  "accountOwner": null,
   "address": {
     "__typename": "Address",
     "addressCity": "Dublin",
@@ -399,6 +398,7 @@ exports[`useDeleteOneRecord B. Starting from filled cache 3. Should handle optim
   "opportunities": [
     {},
   ],
+  "ownerWorkspaceMember": null,
   "people": [
     {
       "__typename": "Person",

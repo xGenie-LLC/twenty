@@ -1,4 +1,7 @@
-import { type ObjectsPermissions } from 'twenty-shared/types';
+import {
+  RecordAccessLevel,
+  type ObjectsPermissions,
+} from 'twenty-shared/types';
 import { EntityManager } from 'typeorm';
 import { EntityPersistExecutor } from 'typeorm/persistence/EntityPersistExecutor';
 import { PlainObjectToDatabaseEntityTransformer } from 'typeorm/query-builder/transformer/PlainObjectToDatabaseEntityTransformer';
@@ -181,6 +184,7 @@ describe('WorkspaceEntityManager', () => {
           canUpdateObjectRecords: false,
           canSoftDeleteObjectRecords: false,
           canDestroyObjectRecords: false,
+          recordAccessLevel: RecordAccessLevel.EVERYTHING,
           restrictedFields: {},
         },
       },

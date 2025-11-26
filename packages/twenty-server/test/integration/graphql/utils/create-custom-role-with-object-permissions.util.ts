@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { RecordAccessLevel } from 'twenty-shared/types';
 import { makeGraphqlAPIRequest } from 'test/integration/graphql/utils/make-graphql-api-request.util';
 import { makeMetadataAPIRequest } from 'test/integration/metadata/suites/utils/make-metadata-api-request.util';
 
@@ -11,6 +12,7 @@ export const createCustomRoleWithObjectPermissions = async (options: {
   canUpdateCompany?: boolean;
   canUpdateOpportunities?: boolean;
   hasAllObjectRecordsReadPermission?: boolean;
+  personRecordAccessLevel?: RecordAccessLevel;
 }) => {
   const createRoleOperation = {
     query: gql`
@@ -75,14 +77,15 @@ export const createCustomRoleWithObjectPermissions = async (options: {
     options.canReadPerson !== undefined ||
     options.canUpdatePerson !== undefined
   ) {
-    objectPermissions.push({
-      objectMetadataId: personObjectId,
-      canReadObjectRecords: options.canReadPerson,
-      canUpdateObjectRecords:
-        options.canUpdatePerson === undefined ? false : options.canUpdatePerson,
-      canSoftDeleteObjectRecords: false,
-      canDestroyObjectRecords: false,
-    });
+      objectPermissions.push({
+        objectMetadataId: personObjectId,
+        canReadObjectRecords: options.canReadPerson,
+        canUpdateObjectRecords:
+          options.canUpdatePerson === undefined ? false : options.canUpdatePerson,
+        canSoftDeleteObjectRecords: false,
+        canDestroyObjectRecords: false,
+        recordAccessLevel: options.personRecordAccessLevel,
+      });
   }
 
   if (

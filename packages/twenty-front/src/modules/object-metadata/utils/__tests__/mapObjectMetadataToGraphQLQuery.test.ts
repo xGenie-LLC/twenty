@@ -108,7 +108,7 @@ describe('mapObjectMetadataToGraphQLQuery', () => {
       secondaryLinks
     }
     createdAt
-    accountOwnerId
+    ownerWorkspaceMemberId
     domainName
     {
       primaryLinkUrl

@@ -75,6 +75,9 @@ LABEL org.opencontainers.image.description="This image provides a consistent and
 RUN mkdir -p /app/.local-storage /app/packages/twenty-server/.local-storage && \
     chown -R 1000:1000 /app
 
+# Declare volume for persistent storage
+VOLUME ["/app/packages/twenty-server/.local-storage"]
+
 # Use non root user with uid 1000
 USER 1000
 

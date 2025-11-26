@@ -644,7 +644,7 @@ export const mockPerformance = {
         currencyCode: '',
       },
       employees: null,
-      accountOwnerId: null,
+      ownerWorkspaceMemberId: null,
       address: {
         addressCity: 'San Francisco',
       },
@@ -694,7 +694,7 @@ export const mockPerformance = {
       currencyCode: '',
     },
     employees: null,
-    accountOwnerId: null,
+    ownerWorkspaceMemberId: null,
     address: { addressCity: 'San Francisco' },
     idealCustomerProfile: false,
     createdAt: '2024-05-01T13:16:29.046Z',

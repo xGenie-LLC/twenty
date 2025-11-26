@@ -22,6 +22,8 @@ const baseNote = {
   },
   createdAt: '2021-01-01',
   updatedAt: '2021-01-01',
+  ownerWorkspaceMember: null,
+  ownerWorkspaceMemberId: null,
   noteTargets: [],
   attachments: [],
   timelineActivities: [],

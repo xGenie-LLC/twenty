@@ -1,4 +1,4 @@
-import { type ObjectPermissions } from 'twenty-shared/types';
+import { type ObjectPermissions, RecordAccessLevel } from 'twenty-shared/types';
 import { checkFieldPermissions } from '../checkFieldPermissions';
 
 describe('checkFieldPermissions', () => {

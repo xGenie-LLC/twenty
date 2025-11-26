@@ -4,6 +4,7 @@ import { useObjectPermissionDerivedStates } from '@/settings/roles/role-permissi
 import { settingsDraftRoleFamilyState } from '@/settings/roles/states/settingsDraftRoleFamilyState';
 import { useLingui } from '@lingui/react/macro';
 import { useRecoilValue } from 'recoil';
+import { AppTooltip, TooltipDelay } from 'twenty-ui/display';
 
 type SettingsRolePermissionsObjectLevelUpdateFieldsValueForObjectProps = {
   roleId: string;
@@ -56,15 +57,43 @@ export const SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject = ({
     objectMetadataItemId,
   });
 
+  const anchorId = `object-level-update-${roleId}-${objectMetadataItemId}`;
+
+  const { label, tooltip } = (() => {
+    if (objectUpdateIsRestricted) {
+      return { label: '-', tooltip: null as string | null };
+    }
+
+    if (canUpdateAll) {
+      return {
+        label: t`All (default)`,
+        tooltip: t`No field-level overrides; inherits default editability.`,
+      };
+    }
+
+    if (canUpdateSome) {
+      return {
+        label: t`Custom`,
+        tooltip: t`${numberOfRestrictedFieldMetadataItemsOnUpdate} of ${numberOfRestrictableFieldMetadataItems} fields read-only.`,
+      };
+    }
+
+    return { label: t`No`, tooltip: t`All fields read-only.` };
+  })();
+
   return (
     <>
-      {objectUpdateIsRestricted
-        ? '-'
-        : canUpdateAll
-          ? t`All`
-          : canUpdateSome
-            ? t`Some`
-            : t`No`}
+      <span id={anchorId}>{label}</span>
+      {tooltip && (
+        <AppTooltip
+          anchorSelect={`#${anchorId}`}
+          content={tooltip}
+          delay={TooltipDelay.shortDelay}
+          noArrow
+          place="bottom"
+          positionStrategy="fixed"
+        />
+      )}
     </>
   );
 };

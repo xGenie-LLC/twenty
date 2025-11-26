@@ -7,6 +7,8 @@ export const OBJECT_PERMISSION_FRAGMENT = gql`
     canUpdateObjectRecords
     canSoftDeleteObjectRecords
     canDestroyObjectRecords
+    recordAccessLevel
+    ownershipFieldNames
     restrictedFields
   }
 `;

@@ -52,4 +52,11 @@ export default defineConfig({
       external: ['react', 'react-dom', 'react/jsx-runtime'],
     },
   },
+  resolve: {
+    alias: {
+      '@lingui/core': path.resolve(__dirname, '../../node_modules/@lingui/core'),
+      '@lingui/react': path.resolve(__dirname, '../../node_modules/@lingui/react'),
+    },
+    dedupe: ['@lingui/core', '@lingui/react'],
+  },
 });

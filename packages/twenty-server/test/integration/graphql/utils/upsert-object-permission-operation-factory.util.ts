@@ -8,6 +8,8 @@ export const createUpsertObjectPermissionsOperation = (
     canUpdateObjectRecords?: boolean;
     canSoftDeleteObjectRecords?: boolean;
     canDestroyObjectRecords?: boolean;
+    recordAccessLevel?: string;
+    ownershipFieldNames?: string[];
   }>,
   selectedFields: string[] = [
     'objectMetadataId',
@@ -15,6 +17,8 @@ export const createUpsertObjectPermissionsOperation = (
     'canUpdateObjectRecords',
     'canSoftDeleteObjectRecords',
     'canDestroyObjectRecords',
+    'recordAccessLevel',
+    'ownershipFieldNames',
   ],
 ) => ({
   query: gql`

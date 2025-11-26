@@ -2,6 +2,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 import { type Repository } from 'typeorm';
+import { RecordAccessLevel } from 'twenty-shared/types';
 
 import { WorkspaceManyOrAllFlatEntityMapsCacheService } from 'src/engine/metadata-modules/flat-entity/services/workspace-many-or-all-flat-entity-maps-cache.service';
 import { ObjectMetadataEntity } from 'src/engine/metadata-modules/object-metadata/object-metadata.entity';
@@ -196,6 +197,8 @@ describe('ObjectPermissionService', () => {
         canUpdateObjectRecords: true,
         canSoftDeleteObjectRecords: false,
         canDestroyObjectRecords: false,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
+        ownershipFieldNames: ['ownerWorkspaceMemberId'],
       } as ObjectPermissionEntity;
 
       objectPermissionRepository.upsert.mockResolvedValue({
@@ -222,6 +225,8 @@ describe('ObjectPermissionService', () => {
             canUpdateObjectRecords: true,
             canSoftDeleteObjectRecords: false,
             canDestroyObjectRecords: false,
+            recordAccessLevel: RecordAccessLevel.EVERYTHING,
+            ownershipFieldNames: ['ownerWorkspaceMemberId'],
             roleId,
             workspaceId,
           },

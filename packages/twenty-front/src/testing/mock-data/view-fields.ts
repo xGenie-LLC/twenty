@@ -41,7 +41,7 @@ export const mockedViewFieldsData = [
   {
     id: '0c1b4c7b-6a3d-4fb0-bf2b-5d7c8fb844ed',
     fieldMetadataId: companyObjectMetadata?.fields.find(
-      (field) => field.name === 'accountOwner',
+      (field) => field.name === 'ownerWorkspaceMember',
     )?.id,
     viewId: mockedViewsData[0].id,
     position: 2,
@@ -141,7 +141,7 @@ export const mockedViewFieldsData = [
   {
     id: '0c1b4c7b-6a3d-4fb0-bf2b-5d7c8fb844ed',
     fieldMetadataId: companyObjectMetadata?.fields.find(
-      (field) => field.name === 'accountOwner',
+      (field) => field.name === 'ownerWorkspaceMember',
     )?.id,
     viewId: mockedViewsData[3].id,
     position: 2,

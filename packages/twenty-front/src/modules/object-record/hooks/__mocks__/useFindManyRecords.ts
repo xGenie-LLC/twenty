@@ -92,7 +92,7 @@ export const query = gql`
             }
             updatedAt
             name
-            accountOwnerId
+            ownerWorkspaceMemberId
             employees
             id
             idealCustomerProfile

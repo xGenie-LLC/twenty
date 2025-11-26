@@ -1,5 +1,5 @@
 import { getObjectPermissionsFromMapByObjectMetadataId } from '@/settings/roles/role-permissions/objects-permissions/utils/getObjectPermissionsFromMapByObjectMetadataId';
-import { type ObjectPermissions } from 'twenty-shared/types';
+import { type ObjectPermissions, RecordAccessLevel } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 
 export const getObjectPermissionsForObject = (
@@ -20,6 +20,7 @@ export const getObjectPermissionsForObject = (
       canUpdateObjectRecords: true,
       canSoftDeleteObjectRecords: true,
       canDestroyObjectRecords: true,
+      recordAccessLevel: RecordAccessLevel.EVERYTHING,
       restrictedFields: {},
       objectMetadataId,
     };
@@ -31,6 +32,8 @@ export const getObjectPermissionsForObject = (
     canSoftDeleteObjectRecords:
       objectPermissions.canSoftDeleteObjectRecords ?? true,
     canDestroyObjectRecords: objectPermissions.canDestroyObjectRecords ?? true,
+    recordAccessLevel:
+      objectPermissions.recordAccessLevel ?? RecordAccessLevel.EVERYTHING,
     restrictedFields: objectPermissions.restrictedFields ?? {},
     objectMetadataId,
   };

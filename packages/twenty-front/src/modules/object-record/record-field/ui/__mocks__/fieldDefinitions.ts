@@ -44,12 +44,12 @@ export const relationFieldDefinition = formatFieldMetadataItemAsFieldDefinition(
 
 export const selectFieldDefinition: FieldDefinition<FieldSelectMetadata> = {
   fieldMetadataId,
-  label: 'Account Owner',
+  label: 'Owner',
   iconName: 'iconName',
   type: FieldMetadataType.SELECT,
   defaultValue: null,
   metadata: {
-    fieldName: 'accountOwner',
+    fieldName: 'ownerWorkspaceMember',
     options: [{ label: 'Elon Musk', color: 'blue', value: 'userId' }],
     isNullable: true,
   },
