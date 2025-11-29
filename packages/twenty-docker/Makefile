@@ -12,7 +12,7 @@ PLATFORM ?= linux/amd64
 TAG ?= latest
 
 prod-build:
-	@cd ../.. && docker build -f ./packages/twenty-docker/twenty/Dockerfile --platform $(PLATFORM) --tag twenty:$(TAG) . && cd -
+	@cd ../.. && docker build --ulimit nofile=65536:65536 -f ./packages/twenty-docker/twenty/Dockerfile --platform $(PLATFORM) --tag twenty:$(TAG) . && cd -
 
 prod-run:
 	@docker run -d -p 3000:3000 --name twenty twenty:$(TAG)
