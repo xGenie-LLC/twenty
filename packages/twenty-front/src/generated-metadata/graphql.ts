@@ -2972,6 +2972,11 @@ export type ObjectIndexMetadatasConnection = {
   pageInfo: PageInfo;
 };
 
+export enum RecordAccessLevel {
+  EVERYTHING = 'EVERYTHING',
+  OWNED_ONLY = 'OWNED_ONLY'
+}
+
 export type ObjectPermission = {
   __typename?: 'ObjectPermission';
   canDestroyObjectRecords?: Maybe<Scalars['Boolean']>;
@@ -2979,6 +2984,8 @@ export type ObjectPermission = {
   canSoftDeleteObjectRecords?: Maybe<Scalars['Boolean']>;
   canUpdateObjectRecords?: Maybe<Scalars['Boolean']>;
   objectMetadataId: Scalars['UUID'];
+  ownershipFieldNames?: Maybe<Array<Scalars['String']>>;
+  recordAccessLevel?: Maybe<RecordAccessLevel>;
   restrictedFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -2988,6 +2995,8 @@ export type ObjectPermissionInput = {
   canSoftDeleteObjectRecords?: InputMaybe<Scalars['Boolean']>;
   canUpdateObjectRecords?: InputMaybe<Scalars['Boolean']>;
   objectMetadataId: Scalars['UUID'];
+  ownershipFieldNames?: InputMaybe<Array<Scalars['String']>>;
+  recordAccessLevel?: InputMaybe<RecordAccessLevel>;
 };
 
 export type ObjectRecordFilterInput = {
