@@ -281,43 +281,33 @@ git commit -m "fix: regenerate types and translations after upstream sync"
 - The data in database is correct, only the UI labels are wrong
 
 **Cause:**
-These are Lingui message IDs (truncated base64 hashes). When a translation is missing from the locale files, Lingui displays the message ID instead of the translated text. After upstream merge, the locale files get overwritten and lose our custom translations.
+These are Lingui message IDs (truncated base64 hashes). When a translation is missing from the locale files, Lingui displays the message ID instead of the translated text.
 
-**Solution:**
-Running `npx lingui compile` may NOT work if the source `.po` files were also overwritten. Instead, manually add the missing translations to the generated `.ts` files:
-
-**File:** `packages/twenty-front/src/locales/generated/en.ts`
-**File:** `packages/twenty-front/src/locales/generated/zh-CN.ts`
-
-Add these translations to the `messages` object in each file:
-
-```javascript
-// English (en.ts)
-"7pRzO+": ["Record visibility"],
-"8vwca+": ["Choose whether members with this role can see every record or only records they own (selected owner fields)."],
-"B5odfQ": ["See all records"],
-"GJ85XG": ["See owned records only"],
-"HVJ7kw": ["Select which fields count as ownership for this object."],
-"a/3qoC": ["Records are treated as owned when this field matches the member."],
-"snLZTw": ["No member fields found. Add an Owner (Workspace Member) field in Data model to enable owned visibility."],
-"QthfhV": ["Matches the member set in ", ["fieldLabel"]],
-
-// Chinese (zh-CN.ts)
-"7pRzO+": ["记录可见性"],
-"8vwca+": ["选择此角色的成员是可以查看所有记录，还是只能查看他们拥有的记录（选定的所有者字段）。"],
-"B5odfQ": ["查看所有记录"],
-"GJ85XG": ["仅查看自己的记录"],
-"HVJ7kw": ["选择哪些字段作为此对象的所有权字段。"],
-"a/3qoC": ["当此字段与成员匹配时，记录被视为该成员拥有。"],
-"snLZTw": ["未找到成员字段。请在数据模型中添加所有者（工作区成员）字段以启用所有权可见性。"],
-"QthfhV": ["匹配 ", ["fieldLabel"], " 中设置的成员"],
+**Solution (after commit 80e1ef8b42):**
+The translations for record visibility are now in the source `.po` files. After upstream merge, just run:
+```bash
+npx lingui compile --config packages/twenty-front/lingui.config.ts
 ```
 
-**Reference commit:** `992158fac1` contains the correct translations for record visibility feature.
+This will regenerate the `.ts` files from the `.po` source files, which now contain our custom translations.
+
+**If translations are still missing after compile:**
+The `.po` files contain our custom translations at the end of each file. If they're somehow removed:
+
+1. Check commit `80e1ef8b42` for the correct `.po` file entries
+2. Add entries to end of `packages/twenty-front/src/locales/en.po` and `zh-CN.po`:
+
+```
+#. js-lingui-id: 7pRzO+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Record visibility"
+msgstr "Record visibility"
+```
+
+3. Run `lingui compile` again
 
 **How to identify which translations are missing:**
 1. Find the garbled text ID (e.g., "7pRzO+")
-2. Search for that ID in the codebase - it won't be found directly
-3. The ID is generated from the source string using Lingui's hash algorithm
-4. Check the source component (e.g., `SettingsRolePermissionsObjectLevelRecordAccess.tsx`) to see what `t\`...\`` strings are used
-5. Add the translations mapping the ID to the correct text
+2. The ID is a hash of the source string
+3. Check the source component to see what `t\`...\`` strings are used
+4. Add the translation to the `.po` files with the correct `js-lingui-id` comment
