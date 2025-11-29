@@ -242,20 +242,27 @@ yarn install
 
 # 2. Start backend server (in background)
 npx nx start twenty-server &
-# Wait ~40 seconds for server to be ready
+# Wait ~45 seconds for server to be ready
+sleep 45
 
-# 3. Regenerate GraphQL types (both data and metadata)
+# 3. Regenerate GraphQL types (BOTH commands are required)
 npx nx run twenty-front:graphql:generate
+cd packages/twenty-front && npx graphql-codegen --config=codegen-metadata.cjs && cd ../..
 
 # 4. Stop backend server
-# pkill -f "nest start"
+pkill -f "nest start" || true
 
 # 5. Make recordAccessLevel optional (to match shared types)
+# Note: Need TWO sed commands - one for semicolon endings, one for comma endings
 sed -i '' 's/recordAccessLevel: RecordAccessLevel;/recordAccessLevel?: Maybe<RecordAccessLevel>;/g' \
   packages/twenty-front/src/generated/graphql.ts \
   packages/twenty-front/src/generated-metadata/graphql.ts
+sed -i '' 's/recordAccessLevel: RecordAccessLevel,/recordAccessLevel?: RecordAccessLevel | null,/g' \
+  packages/twenty-front/src/generated/graphql.ts \
+  packages/twenty-front/src/generated-metadata/graphql.ts
 
-# 6. Compile translations
+# 6. Sync and compile translations (BOTH commands are required)
+npx lingui extract --config packages/twenty-front/lingui.config.ts
 npx lingui compile --config packages/twenty-front/lingui.config.ts
 
 # 7. Verify TypeScript compiles
@@ -265,6 +272,11 @@ npx nx typecheck twenty-front
 git add -A
 git commit -m "fix: regenerate types and translations after upstream sync"
 ```
+
+**IMPORTANT:** All steps must be run. Skipping any step will cause issues:
+- Skip step 3 → Object-level permissions show empty (GraphQL types missing fields)
+- Skip step 5 → TypeScript errors (type mismatch)
+- Skip step 6 → UI shows garbled text like "qEAgqe", "gBlxjb" (missing translations)
 
 **Custom fields that may be overwritten:**
 - `ObjectPermission.recordAccessLevel` - Record visibility level (EVERYTHING/OWNED_ONLY)
@@ -283,13 +295,16 @@ git commit -m "fix: regenerate types and translations after upstream sync"
 **Cause:**
 These are Lingui message IDs (truncated base64 hashes). When a translation is missing from the locale files, Lingui displays the message ID instead of the translated text.
 
-**Solution (after commit 80e1ef8b42):**
-The translations for record visibility are now in the source `.po` files. After upstream merge, just run:
+**Solution (after commit 5e1189e598):**
+The translations for record visibility are now in the source `.po` files. After upstream merge, run:
 ```bash
+npx lingui extract --config packages/twenty-front/lingui.config.ts
 npx lingui compile --config packages/twenty-front/lingui.config.ts
 ```
 
-This will regenerate the `.ts` files from the `.po` source files, which now contain our custom translations.
+This will sync and regenerate the `.ts` files from the `.po` source files, which now contain our custom translations.
+
+**Note:** `lingui extract` is needed to properly sync message IDs. Just running `compile` may not be enough if upstream changed the source files.
 
 **If translations are still missing after compile:**
 The `.po` files contain our custom translations at the end of each file. If they're somehow removed:
