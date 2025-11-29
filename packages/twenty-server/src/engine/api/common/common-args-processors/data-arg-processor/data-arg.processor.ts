@@ -52,9 +52,10 @@ import { transformLinksValue } from 'src/engine/core-modules/record-transformer/
 import { transformPhonesValue } from 'src/engine/core-modules/record-transformer/utils/transform-phones-value.util';
 import { transformRichTextV2Value } from 'src/engine/core-modules/record-transformer/utils/transform-rich-text-v2.util';
 import { WorkspaceNotFoundDefaultError } from 'src/engine/core-modules/workspace/workspace.exception';
-import { FieldMetadataEntity } from 'src/engine/metadata-modules/field-metadata/field-metadata.entity';
-import { ObjectMetadataItemWithFieldMaps } from 'src/engine/metadata-modules/types/object-metadata-item-with-field-maps';
-import { isWorkspaceAuthContext } from 'src/engine/api/common/utils/is-workspace-auth-context.util';
+import { FlatEntityMaps } from 'src/engine/metadata-modules/flat-entity/types/flat-entity-maps.type';
+import { FlatFieldMetadata } from 'src/engine/metadata-modules/flat-field-metadata/types/flat-field-metadata.type';
+import { buildFieldMapsFromFlatObjectMetadata } from 'src/engine/metadata-modules/flat-field-metadata/utils/build-field-maps-from-flat-object-metadata.util';
+import { FlatObjectMetadata } from 'src/engine/metadata-modules/flat-object-metadata/types/flat-object-metadata.type';
 
 @Injectable()
 export class DataArgProcessor {
@@ -66,12 +67,14 @@ export class DataArgProcessor {
   async process({
     partialRecordInputs,
     authContext,
-    objectMetadataItemWithFieldMaps,
+    flatObjectMetadata,
+    flatFieldMetadataMaps,
     shouldBackfillPositionIfUndefined = true,
   }: {
     partialRecordInputs: Partial<ObjectRecord>[] | undefined;
     authContext: AuthContext;
-    objectMetadataItemWithFieldMaps: ObjectMetadataItemWithFieldMaps;
+    flatObjectMetadata: FlatObjectMetadata;
+    flatFieldMetadataMaps: FlatEntityMaps<FlatFieldMetadata>;
     shouldBackfillPositionIfUndefined?: boolean;
   }): Promise<Partial<ObjectRecord>[]> {
     if (!isDefined(partialRecordInputs)) {
@@ -88,6 +91,12 @@ export class DataArgProcessor {
         workspace.id,
       );
 
+    const { fieldIdByName, fieldIdByJoinColumnName } =
+      buildFieldMapsFromFlatObjectMetadata(
+        flatFieldMetadataMaps,
+        flatObjectMetadata,
+      );
+
     const processedRecords: Partial<ObjectRecord>[] = [];
 
     for (const record of partialRecordInputs) {
@@ -95,18 +104,23 @@ export class DataArgProcessor {
 
       for (const [key, value] of Object.entries(record)) {
         const fieldMetadataId =
-          objectMetadataItemWithFieldMaps.fieldIdByName[key] ||
-          objectMetadataItemWithFieldMaps.fieldIdByJoinColumnName[key];
+          fieldIdByName[key] || fieldIdByJoinColumnName[key];
 
         if (!isDefined(fieldMetadataId)) {
           throw new CommonQueryRunnerException(
-            `Object ${objectMetadataItemWithFieldMaps.nameSingular} doesn't have any "${key}" field.`,
+            `Object ${flatObjectMetadata.nameSingular} doesn't have any "${key}" field.`,
             CommonQueryRunnerExceptionCode.INVALID_ARGS_DATA,
           );
         }
 
-        const fieldMetadata =
-          objectMetadataItemWithFieldMaps.fieldsById[fieldMetadataId];
+        const fieldMetadata = flatFieldMetadataMaps.byId[fieldMetadataId];
+
+        if (!fieldMetadata) {
+          throw new CommonQueryRunnerException(
+            `Field metadata not found for field ${key}`,
+            CommonQueryRunnerExceptionCode.INVALID_ARGS_DATA,
+          );
+        }
 
         if (
           !isDefined(fieldMetadata.defaultValue) &&
@@ -130,40 +144,6 @@ export class DataArgProcessor {
           isNullEquivalenceEnabled,
         );
       }
-
-      if (isWorkspaceAuthContext(authContext)) {
-        const ownerFieldMetadataId =
-          objectMetadataItemWithFieldMaps.fieldIdByJoinColumnName[
-            'ownerWorkspaceMemberId'
-          ] ??
-          objectMetadataItemWithFieldMaps.fieldIdByName['ownerWorkspaceMember'];
-
-        if (isDefined(ownerFieldMetadataId)) {
-          const ownerFieldMetadata =
-            objectMetadataItemWithFieldMaps.fieldsById[ownerFieldMetadataId];
-
-          const ownerJoinColumnName =
-            (
-              ownerFieldMetadata.settings as
-                | { joinColumnName?: string }
-                | null
-                | undefined
-            )?.joinColumnName ?? 'ownerWorkspaceMemberId';
-
-          const ownerValue =
-            processedRecord[ownerJoinColumnName] ??
-            processedRecord[ownerFieldMetadata.name];
-
-          if (
-            isDefined(authContext.workspaceMemberId) &&
-            (isUndefined(ownerValue) || isNull(ownerValue))
-          ) {
-            processedRecord[ownerJoinColumnName] =
-              authContext.workspaceMemberId;
-          }
-        }
-      }
-
       processedRecords.push(processedRecord);
     }
 
@@ -172,9 +152,9 @@ export class DataArgProcessor {
         partialRecordInputs: processedRecords,
         workspaceId: workspace.id,
         objectMetadata: {
-          isCustom: objectMetadataItemWithFieldMaps.isCustom,
-          nameSingular: objectMetadataItemWithFieldMaps.nameSingular,
-          fieldIdByName: objectMetadataItemWithFieldMaps.fieldIdByName,
+          isCustom: flatObjectMetadata.isCustom,
+          nameSingular: flatObjectMetadata.nameSingular,
+          fieldIdByName,
         },
         shouldBackfillPositionIfUndefined,
       });
@@ -183,7 +163,7 @@ export class DataArgProcessor {
   }
 
   private async processField(
-    fieldMetadata: FieldMetadataEntity,
+    fieldMetadata: FlatFieldMetadata,
     key: string,
     value: unknown,
     isNullEquivalenceEnabled: boolean,

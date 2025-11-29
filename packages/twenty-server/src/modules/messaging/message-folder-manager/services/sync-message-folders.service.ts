@@ -14,9 +14,9 @@ import {
   MessageFolderPendingSyncAction,
   type MessageFolderWorkspaceEntity,
 } from 'src/modules/messaging/common/standard-objects/message-folder.workspace-entity';
-import { GmailGetAllFoldersService } from 'src/modules/messaging/message-folder-manager/drivers/gmail/gmail-get-all-folders.service';
-import { ImapGetAllFoldersService } from 'src/modules/messaging/message-folder-manager/drivers/imap/imap-get-all-folders.service';
-import { MicrosoftGetAllFoldersService } from 'src/modules/messaging/message-folder-manager/drivers/microsoft/microsoft-get-all-folders.service';
+import { GmailGetAllFoldersService } from 'src/modules/messaging/message-folder-manager/drivers/gmail/services/gmail-get-all-folders.service';
+import { ImapGetAllFoldersService } from 'src/modules/messaging/message-folder-manager/drivers/imap/services/imap-get-all-folders.service';
+import { MicrosoftGetAllFoldersService } from 'src/modules/messaging/message-folder-manager/drivers/microsoft/services/microsoft-get-all-folders.service';
 import { MessageFolderName } from 'src/modules/messaging/message-import-manager/drivers/microsoft/types/folders';
 
 type SyncMessageFoldersInput = {
@@ -218,7 +218,7 @@ export class SyncMessageFoldersService {
       if (isDefined(existingFolder.externalId)) {
         existingFolderMap.set(existingFolder.externalId, existingFolder);
       }
-      existingFolderMap.set(existingFolder.name, existingFolder);
+      existingFolderMap.set(existingFolder.name ?? '', existingFolder);
     }
 
     return existingFolderMap;
@@ -250,6 +250,6 @@ export class SyncMessageFoldersService {
       return MessageFolderName.SENT_ITEMS;
     }
 
-    return folder.name;
+    return folder.name ?? '';
   }
 }
