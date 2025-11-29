@@ -272,3 +272,52 @@ git commit -m "fix: regenerate types and translations after upstream sync"
 - `RecordAccessLevel` enum - Enum for record access levels
 
 **If GraphQL generation fails** (server not running), manually add missing fields to the generated files by referencing commit `ef67c6ca27` which has the correct types.
+
+### Garbled Text in UI (Lingui Translation Issue)
+
+**Symptoms:**
+- UI shows garbled text like "7pRzO+", "8vwca+", "B5odfQ", "GJ85XG" instead of proper labels
+- This typically appears in record visibility / object-level permissions settings
+- The data in database is correct, only the UI labels are wrong
+
+**Cause:**
+These are Lingui message IDs (truncated base64 hashes). When a translation is missing from the locale files, Lingui displays the message ID instead of the translated text. After upstream merge, the locale files get overwritten and lose our custom translations.
+
+**Solution:**
+Running `npx lingui compile` may NOT work if the source `.po` files were also overwritten. Instead, manually add the missing translations to the generated `.ts` files:
+
+**File:** `packages/twenty-front/src/locales/generated/en.ts`
+**File:** `packages/twenty-front/src/locales/generated/zh-CN.ts`
+
+Add these translations to the `messages` object in each file:
+
+```javascript
+// English (en.ts)
+"7pRzO+": ["Record visibility"],
+"8vwca+": ["Choose whether members with this role can see every record or only records they own (selected owner fields)."],
+"B5odfQ": ["See all records"],
+"GJ85XG": ["See owned records only"],
+"HVJ7kw": ["Select which fields count as ownership for this object."],
+"a/3qoC": ["Records are treated as owned when this field matches the member."],
+"snLZTw": ["No member fields found. Add an Owner (Workspace Member) field in Data model to enable owned visibility."],
+"QthfhV": ["Matches the member set in ", ["fieldLabel"]],
+
+// Chinese (zh-CN.ts)
+"7pRzO+": ["记录可见性"],
+"8vwca+": ["选择此角色的成员是可以查看所有记录，还是只能查看他们拥有的记录（选定的所有者字段）。"],
+"B5odfQ": ["查看所有记录"],
+"GJ85XG": ["仅查看自己的记录"],
+"HVJ7kw": ["选择哪些字段作为此对象的所有权字段。"],
+"a/3qoC": ["当此字段与成员匹配时，记录被视为该成员拥有。"],
+"snLZTw": ["未找到成员字段。请在数据模型中添加所有者（工作区成员）字段以启用所有权可见性。"],
+"QthfhV": ["匹配 ", ["fieldLabel"], " 中设置的成员"],
+```
+
+**Reference commit:** `992158fac1` contains the correct translations for record visibility feature.
+
+**How to identify which translations are missing:**
+1. Find the garbled text ID (e.g., "7pRzO+")
+2. Search for that ID in the codebase - it won't be found directly
+3. The ID is generated from the source string using Lingui's hash algorithm
+4. Check the source component (e.g., `SettingsRolePermissionsObjectLevelRecordAccess.tsx`) to see what `t\`...\`` strings are used
+5. Add the translations mapping the ID to the correct text
