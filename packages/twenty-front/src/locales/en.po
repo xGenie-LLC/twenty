@@ -10358,3 +10358,43 @@ msgstr "Your workspace doesn't have an active subscription. Please contact your 
 #: src/modules/billing/components/SettingsBillingContent.tsx
 msgid "Your workspace will be disabled"
 msgstr "Your workspace will be disabled"
+
+#. js-lingui-id: 7pRzO+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Record visibility"
+msgstr "Record visibility"
+
+#. js-lingui-id: 8vwca+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Choose whether members with this role can see every record or only records they own (selected owner fields)."
+msgstr "Choose whether members with this role can see every record or only records they own (selected owner fields)."
+
+#. js-lingui-id: B5odfQ
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See all records"
+msgstr "See all records"
+
+#. js-lingui-id: GJ85XG
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See owned records only"
+msgstr "See owned records only"
+
+#. js-lingui-id: HVJ7kw
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Select which fields count as ownership for this object."
+msgstr "Select which fields count as ownership for this object."
+
+#. js-lingui-id: a/3qoC
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Records are treated as owned when this field matches the member."
+msgstr "Records are treated as owned when this field matches the member."
+
+#. js-lingui-id: snLZTw
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "No member fields found. Add an Owner (Workspace Member) field in Data model to enable owned visibility."
+msgstr "No member fields found. Add an Owner (Workspace Member) field in Data model to enable owned visibility."
+
+#. js-lingui-id: QthfhV
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Matches the member set in {fieldLabel}"
+msgstr "Matches the member set in {fieldLabel}"

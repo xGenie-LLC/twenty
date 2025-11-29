@@ -10361,3 +10361,43 @@ msgstr "您的工作区没有有效的订阅。请联系您的管理员。"
 #: src/modules/billing/components/SettingsBillingContent.tsx
 msgid "Your workspace will be disabled"
 msgstr "您的工作区将被禁用"
+
+#. js-lingui-id: 7pRzO+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Record visibility"
+msgstr "记录可见性"
+
+#. js-lingui-id: 8vwca+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Choose whether members with this role can see every record or only records they own (selected owner fields)."
+msgstr "选择此角色的成员是可以查看所有记录，还是只能查看他们拥有的记录（选定的所有者字段）。"
+
+#. js-lingui-id: B5odfQ
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See all records"
+msgstr "查看所有记录"
+
+#. js-lingui-id: GJ85XG
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See owned records only"
+msgstr "仅查看自己的记录"
+
+#. js-lingui-id: HVJ7kw
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Select which fields count as ownership for this object."
+msgstr "选择哪些字段作为此对象的所有权字段。"
+
+#. js-lingui-id: a/3qoC
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Records are treated as owned when this field matches the member."
+msgstr "当此字段与成员匹配时，记录被视为该成员拥有。"
+
+#. js-lingui-id: snLZTw
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "No member fields found. Add an Owner (Workspace Member) field in Data model to enable owned visibility."
+msgstr "未找到成员字段。请在数据模型中添加所有者（工作区成员）字段以启用所有权可见性。"
+
+#. js-lingui-id: QthfhV
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Matches the member set in {fieldLabel}"
+msgstr "匹配 {fieldLabel} 中设置的成员"

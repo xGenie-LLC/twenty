@@ -272,3 +272,42 @@ git commit -m "fix: regenerate types and translations after upstream sync"
 - `RecordAccessLevel` enum - Enum for record access levels
 
 **If GraphQL generation fails** (server not running), manually add missing fields to the generated files by referencing commit `ef67c6ca27` which has the correct types.
+
+### Garbled Text in UI (Lingui Translation Issue)
+
+**Symptoms:**
+- UI shows garbled text like "7pRzO+", "8vwca+", "B5odfQ", "GJ85XG" instead of proper labels
+- This typically appears in record visibility / object-level permissions settings
+- The data in database is correct, only the UI labels are wrong
+
+**Cause:**
+These are Lingui message IDs (truncated base64 hashes). When a translation is missing from the locale files, Lingui displays the message ID instead of the translated text.
+
+**Solution (after commit 80e1ef8b42):**
+The translations for record visibility are now in the source `.po` files. After upstream merge, just run:
+```bash
+npx lingui compile --config packages/twenty-front/lingui.config.ts
+```
+
+This will regenerate the `.ts` files from the `.po` source files, which now contain our custom translations.
+
+**If translations are still missing after compile:**
+The `.po` files contain our custom translations at the end of each file. If they're somehow removed:
+
+1. Check commit `80e1ef8b42` for the correct `.po` file entries
+2. Add entries to end of `packages/twenty-front/src/locales/en.po` and `zh-CN.po`:
+
+```
+#. js-lingui-id: 7pRzO+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Record visibility"
+msgstr "Record visibility"
+```
+
+3. Run `lingui compile` again
+
+**How to identify which translations are missing:**
+1. Find the garbled text ID (e.g., "7pRzO+")
+2. The ID is a hash of the source string
+3. Check the source component to see what `t\`...\`` strings are used
+4. Add the translation to the `.po` files with the correct `js-lingui-id` comment
