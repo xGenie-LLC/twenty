@@ -283,6 +283,20 @@ git commit -m "fix: regenerate types and translations after upstream sync"
 - `ObjectPermission.ownershipFieldNames` - Fields used for ownership-based visibility
 - `RecordAccessLevel` enum - Enum for record access levels
 
+**Custom code modifications (NOT in generated files, must be manually re-applied):**
+
+1. **AI Model "auto" alias** - File: `packages/twenty-server/src/engine/metadata-modules/ai/ai-models/services/ai-model-registry.service.ts`
+
+   In `getEffectiveModelConfig` method, add at the beginning:
+   ```typescript
+   // Handle "auto" as an alias for DEFAULT_SMART_MODEL
+   if (modelId === 'auto') {
+     modelId = DEFAULT_SMART_MODEL;
+   }
+   ```
+
+   This allows using "auto" as a model ID which resolves to the default smart model.
+
 **If GraphQL generation fails** (server not running), manually add missing fields to the generated files by referencing commit `ef67c6ca27` which has the correct types.
 
 ### Garbled Text in UI (Lingui Translation Issue)
