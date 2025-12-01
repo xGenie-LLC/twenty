@@ -297,6 +297,32 @@ git commit -m "fix: regenerate types and translations after upstream sync"
 
    This allows using "auto" as a model ID which resolves to the default smart model.
 
+2. **Record Access Filter fix** - File: `packages/twenty-server/src/engine/twenty-orm/repository/workspace-select-query-builder.ts`
+
+   The `applyRecordAccessFilter` method must use `buildFieldMapsFromFlatObjectMetadata()` to get field mappings instead of directly accessing `objectMetadata.fieldIdByName` (which doesn't exist on `FlatObjectMetadata`).
+
+   Required import:
+   ```typescript
+   import { buildFieldMapsFromFlatObjectMetadata } from 'src/engine/metadata-modules/flat-field-metadata/utils/build-field-maps-from-flat-object-metadata.util';
+   ```
+
+   In the method, use:
+   ```typescript
+   const { fieldIdByName, fieldIdByJoinColumnName } =
+     buildFieldMapsFromFlatObjectMetadata(
+       this.internalContext.flatFieldMetadataMaps,
+       objectMetadata,
+     );
+   ```
+
+   And for field metadata lookup:
+   ```typescript
+   const fieldMetadata =
+     this.internalContext.flatFieldMetadataMaps.byId[fieldId];
+   ```
+
+   Without this fix, Owner-based record filtering throws "Cannot read properties of undefined" errors.
+
 **If GraphQL generation fails** (server not running), manually add missing fields to the generated files by referencing commit `ef67c6ca27` which has the correct types.
 
 ### Garbled Text in UI (Lingui Translation Issue)
