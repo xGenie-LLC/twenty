@@ -25,6 +25,7 @@ import {
   TwentyORMExceptionCode,
 } from 'src/engine/twenty-orm/exceptions/twenty-orm.exception';
 import { validateQueryIsPermittedOrThrow } from 'src/engine/twenty-orm/repository/permissions.utils';
+import { buildFieldMapsFromFlatObjectMetadata } from 'src/engine/metadata-modules/flat-field-metadata/utils/build-field-maps-from-flat-object-metadata.util';
 import { WorkspaceDeleteQueryBuilder } from 'src/engine/twenty-orm/repository/workspace-delete-query-builder';
 import { WorkspaceInsertQueryBuilder } from 'src/engine/twenty-orm/repository/workspace-insert-query-builder';
 import { WorkspaceSoftDeleteQueryBuilder } from 'src/engine/twenty-orm/repository/workspace-soft-delete-query-builder';
@@ -395,17 +396,28 @@ export class WorkspaceSelectQueryBuilder<
         ? objectPermissions.ownershipFieldNames
         : ['ownerWorkspaceMemberId'];
 
+    const { fieldIdByName, fieldIdByJoinColumnName } =
+      buildFieldMapsFromFlatObjectMetadata(
+        this.internalContext.flatFieldMetadataMaps,
+        objectMetadata,
+      );
+
     const ownershipColumns = ownershipFieldNames
       .map((fieldName) => {
         const fieldId =
-          objectMetadata.fieldIdByName[fieldName] ??
-          objectMetadata.fieldIdByJoinColumnName[fieldName];
+          fieldIdByName[fieldName] ?? fieldIdByJoinColumnName[fieldName];
 
         if (!fieldId) {
           return null;
         }
 
-        const fieldMetadata = objectMetadata.fieldsById[fieldId];
+        const fieldMetadata =
+          this.internalContext.flatFieldMetadataMaps.byId[fieldId];
+
+        if (!fieldMetadata) {
+          return null;
+        }
+
         const joinColumnName =
           // Settings is loosely typed; joinColumnName exists for relation fields
           (
