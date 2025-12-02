@@ -342,6 +342,12 @@ git commit -m "fix: regenerate types and translations after upstream sync"
 
    Without this fix, users without WORKFLOWS permission get "permission denied" errors when querying favorites that reference workflow objects.
 
+   **IMPORTANT: After applying this fix, you MUST restart the server.** The permission cache has two layers:
+   - Redis (persistent) - cleared by deleting `workspace:*:permissions:*` keys
+   - In-memory `WorkspaceDataSource` (1 hour TTL) - only cleared by server restart
+
+   If you only clear Redis without restarting the server, the in-memory cache will continue using stale permissions, and the error will persist.
+
 **If GraphQL generation fails** (server not running), manually add missing fields to the generated files by referencing commit `ef67c6ca27` which has the correct types.
 
 ### Garbled Text in UI (Lingui Translation Issue)
