@@ -323,6 +323,25 @@ git commit -m "fix: regenerate types and translations after upstream sync"
 
    Without this fix, Owner-based record filtering throws "Cannot read properties of undefined" errors.
 
+3. **Workflow read permission fix** - File: `packages/twenty-server/src/engine/metadata-modules/workspace-permissions-cache/workspace-permissions-cache.service.ts`
+
+   In the `getObjectRecordPermissionsForRoles` method, the workflow objects permission block should NOT override `canRead`:
+
+   ```typescript
+   if (WORKFLOW_STANDARD_OBJECT_IDS.includes(standardId)) {
+     const hasWorkflowsPermissions = this.hasWorkflowsPermissions(role);
+
+     // Keep read permission from role default (users can see workflows in favorites)
+     // Only restrict write operations to users with WORKFLOWS permission
+     canUpdate = hasWorkflowsPermissions;
+     canSoftDelete = hasWorkflowsPermissions;
+     canDestroy = hasWorkflowsPermissions;
+     // NOTE: canRead is NOT set here - it keeps the role default value
+   }
+   ```
+
+   Without this fix, users without WORKFLOWS permission get "permission denied" errors when querying favorites that reference workflow objects.
+
 **If GraphQL generation fails** (server not running), manually add missing fields to the generated files by referencing commit `ef67c6ca27` which has the correct types.
 
 ### Garbled Text in UI (Lingui Translation Issue)
