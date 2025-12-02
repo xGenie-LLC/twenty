@@ -230,7 +230,8 @@ export class WorkspacePermissionsCacheService {
         ) {
           const hasWorkflowsPermissions = this.hasWorkflowsPermissions(role);
 
-          canRead = hasWorkflowsPermissions;
+          // Keep read permission from role default (users can see workflows in favorites)
+          // Only restrict write operations to users with WORKFLOWS permission
           canUpdate = hasWorkflowsPermissions;
           canSoftDelete = hasWorkflowsPermissions;
           canDestroy = hasWorkflowsPermissions;
