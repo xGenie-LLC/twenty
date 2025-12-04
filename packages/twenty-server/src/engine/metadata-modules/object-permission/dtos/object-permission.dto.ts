@@ -1,9 +1,14 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 
 import GraphQLJSON from 'graphql-type-json';
-import { RestrictedFieldsPermissions } from 'twenty-shared/types';
+import {
+  RecordAccessLevel,
+  RestrictedFieldsPermissions,
+} from 'twenty-shared/types';
 
 import { UUIDScalarType } from 'src/engine/api/graphql/workspace-schema-builder/graphql-types/scalars';
+
+registerEnumType(RecordAccessLevel, { name: 'RecordAccessLevel' });
 
 @ObjectType('ObjectPermission')
 export class ObjectPermissionDTO {
@@ -21,6 +26,12 @@ export class ObjectPermissionDTO {
 
   @Field({ nullable: true })
   canDestroyObjectRecords?: boolean;
+
+  @Field(() => RecordAccessLevel, { nullable: true })
+  recordAccessLevel?: RecordAccessLevel;
+
+  @Field(() => [String], { nullable: true })
+  ownershipFieldNames?: string[];
 
   @Field(() => GraphQLJSON, {
     nullable: true,

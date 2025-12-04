@@ -1,6 +1,7 @@
 import {
   type ObjectsPermissions,
   type RestrictedFieldPermissions,
+  RecordAccessLevel,
 } from 'twenty-shared/types';
 
 export const computePermissionIntersection = (
@@ -29,6 +30,8 @@ export const computePermissionIntersection = (
     let canUpdateObjectRecords = true;
     let canSoftDeleteObjectRecords = true;
     let canDestroyObjectRecords = true;
+    let recordAccessLevel = RecordAccessLevel.EVERYTHING;
+    let ownershipFieldNames: string[] | null = null;
     const restrictedFields: Record<string, RestrictedFieldPermissions> = {};
 
     for (const permissions of permissionsArray) {
@@ -51,6 +54,23 @@ export const computePermissionIntersection = (
         objPerm.canSoftDeleteObjectRecords === true;
       canDestroyObjectRecords =
         canDestroyObjectRecords && objPerm.canDestroyObjectRecords === true;
+      if (
+        Array.isArray(objPerm.ownershipFieldNames) &&
+        objPerm.ownershipFieldNames.length > 0
+      ) {
+        if (ownershipFieldNames === null) {
+          ownershipFieldNames = objPerm.ownershipFieldNames;
+        } else {
+          const intersection: string[] = ownershipFieldNames.filter(
+            (fieldName) => objPerm.ownershipFieldNames?.includes(fieldName),
+          );
+
+          ownershipFieldNames = intersection;
+        }
+      }
+      if (objPerm.recordAccessLevel === RecordAccessLevel.OWNED_ONLY) {
+        recordAccessLevel = RecordAccessLevel.OWNED_ONLY;
+      }
 
       if (objPerm.restrictedFields) {
         for (const [fieldName, fieldPerm] of Object.entries(
@@ -84,6 +104,8 @@ export const computePermissionIntersection = (
       canUpdateObjectRecords,
       canSoftDeleteObjectRecords,
       canDestroyObjectRecords,
+      recordAccessLevel,
+      ownershipFieldNames: ownershipFieldNames ?? ['ownerWorkspaceMemberId'],
       restrictedFields,
     };
   }

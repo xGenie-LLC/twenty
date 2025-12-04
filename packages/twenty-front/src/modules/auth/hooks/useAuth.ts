@@ -197,7 +197,14 @@ export const useAuth = () => {
   const handleSetAuthTokens = useCallback(
     (tokens: AuthTokenPair) => {
       setTokenPair(tokens);
-      cookieStorage.setItem('tokenPair', JSON.stringify(tokens));
+      const serialized = JSON.stringify(tokens);
+      cookieStorage.setItem('tokenPair', serialized);
+      try {
+        window.localStorage.setItem('tokenPair', serialized);
+        window.sessionStorage.setItem('tokenPair', serialized);
+      } catch {
+        // storage might be unavailable (incognito/full cookies disabled); cookie remains primary
+      }
     },
     [setTokenPair],
   );

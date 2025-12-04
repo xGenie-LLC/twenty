@@ -1722,6 +1722,7 @@ export enum MessageChannelVisibility {
 
 export enum ModelProvider {
   ANTHROPIC = 'ANTHROPIC',
+  GOOGLE = 'GOOGLE',
   NONE = 'NONE',
   OPENAI = 'OPENAI',
   OPENAI_COMPATIBLE = 'OPENAI_COMPATIBLE',
@@ -2900,6 +2901,8 @@ export type ObjectPermission = {
   canSoftDeleteObjectRecords?: Maybe<Scalars['Boolean']>;
   canUpdateObjectRecords?: Maybe<Scalars['Boolean']>;
   objectMetadataId: Scalars['UUID'];
+  ownershipFieldNames?: Maybe<Array<Scalars['String']>>;
+  recordAccessLevel?: Maybe<RecordAccessLevel>;
   restrictedFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -2909,6 +2912,8 @@ export type ObjectPermissionInput = {
   canSoftDeleteObjectRecords?: InputMaybe<Scalars['Boolean']>;
   canUpdateObjectRecords?: InputMaybe<Scalars['Boolean']>;
   objectMetadataId: Scalars['UUID'];
+  ownershipFieldNames?: InputMaybe<Array<Scalars['String']>>;
+  recordAccessLevel?: InputMaybe<RecordAccessLevel>;
 };
 
 export type ObjectRecordFilterInput = {
@@ -3543,6 +3548,11 @@ export type QueueRetentionConfig = {
   failedMaxAge: Scalars['Float'];
   failedMaxCount: Scalars['Float'];
 };
+
+export enum RecordAccessLevel {
+  EVERYTHING = 'EVERYTHING',
+  OWNED_ONLY = 'OWNED_ONLY'
+}
 
 export type Relation = {
   __typename?: 'Relation';

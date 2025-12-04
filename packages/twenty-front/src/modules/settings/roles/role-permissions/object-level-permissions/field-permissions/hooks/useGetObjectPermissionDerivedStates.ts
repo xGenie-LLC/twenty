@@ -1,5 +1,6 @@
 import { settingsDraftRoleFamilyState } from '@/settings/roles/states/settingsDraftRoleFamilyState';
 import { useRecoilValue } from 'recoil';
+import { RecordAccessLevel } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 
 export const useGetObjectPermissionDerivedStates = ({
@@ -163,8 +164,19 @@ export const useGetObjectPermissionDerivedStates = ({
       ((isThereAnyFieldPermissionThatRevokeRead && canRestrictFieldRead) ||
         (isThereAnyFieldPermissionThatRevokeUpdate && canRestrictFieldUpdate));
 
+    const objectHasRecordAccessLevelOverride =
+      isObjectPermissionDefined &&
+      isDefined(objectPermission.recordAccessLevel) &&
+      objectPermission.recordAccessLevel !== RecordAccessLevel.EVERYTHING;
+
+    // Show as override if:
+    // 1. There's an actual permission override (read/update/delete/destroy changed)
+    // 2. OR recordAccessLevel is OWNED_ONLY
+    // 3. OR there's an objectPermission record (even with EVERYTHING - user explicitly set it)
     const objectHasOverrideOnObjectPermissions =
-      !objectHasNoOverrideOnObjectPermission;
+      !objectHasNoOverrideOnObjectPermission ||
+      objectHasRecordAccessLevelOverride ||
+      isObjectPermissionDefined;
 
     return {
       objectReadIsRestricted,

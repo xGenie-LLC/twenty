@@ -138,7 +138,9 @@ export const Select = <Value extends SelectValue>({
       ? selectContainerRef.current?.clientWidth
       : dropdownWidth;
 
-  const selectableItemIdArray = filteredOptions.map((option) => option.label);
+  const selectableItemIdArray = filteredOptions
+    .filter((option) => option.disabled !== true)
+    .map((option) => option.label);
 
   const selectedItemId = useRecoilComponentValue(
     selectedItemIdComponentState,
@@ -211,6 +213,9 @@ export const Select = <Value extends SelectValue>({
                         key={`${option.value}-${option.label}`}
                         itemId={option.label}
                         onEnter={() => {
+                          if (option.disabled === true) {
+                            return;
+                          }
                           onChange?.(option.value);
                           onBlur?.();
                           closeDropdown(dropdownId);
@@ -222,7 +227,11 @@ export const Select = <Value extends SelectValue>({
                           selected={selectedOption.value === option.value}
                           focused={selectedItemId === option.label}
                           needIconCheck={needIconCheck}
+                          disabled={option.disabled}
                           onClick={() => {
+                            if (option.disabled === true) {
+                              return;
+                            }
                             onChange?.(option.value);
                             onBlur?.();
                             closeDropdown(dropdownId);

@@ -125,8 +125,6 @@ packages/
 
 ## Development Workflow
 
-IMPORTANT: Use Context7 for code generation, setup or configuration steps, or library/API documentation. Automatically use the Context7 MCP tools to resolve library IDs and get library docs without waiting for explicit requests.
-
 ### Before Making Changes
 1. Always run linting and type checking after code changes
 2. Test changes with relevant test suites
@@ -150,3 +148,100 @@ IMPORTANT: Use Context7 for code generation, setup or configuration steps, or li
 - `tsconfig.base.json` - Base TypeScript configuration
 - `package.json` - Root package with workspace definitions
 - `.cursor/rules/` - Development guidelines and best practices
+
+## Custom Modifications (Must be re-applied after upstream sync)
+
+This fork includes custom modifications that may be overwritten when syncing with upstream. After each merge from upstream, verify these modifications are still in place.
+
+### 1. Record-Level Security (RLS) / OWNED_ONLY Feature
+
+This is a custom feature that allows restricting record visibility to only records owned by the user.
+
+**Key files (already in codebase):**
+- `packages/twenty-server/src/engine/metadata-modules/object-permission/object-permission.entity.ts` - Entity with `recordAccessLevel` and `ownershipFieldNames`
+- `packages/twenty-server/src/engine/twenty-orm/repository/workspace-select-query-builder.ts` - `applyRecordAccessFilter()` method
+- `packages/twenty-front/src/modules/settings/roles/role/hooks/useSaveDraftRoleToDB.ts` - Must include `recordAccessLevel` and `ownershipFieldNames` in mutation
+
+**After upstream sync, regenerate GraphQL types:**
+```bash
+npx nx run twenty-front:graphql:generate
+cd packages/twenty-front && npx graphql-codegen --config=codegen-metadata.cjs
+```
+
+### 2. Role Default Permissions Fix
+
+**File:** `packages/twenty-server/src/engine/metadata-modules/workspace-permissions-cache/workspace-permissions-cache.service.ts`
+
+In `getObjectRecordPermissionsForRoles`, default permissions should use the role's settings, not hardcoded `false`:
+
+```typescript
+// Use role's default permissions (canReadAllObjectRecords, etc.)
+// These can be overridden by explicit objectPermission records
+let canRead = role.canReadAllObjectRecords;
+let canUpdate = role.canUpdateAllObjectRecords;
+let canSoftDelete = role.canSoftDeleteAllObjectRecords;
+let canDestroy = role.canDestroyAllObjectRecords;
+```
+
+**Why:** Without this fix, non-Admin roles with `canReadAllObjectRecords = true` will get PERMISSION_DENIED when accessing objects that don't have explicit `objectPermission` records (like `dashboard`). This causes the favorites query to fail because it joins related objects.
+
+Also, keep the workflow block to always allow read:
+```typescript
+if (WORKFLOW_STANDARD_OBJECT_IDS.includes(standardId)) {
+  const hasWorkflowsPermissions = this.hasWorkflowsPermissions(role);
+  canRead = true;  // Always allow reading workflow objects
+  canUpdate = hasWorkflowsPermissions;
+  canSoftDelete = hasWorkflowsPermissions;
+  canDestroy = hasWorkflowsPermissions;
+}
+```
+
+### 3. Nested Relations authContext Fix
+
+**File:** `packages/twenty-server/src/engine/api/graphql/graphql-query-runner/helpers/process-nested-relations-v2.helper.ts`
+
+In the `processRelation` method, the `getRepository()` call must include `authContext` as the third parameter:
+
+```typescript
+const targetObjectRepository = workspaceDataSource.getRepository(
+  targetObjectMetadata.nameSingular,
+  rolePermissionConfig,
+  authContext,  // THIS LINE IS REQUIRED
+);
+```
+
+**Why:** Without `authContext`, when processing nested relations (e.g., favorites -> person/company), the QueryBuilder has no access to `workspaceMemberId`. This causes OWNED_ONLY permission checks to fail with "workspaceMemberId is undefined" error, resulting in PERMISSION_DENIED for Member users querying favorites.
+
+### 4. AI Model "auto" Alias Fix
+
+**File:** `packages/twenty-server/src/engine/metadata-modules/ai/ai-models/services/ai-model-registry.service.ts`
+
+In `getEffectiveModelConfig` method, add at the beginning:
+
+```typescript
+if (modelId === 'auto') {
+  modelId = DEFAULT_SMART_MODEL;
+}
+```
+
+## Production Deployment Notes
+
+### Clearing Redis Permission Cache
+
+**IMPORTANT:** Command-line Redis cache clearing does NOT work for this deployment. You MUST use Dokploy to rebuild Redis.
+
+When you need to clear permission cache (e.g., after deploying permission logic changes):
+
+1. Go to Dokploy dashboard
+2. Find the Redis service (`crm-redis-*`)
+3. Click "Rebuild" to completely rebuild the Redis container
+
+**Why command-line doesn't work:**
+- The `redis-cli DEL` command may appear to succeed but the cache is not actually cleared
+- This may be due to Redis persistence settings or Docker networking issues
+- Only a full Redis rebuild via Dokploy guarantees cache is cleared
+
+**When to clear cache:**
+- After deploying changes to `workspace-permissions-cache.service.ts`
+- After deploying changes to permission calculation logic
+- When users report seeing stale permissions (e.g., can't see objects they should have access to)

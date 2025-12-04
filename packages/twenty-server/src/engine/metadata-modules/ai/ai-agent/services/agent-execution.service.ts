@@ -122,11 +122,28 @@ export class AgentExecutionService {
 
       this.logger.log(`Generated ${Object.keys(tools).length} tools for agent`);
 
+      // Filter out messages with no meaningful content to avoid API errors
+      const filteredMessages = messages.filter((message) => {
+        if (!message.parts || message.parts.length === 0) {
+          return false;
+        }
+
+        // Keep messages that have text content, tool calls, or tool results
+        return message.parts.some((part) => {
+          if (part.type === 'text') {
+            return part.text && part.text.trim().length > 0;
+          }
+
+          // Keep tool-call and tool-result parts
+          return part.type === 'tool-invocation' || part.type === 'tool-result';
+        });
+      });
+
       return {
         system,
         tools,
         model: registeredModel.model,
-        messages: convertToModelMessages(messages),
+        messages: convertToModelMessages(filteredMessages),
         stopWhen: stepCountIs(AGENT_CONFIG.MAX_STEPS),
         providerOptions,
         experimental_telemetry: AI_TELEMETRY_CONFIG,

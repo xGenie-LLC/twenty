@@ -1,16 +1,30 @@
+import styled from '@emotion/styled';
+import { useMutation } from '@apollo/client';
 import { useObjectMetadataItemById } from '@/object-metadata/hooks/useObjectMetadataItemById';
 import { SettingsPageContainer } from '@/settings/components/SettingsPageContainer';
+import { DELETE_OBJECT_PERMISSION } from '@/settings/roles/graphql/mutations/deleteObjectPermissionMutation';
+import { GET_ROLES } from '@/settings/roles/graphql/queries/getRolesQuery';
+import { useDeleteObjectPermissionFromDraftRole } from '@/settings/roles/role-permissions/object-level-permissions/hooks/useDeleteObjectPermissionFromDraftRole';
 import { SettingsRolePermissionsObjectLevelObjectFieldPermissionTable } from '@/settings/roles/role-permissions/object-level-permissions/field-permissions/components/SettingsRolePermissionsObjectLevelObjectFieldPermissionTable';
 import { SettingsRolePermissionsObjectLevelObjectFormObjectLevel } from '@/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelObjectFormObjectLevel';
+import { SettingsRolePermissionsObjectLevelRecordAccess } from '@/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess';
 import { settingsDraftRoleFamilyState } from '@/settings/roles/states/settingsDraftRoleFamilyState';
 import { SubMenuTopBarContainer } from '@/ui/layout/page/components/SubMenuTopBarContainer';
+import { getOperationName } from '@apollo/client/utilities';
 import { t } from '@lingui/core/macro';
 import { useSearchParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { SettingsPath } from 'twenty-shared/types';
 import { getSettingsPath, isDefined } from 'twenty-shared/utils';
+import { IconTrash } from 'twenty-ui/display';
 import { Button } from 'twenty-ui/input';
 import { useFindOneAgentQuery } from '~/generated-metadata/graphql';
+import { useNavigateSettings } from '~/hooks/useNavigateSettings';
+
+const StyledActionButtonsContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing(2)};
+`;
 
 type SettingsRolePermissionsObjectLevelObjectFormProps = {
   roleId: string;
@@ -23,10 +37,18 @@ export const SettingsRolePermissionsObjectLevelObjectForm = ({
 }: SettingsRolePermissionsObjectLevelObjectFormProps) => {
   const [searchParams] = useSearchParams();
   const fromAgentId = searchParams.get('fromAgent');
+  const navigateSettings = useNavigateSettings();
 
   const settingsDraftRole = useRecoilValue(
     settingsDraftRoleFamilyState(roleId),
   );
+
+  const { deleteObjectPermissionFromDraftRole } =
+    useDeleteObjectPermissionFromDraftRole(roleId);
+
+  const [deleteObjectPermission] = useMutation(DELETE_OBJECT_PERMISSION, {
+    refetchQueries: [getOperationName(GET_ROLES) ?? ''],
+  });
 
   const { data: agentData } = useFindOneAgentQuery({
     variables: { id: fromAgentId || '' },
@@ -43,6 +65,20 @@ export const SettingsRolePermissionsObjectLevelObjectForm = ({
   const objectLabelPlural = objectMetadataItem.labelPlural;
 
   const agent = agentData?.findOneAgent;
+
+  const handleDeleteRule = async () => {
+    // Delete from backend database
+    await deleteObjectPermission({
+      variables: { roleId, objectMetadataId },
+    });
+    // Delete from local draft state
+    deleteObjectPermissionFromDraftRole(objectMetadataId);
+    if (isDefined(fromAgentId) && isDefined(agent)) {
+      navigateSettings(SettingsPath.AIAgentDetail, { agentId: agent.id });
+    } else {
+      navigateSettings(SettingsPath.RoleDetail, { roleId });
+    }
+  };
 
   const breadcrumbLinks =
     fromAgentId && isDefined(agent)
@@ -95,17 +131,32 @@ export const SettingsRolePermissionsObjectLevelObjectForm = ({
       title={t`2. Set ${objectLabelPlural} permissions`}
       links={breadcrumbLinks}
       actionButton={
-        <Button
-          title={t`Finish`}
-          variant="secondary"
-          size="small"
-          accent="blue"
-          to={finishButtonPath}
-        />
+        <StyledActionButtonsContainer>
+          <Button
+            Icon={IconTrash}
+            title={t`Delete rule`}
+            variant="secondary"
+            size="small"
+            accent="danger"
+            onClick={handleDeleteRule}
+            disabled={!settingsDraftRole.isEditable}
+          />
+          <Button
+            title={t`Finish`}
+            variant="secondary"
+            size="small"
+            accent="blue"
+            to={finishButtonPath}
+          />
+        </StyledActionButtonsContainer>
       }
     >
       <SettingsPageContainer>
         <SettingsRolePermissionsObjectLevelObjectFormObjectLevel
+          objectMetadataItem={objectMetadataItem}
+          roleId={roleId}
+        />
+        <SettingsRolePermissionsObjectLevelRecordAccess
           objectMetadataItem={objectMetadataItem}
           roleId={roleId}
         />

@@ -26,4 +26,5 @@ export type SettingsRolePermissionsObjectLevelPermission = {
   >;
   label: string | ReactNode;
   value?: boolean | null;
+  recordAccessLevel?: ObjectPermission['recordAccessLevel'];
 };

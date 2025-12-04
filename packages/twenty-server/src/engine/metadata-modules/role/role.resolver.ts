@@ -210,6 +210,20 @@ export class RoleResolver {
   }
 
   @Mutation(() => Boolean)
+  async deleteObjectPermission(
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @Args('roleId', { type: () => UUIDScalarType }) roleId: string,
+    @Args('objectMetadataId', { type: () => UUIDScalarType })
+    objectMetadataId: string,
+  ): Promise<boolean> {
+    return this.objectPermissionService.deleteObjectPermission({
+      workspaceId: workspace.id,
+      roleId,
+      objectMetadataId,
+    });
+  }
+
+  @Mutation(() => Boolean)
   @RequireFeatureFlag(FeatureFlagKey.IS_AI_ENABLED)
   async assignRoleToAgent(
     @Args('agentId', { type: () => UUIDScalarType }) agentId: string,

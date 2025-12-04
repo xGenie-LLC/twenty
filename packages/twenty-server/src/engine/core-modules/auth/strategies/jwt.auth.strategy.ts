@@ -27,6 +27,9 @@ import { userValidator } from 'src/engine/core-modules/user/user.validate';
 import { WorkspaceEntity } from 'src/engine/core-modules/workspace/workspace.entity';
 import { PermissionFlagType } from 'src/engine/metadata-modules/permissions/constants/permission-flag-type.constants';
 import { PermissionsService } from 'src/engine/metadata-modules/permissions/permissions.service';
+import { TwentyORMGlobalManager } from 'src/engine/twenty-orm/twenty-orm-global.manager';
+import { WorkspaceMemberWorkspaceEntity } from 'src/modules/workspace-member/standard-objects/workspace-member.workspace-entity';
+
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
@@ -40,6 +43,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
     @InjectRepository(ApiKeyEntity)
     private readonly apiKeyRepository: Repository<ApiKeyEntity>,
     private readonly permissionsService: PermissionsService,
+    private readonly twentyORMGlobalManager: TwentyORMGlobalManager,
   ) {
     const jwtFromRequestFunction = jwtWrapperService.extractJwtFromRequest();
     // @ts-expect-error legacy noImplicitAny
@@ -163,6 +167,30 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
       ),
     );
 
+    // Fallback: fetch workspaceMemberId from database if not in token (for old tokens)
+    let workspaceMemberId = payload.workspaceMemberId;
+
+    if (!workspaceMemberId && user) {
+      try {
+        const workspaceMemberRepository =
+          await this.twentyORMGlobalManager.getRepositoryForWorkspace<WorkspaceMemberWorkspaceEntity>(
+            workspace.id,
+            'workspaceMember',
+            { shouldBypassPermissionChecks: true },
+          );
+
+        const workspaceMember = await workspaceMemberRepository.findOne({
+          where: { userId: user.id },
+        });
+
+        if (workspaceMember) {
+          workspaceMemberId = workspaceMember.id;
+        }
+      } catch {
+        // Ignore errors - workspaceMemberId will remain undefined
+      }
+    }
+
     context = {
       ...context,
       user,
@@ -170,7 +198,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
       authProvider: payload.authProvider,
       userWorkspace,
       userWorkspaceId: userWorkspace.id,
-      workspaceMemberId: payload.workspaceMemberId,
+      workspaceMemberId,
     };
 
     return context;

@@ -57,6 +57,7 @@ import {
 } from 'src/engine/twenty-orm/repository/permissions.utils';
 import { WorkspaceSelectQueryBuilder } from 'src/engine/twenty-orm/repository/workspace-select-query-builder';
 import { WorkspaceRepository } from 'src/engine/twenty-orm/repository/workspace.repository';
+import { getWorkspaceContext } from 'src/engine/twenty-orm/storage/orm-workspace-context.storage';
 import { type RolePermissionConfig } from 'src/engine/twenty-orm/types/role-permission-config';
 import { computePermissionIntersection } from 'src/engine/twenty-orm/utils/compute-permission-intersection.util';
 import { formatData } from 'src/engine/twenty-orm/utils/format-data.util';
@@ -191,12 +192,25 @@ export class WorkspaceEntityManager extends EntityManager {
       );
     }
 
+    // Try to get authContext from workspace context (AsyncLocalStorage)
+    // This is needed for OWNED_ONLY record access filtering
+    let authContext: AuthContext = {};
+
+    try {
+      const workspaceContext = getWorkspaceContext();
+
+      authContext = workspaceContext.authContext ?? {};
+    } catch {
+      // Context not available (e.g., during background jobs)
+      // authContext will remain empty
+    }
+
     return new WorkspaceSelectQueryBuilder(
       queryBuilder,
       options?.objectRecordsPermissions ?? {},
       this.internalContext,
       options?.shouldBypassPermissionChecks ?? false,
-      {},
+      authContext,
       this.getFeatureFlagMap(),
     );
   }

@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { msg } from '@lingui/core/macro';
+import { RecordAccessLevel } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { In, Repository } from 'typeorm';
 
@@ -89,6 +90,11 @@ export class ObjectPermissionService {
       const objectPermissions = input.objectPermissions.map(
         (objectPermission) => ({
           ...objectPermission,
+          recordAccessLevel:
+            objectPermission.recordAccessLevel ?? RecordAccessLevel.EVERYTHING,
+          ownershipFieldNames: objectPermission.ownershipFieldNames ?? [
+            'ownerWorkspaceMemberId',
+          ],
           roleId: input.roleId,
           workspaceId,
         }),
@@ -279,5 +285,47 @@ export class ObjectPermissionService {
         },
       );
     }
+  }
+
+  public async deleteObjectPermission({
+    workspaceId,
+    roleId,
+    objectMetadataId,
+  }: {
+    workspaceId: string;
+    roleId: string;
+    objectMetadataId: string;
+  }): Promise<boolean> {
+    const role = await this.getRoleOrThrow({
+      roleId,
+      workspaceId,
+    });
+
+    await this.validateRoleIsEditableOrThrow({
+      role,
+    });
+
+    const result = await this.objectPermissionRepository.delete({
+      roleId,
+      objectMetadataId,
+      workspaceId,
+    });
+
+    if (result.affected === 0) {
+      throw new PermissionsException(
+        'Object permission not found',
+        PermissionsExceptionCode.OBJECT_PERMISSION_NOT_FOUND,
+        {
+          userFriendlyMessage: msg`The object permission you are trying to delete could not be found.`,
+        },
+      );
+    }
+
+    await this.workspacePermissionsCacheService.recomputeRolesPermissionsCache({
+      workspaceId,
+      roleIds: [roleId],
+    });
+
+    return true;
   }
 }

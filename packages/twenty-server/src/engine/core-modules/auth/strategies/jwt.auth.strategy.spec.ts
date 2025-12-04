@@ -26,6 +26,7 @@ describe('JwtAuthStrategy', () => {
   let apiKeyRepository: any;
   let jwtWrapperService: any;
   let permissionsService: any;
+  let twentyORMGlobalManager: any;
 
   const jwt = {
     sub: 'sub-default',
@@ -56,6 +57,12 @@ describe('JwtAuthStrategy', () => {
     permissionsService = {
       userHasWorkspaceSettingPermission: jest.fn(),
     };
+
+    twentyORMGlobalManager = {
+      getRepositoryForWorkspace: jest.fn().mockResolvedValue({
+        findOne: jest.fn().mockResolvedValue(null),
+      }),
+    };
   });
 
   afterEach(() => {
@@ -78,6 +85,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -108,6 +116,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -141,6 +150,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -174,6 +184,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       const result = await strategy.validate(payload as JwtPayload);
@@ -214,6 +225,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -252,6 +264,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -294,6 +307,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       const user = await strategy.validate(payload as JwtPayload);
@@ -339,6 +353,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -384,6 +399,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -431,6 +447,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -489,6 +506,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -541,6 +559,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -611,6 +630,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -680,6 +700,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -750,6 +771,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       await expect(strategy.validate(payload as JwtPayload)).rejects.toThrow(
@@ -813,6 +835,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       const result = await strategy.validate(payload as JwtPayload);
@@ -878,6 +901,7 @@ describe('JwtAuthStrategy', () => {
         userWorkspaceRepository,
         apiKeyRepository,
         permissionsService,
+        twentyORMGlobalManager,
       );
 
       const result = await strategy.validate(payload as JwtPayload);

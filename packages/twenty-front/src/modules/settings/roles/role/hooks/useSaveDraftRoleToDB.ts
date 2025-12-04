@@ -212,6 +212,8 @@ export const useSaveDraftRoleToDB = ({
                   objectPermission.canSoftDeleteObjectRecords,
                 canDestroyObjectRecords:
                   objectPermission.canDestroyObjectRecords,
+                recordAccessLevel: objectPermission.recordAccessLevel,
+                ownershipFieldNames: objectPermission.ownershipFieldNames,
               })) ?? [],
           },
         },
@@ -268,6 +270,8 @@ export const useSaveDraftRoleToDB = ({
                   objectPermission.canSoftDeleteObjectRecords,
                 canDestroyObjectRecords:
                   objectPermission.canDestroyObjectRecords,
+                recordAccessLevel: objectPermission.recordAccessLevel,
+                ownershipFieldNames: objectPermission.ownershipFieldNames,
               })) ?? [],
           },
         },

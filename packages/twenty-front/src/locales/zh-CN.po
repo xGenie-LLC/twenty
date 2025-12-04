@@ -926,6 +926,7 @@ msgstr "AI 响应架构"
 #: src/modules/settings/roles/role-permissions/object-level-permissions/field-permissions/components/SettingsRolePermissionsObjectLevelObjectFieldPermissionTableAllHeaderRow.tsx
 #: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject.tsx
 #: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelRecordValue.tsx
 #: src/modules/object-record/record-board/record-board-column/utils/getAggregateOperationShortLabel.ts
 #: src/modules/activities/timeline-activities/components/TimelineCard.tsx
 #: src/modules/activities/notes/components/NotesCard.tsx
@@ -1940,6 +1941,11 @@ msgstr "选择将标识您记录的字段"
 #: src/modules/settings/data-model/fields/forms/date/utils/getDisplayFormatSelectDescription.tsx
 msgid "Choose the format used to display date value"
 msgstr "选择用于显示日期值的格式"
+
+#. js-lingui-id: 8vwca+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Choose whether members with this role can see every record or only records they own (selected owner fields)."
+msgstr ""
 
 #. js-lingui-id: 02EFne
 #: src/pages/settings/security/SettingsSecurity.tsx
@@ -3109,6 +3115,11 @@ msgstr "删除角色"
 #: src/modules/settings/roles/role-settings/components/SettingsRoleSettingsDeleteRoleConfirmationModal.tsx
 msgid "Delete Role Permanently"
 msgstr "永久删除角色"
+
+#. js-lingui-id: 39Aq/E
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelObjectForm.tsx
+msgid "Delete rule"
+msgstr "删除规则"
 
 #. js-lingui-id: DgHnjS
 #: src/pages/settings/ai/components/SettingsAgentSettingsTab.tsx
@@ -5782,6 +5793,11 @@ msgstr "管理您的互联网账户。"
 msgid "Match Columns"
 msgstr "匹配列"
 
+#. js-lingui-id: QthfhV
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Matches the member set in {fieldLabel}"
+msgstr ""
+
 #. js-lingui-id: CK1KXz
 #: src/modules/object-record/record-board/record-board-column/utils/getAggregateOperationShortLabel.ts
 #: src/modules/object-record/record-board/record-board-column/utils/getAggregateOperationLabel.ts
@@ -6485,6 +6501,11 @@ msgstr "找不到最新版本"
 msgid "No logs yet"
 msgstr ""
 
+#. js-lingui-id: snLZTw
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "No member fields found. Add an Owner (Workspace Member) field in Data model to enable owned visibility."
+msgstr ""
+
 #. js-lingui-id: UwvrGq
 #: src/pages/settings/members/SettingsWorkspaceMembers.tsx
 msgid "No members"
@@ -6981,6 +7002,11 @@ msgstr "输出字段 {fieldNumber}"
 msgid "Override Draft"
 msgstr "覆盖草稿"
 
+#. js-lingui-id: qEAgqe
+#: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelRecordValue.tsx
+msgid "Owned"
+msgstr ""
+
 #. js-lingui-id: y3tCDg
 #: src/modules/advanced-text-editor/extensions/slash-command/DefaultSlashCommands.ts
 msgid "p"
@@ -7474,10 +7500,20 @@ msgstr "记录页面"
 msgid "Record Selection"
 msgstr "记录选择"
 
+#. js-lingui-id: 7pRzO+
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Record visibility"
+msgstr ""
+
 #. js-lingui-id: PWlTvh
 #: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelTableHeader.tsx
 msgid "Records"
 msgstr "记录"
+
+#. js-lingui-id: a/3qoC
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Records are treated as owned when this field matches the member."
+msgstr ""
 
 #. js-lingui-id: LfH+Ea
 #: src/modules/settings/security/components/SSO/SettingsSSOOIDCForm.tsx
@@ -8066,6 +8102,11 @@ msgstr "查看{objectLabelPlural}"
 msgid "See active version"
 msgstr "查看活动版本"
 
+#. js-lingui-id: B5odfQ
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See all records"
+msgstr ""
+
 #. js-lingui-id: 8O9AJI
 #: src/modules/action-menu/actions/record-actions/constants/WorkspaceMembersActionsConfig.tsx
 msgid "See deleted members"
@@ -8090,6 +8131,16 @@ msgstr "查看已删除的工作流"
 #: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelTableHeader.tsx
 msgid "See Fields"
 msgstr "查看字段"
+
+#. js-lingui-id: GJ85XG
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See owned records only"
+msgstr ""
+
+#. js-lingui-id: yEKErD
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "See owned records only (no owner field)"
+msgstr ""
 
 #. js-lingui-id: irbH/8
 #: src/modules/settings/roles/role-permissions/objects-permissions/components/SettingsRolePermissionsObjectsSection.tsx
@@ -8218,6 +8269,11 @@ msgstr "选择要发送到此端点的事件"
 #: src/modules/spreadsheet-import/steps/components/SelectSheetStep/SelectSheetStep.tsx
 msgid "Select the sheet to use"
 msgstr "选择要使用的工作表"
+
+#. js-lingui-id: HVJ7kw
+#: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelRecordAccess.tsx
+msgid "Select which fields count as ownership for this object."
+msgstr ""
 
 #. js-lingui-id: AXTJAW
 #: src/pages/settings/profile/appearance/components/SettingsExperience.tsx

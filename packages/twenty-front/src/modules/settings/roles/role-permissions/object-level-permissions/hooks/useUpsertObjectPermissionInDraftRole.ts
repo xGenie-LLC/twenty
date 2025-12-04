@@ -9,7 +9,9 @@ export const useUpsertObjectPermissionInDraftRole = (roleId: string) => {
   );
 
   const upsertObjectPermissionInDraftRole = (
-    objectPermissionToUpsert: ObjectPermission,
+    objectPermissionToUpsert: Partial<ObjectPermission> & {
+      objectMetadataId: string;
+    },
   ) => {
     setSettingsDraftRole((currentSettingsDraftRole) =>
       getRoleWithUpsertedObjectPermission(

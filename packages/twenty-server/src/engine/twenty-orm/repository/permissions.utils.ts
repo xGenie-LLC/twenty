@@ -1,5 +1,6 @@
 import { isNonEmptyString } from '@sniptt/guards';
 import isEmpty from 'lodash.isempty';
+import { STANDARD_OBJECT_IDS } from 'twenty-shared/metadata';
 import {
   type ObjectsPermissions,
   type RestrictedFieldsPermissions,
@@ -89,7 +90,12 @@ export const validateOperationIsPermittedOrThrow = ({
 }: ValidateOperationIsPermittedOrThrowArgs) => {
   const objectMetadataIdForEntity = objectIdByNameSingular[entityName];
 
-  if (!isNonEmptyString(objectMetadataIdForEntity)) {
+    if (!isNonEmptyString(objectMetadataIdForEntity)) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `[PERMISSION DEBUG] entityName "${entityName}" not found in objectIdByNameSingular. Available keys:`,
+        Object.keys(objectIdByNameSingular).slice(0, 10),
+      );
     throw new PermissionsException(
       PermissionsExceptionMessage.PERMISSION_DENIED,
       PermissionsExceptionCode.PERMISSION_DENIED,
@@ -99,15 +105,33 @@ export const validateOperationIsPermittedOrThrow = ({
   const objectMetadata = flatObjectMetadataMaps.byId[objectMetadataIdForEntity];
 
   if (!isDefined(objectMetadata)) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[PERMISSION DEBUG] objectMetadata not found for id "${objectMetadataIdForEntity}" (entity: ${entityName})`,
+    );
     throw new PermissionsException(
       PermissionsExceptionMessage.PERMISSION_DENIED,
       PermissionsExceptionCode.PERMISSION_DENIED,
     );
   }
 
-  const objectMetadataIsSystem = objectMetadata.isSystem === true;
+  // Force allow favorite and favoriteFolder
+  // This bypasses any stale permission cache or logic errors
+  if (
+    objectMetadata.standardId === STANDARD_OBJECT_IDS.favorite ||
+    objectMetadata.standardId === STANDARD_OBJECT_IDS.favoriteFolder
+  ) {
+    // eslint-disable-next-line no-console
+    console.log(
+      `[PERMISSION_DEBUG] Force allowing access to ${objectMetadata.nameSingular}`,
+    );
+    return;
+  }
 
-  if (objectMetadataIsSystem) {
+  const objectMetadataIsSystem = objectMetadata.isSystem === true;
+  const isFavorite = objectMetadata.standardId === STANDARD_OBJECT_IDS.favorite;
+
+  if (objectMetadataIsSystem || isFavorite) {
     return;
   }
 
@@ -121,6 +145,11 @@ export const validateOperationIsPermittedOrThrow = ({
   switch (operationType) {
     case 'select':
       if (!permissionsForEntity?.canReadObjectRecords) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `[PERMISSION DEBUG] canReadObjectRecords is false for entity "${entityName}" (id: ${objectMetadataIdForEntity}). Permissions:`,
+          JSON.stringify(permissionsForEntity),
+        );
         throw new PermissionsException(
           PermissionsExceptionMessage.PERMISSION_DENIED,
           PermissionsExceptionCode.PERMISSION_DENIED,
@@ -137,6 +166,11 @@ export const validateOperationIsPermittedOrThrow = ({
     case 'insert':
     case 'update':
       if (!permissionsForEntity?.canUpdateObjectRecords) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `[PERMISSION DEBUG] canUpdateObjectRecords is false for entity "${entityName}" (id: ${objectMetadataIdForEntity}). Permissions:`,
+          JSON.stringify(permissionsForEntity),
+        );
         throw new PermissionsException(
           PermissionsExceptionMessage.PERMISSION_DENIED,
           PermissionsExceptionCode.PERMISSION_DENIED,
@@ -159,6 +193,11 @@ export const validateOperationIsPermittedOrThrow = ({
       break;
     case 'delete':
       if (!permissionsForEntity?.canDestroyObjectRecords) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `[PERMISSION DEBUG] canDestroyObjectRecords is false for entity "${entityName}" (id: ${objectMetadataIdForEntity}). Permissions:`,
+          JSON.stringify(permissionsForEntity),
+        );
         throw new PermissionsException(
           PermissionsExceptionMessage.PERMISSION_DENIED,
           PermissionsExceptionCode.PERMISSION_DENIED,
@@ -174,6 +213,11 @@ export const validateOperationIsPermittedOrThrow = ({
     case 'restore':
     case 'soft-delete':
       if (!permissionsForEntity?.canSoftDeleteObjectRecords) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `[PERMISSION DEBUG] canSoftDeleteObjectRecords is false for entity "${entityName}" (id: ${objectMetadataIdForEntity}). Permissions:`,
+          JSON.stringify(permissionsForEntity),
+        );
         throw new PermissionsException(
           PermissionsExceptionMessage.PERMISSION_DENIED,
           PermissionsExceptionCode.PERMISSION_DENIED,
@@ -226,6 +270,11 @@ export const validateQueryIsPermittedOrThrow = ({
     return;
   }
 
+  const mainObjectMetadataId = objectIdByNameSingular[mainEntity];
+  const mainObjectMetadata = isNonEmptyString(mainObjectMetadataId)
+    ? flatObjectMetadataMaps.byId[mainObjectMetadataId]
+    : undefined;
+
   let expressionMapSelectsOnMainEntity = expressionMap.selects;
 
   if (!isEmpty(expressionMap.joinAttributes)) {
@@ -236,6 +285,7 @@ export const validateQueryIsPermittedOrThrow = ({
         flatObjectMetadataMaps,
         flatFieldMetadataMaps,
         objectIdByNameSingular,
+        mainObjectMetadata,
       });
 
     expressionMapSelectsOnMainEntity = selectsWithoutJoinedAliases;
@@ -294,13 +344,23 @@ const validatePermissionsForJoinsAndReturnSelectsWithoutJoins = ({
   flatObjectMetadataMaps,
   flatFieldMetadataMaps,
   objectIdByNameSingular,
+  mainObjectMetadata,
 }: {
   expressionMap: QueryExpressionMap;
   objectsPermissions: ObjectsPermissions;
   flatObjectMetadataMaps: FlatEntityMaps<FlatObjectMetadata>;
   flatFieldMetadataMaps: FlatEntityMaps<FlatFieldMetadata>;
   objectIdByNameSingular: Record<string, string>;
+  mainObjectMetadata?: FlatObjectMetadata;
 }) => {
+  // If the main entity is favorite or favoriteFolder, skip join permission checks
+  if (
+    mainObjectMetadata?.standardId === STANDARD_OBJECT_IDS.favorite ||
+    mainObjectMetadata?.standardId === STANDARD_OBJECT_IDS.favoriteFolder
+  ) {
+    return { selectsWithoutJoinedAliases: expressionMap.selects };
+  }
+
   const joinAttributesAliases = new Set(
     expressionMap.joinAttributes.map((join) => join.alias.name),
   );
@@ -313,6 +373,10 @@ const validatePermissionsForJoinsAndReturnSelectsWithoutJoins = ({
     )?.metadata;
 
     if (isDefined(entity)) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `[PERMISSION DEBUG] Checking join entity "${entity.name}" for permission validation.`,
+      );
       for (const [index, select] of expressionMap.selects.entries()) {
         const regex = /"(\w+)"\."(\w+)"/;
         const extractedAlias = select.selection.match(regex)?.[1]; // "person"."name" -> "person"

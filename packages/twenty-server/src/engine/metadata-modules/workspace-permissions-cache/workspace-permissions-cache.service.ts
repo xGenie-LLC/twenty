@@ -6,6 +6,7 @@ import {
   type ObjectsPermissions,
   type ObjectsPermissionsByRoleId,
   type RestrictedFieldsPermissions,
+  RecordAccessLevel,
 } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { In, IsNull, Not, Repository } from 'typeorm';
@@ -199,6 +200,16 @@ export class WorkspacePermissionsCacheService {
         workspaceId,
         ...(roleIds ? { id: In(roleIds) } : {}),
       },
+      select: {
+        id: true,
+        label: true,
+        canReadAllObjectRecords: true,
+        canUpdateAllObjectRecords: true,
+        canSoftDeleteAllObjectRecords: true,
+        canDestroyAllObjectRecords: true,
+        canUpdateAllSettings: true,
+        isEditable: true,
+      },
       relations: ['objectPermissions', 'permissionFlags', 'fieldPermissions'],
     });
 
@@ -213,10 +224,19 @@ export class WorkspacePermissionsCacheService {
       for (const objectMetadata of workspaceObjectMetadataCollection) {
         const { id: objectMetadataId, isSystem, standardId } = objectMetadata;
 
+        const isFavorite = standardId === STANDARD_OBJECT_IDS.favorite;
+        let objectRecordPermissionsOverride:
+          | RoleEntity['objectPermissions'][number]
+          | undefined;
+
+        // Use role's default permissions (canReadAllObjectRecords, etc.)
+        // These can be overridden by explicit objectPermission records
         let canRead = role.canReadAllObjectRecords;
         let canUpdate = role.canUpdateAllObjectRecords;
         let canSoftDelete = role.canSoftDeleteAllObjectRecords;
         let canDestroy = role.canDestroyAllObjectRecords;
+        let recordAccessLevel = RecordAccessLevel.EVERYTHING;
+        let ownershipFieldNames: string[] = ['ownerWorkspaceMemberId'];
         const restrictedFields: RestrictedFieldsPermissions = {};
 
         if (
@@ -227,20 +247,48 @@ export class WorkspacePermissionsCacheService {
         ) {
           const hasWorkflowsPermissions = this.hasWorkflowsPermissions(role);
 
-          canRead = hasWorkflowsPermissions;
+          // Workflow objects: always allow read (users can see workflows in favorites)
+          // Only restrict write operations to users with WORKFLOWS permission
+          canRead = true;
           canUpdate = hasWorkflowsPermissions;
           canSoftDelete = hasWorkflowsPermissions;
           canDestroy = hasWorkflowsPermissions;
         } else {
-          const objectRecordPermissionsOverride = role.objectPermissions.find(
+          objectRecordPermissionsOverride = role.objectPermissions.find(
             (objectPermission) =>
               objectPermission.objectMetadataId === objectMetadataId,
           );
 
+          // Permission logic:
+          // 1. System objects: always grant full permissions
+          // 2. Objects with explicit permission record:
+          //    - If canRead/canUpdate explicitly set, use that value
+          //    - If canRead/canUpdate is NULL but recordAccessLevel is set, grant permission (user configured access level)
+          //    - Otherwise use role defaults (true for admin, false for others)
+          // 3. Objects without permission record: no access for non-admin roles
+          const hasExplicitPermissionRecord = isDefined(
+            objectRecordPermissionsOverride,
+          );
+          const hasRecordAccessLevelSet = isDefined(
+            objectRecordPermissionsOverride?.recordAccessLevel,
+          );
+
           const getPermissionValue = (
-            overrideValue: boolean | undefined,
+            overrideValue: boolean | undefined | null,
             defaultValue: boolean,
-          ) => (isSystem ? true : (overrideValue ?? defaultValue));
+          ) => {
+            if (isSystem || isFavorite) {
+              return true;
+            }
+            if (isDefined(overrideValue)) {
+              return overrideValue;
+            }
+            // If user configured recordAccessLevel, they intend to grant access
+            if (hasExplicitPermissionRecord && hasRecordAccessLevelSet) {
+              return true;
+            }
+            return defaultValue;
+          };
 
           canRead = getPermissionValue(
             objectRecordPermissionsOverride?.canReadObjectRecords,
@@ -258,6 +306,18 @@ export class WorkspacePermissionsCacheService {
             objectRecordPermissionsOverride?.canDestroyObjectRecords,
             canDestroy,
           );
+          if (isDefined(objectRecordPermissionsOverride?.recordAccessLevel)) {
+            recordAccessLevel =
+              objectRecordPermissionsOverride.recordAccessLevel;
+          }
+
+          if (
+            isDefined(objectRecordPermissionsOverride?.ownershipFieldNames) &&
+            objectRecordPermissionsOverride?.ownershipFieldNames.length > 0
+          ) {
+            ownershipFieldNames =
+              objectRecordPermissionsOverride.ownershipFieldNames;
+          }
 
           const fieldPermissions = role.fieldPermissions.filter(
             (fieldPermission) =>
@@ -288,6 +348,8 @@ export class WorkspacePermissionsCacheService {
           canUpdateObjectRecords: canUpdate,
           canSoftDeleteObjectRecords: canSoftDelete,
           canDestroyObjectRecords: canDestroy,
+          recordAccessLevel,
+          ownershipFieldNames,
           restrictedFields,
         };
 

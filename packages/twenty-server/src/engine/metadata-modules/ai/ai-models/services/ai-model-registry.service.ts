@@ -171,6 +171,11 @@ export class AiModelRegistryService {
   }
 
   getEffectiveModelConfig(modelId: string): AIModelConfig {
+    // Handle "auto" as an alias for DEFAULT_SMART_MODEL
+    if (modelId === 'auto') {
+      modelId = DEFAULT_SMART_MODEL;
+    }
+
     if (modelId === DEFAULT_FAST_MODEL || modelId === DEFAULT_SMART_MODEL) {
       const defaultModel =
         modelId === DEFAULT_FAST_MODEL

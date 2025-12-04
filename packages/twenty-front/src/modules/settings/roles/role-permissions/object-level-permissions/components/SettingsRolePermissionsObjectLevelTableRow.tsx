@@ -1,5 +1,5 @@
 import { type ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
-import { SettingsRolePermissionsObjectLevelOverrideCellContainer } from '@/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelOverrideCellContainer';
+import { SettingsRolePermissionsObjectLevelRecordValue } from '@/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelRecordValue';
 import { SettingsRolePermissionsObjectLevelSeeFieldsValueForObject } from '@/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject';
 import { SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject } from '@/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelUpdateFieldsValueForObject';
 import { OBJECT_LEVEL_PERMISSION_TABLE_GRID_AUTO_COLUMNS } from '@/settings/roles/role-permissions/object-level-permissions/constants/ObjectLevelPermissionTableGridAutoColumns';
@@ -71,10 +71,9 @@ export const SettingsRolePermissionsObjectLevelTableRow = ({
         </StyledNameLabel>
       </StyledNameTableCell>
       <TableCell>
-        <SettingsRolePermissionsObjectLevelOverrideCellContainer
+        <SettingsRolePermissionsObjectLevelRecordValue
           objectMetadataItem={objectMetadataItem}
           roleId={roleId}
-          objectLabel={objectLabelPlural}
         />
       </TableCell>
       <TableCell>

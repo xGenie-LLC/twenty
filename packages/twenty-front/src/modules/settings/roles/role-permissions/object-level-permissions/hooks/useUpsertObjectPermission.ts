@@ -2,6 +2,7 @@ import { useUpsertObjectPermissionInDraftRole } from '@/settings/roles/role-perm
 import { type SettingsRoleObjectPermissionKey } from '@/settings/roles/role-permissions/objects-permissions/constants/SettingsRoleObjectPermissionIconConfig';
 import { settingsDraftRoleFamilyState } from '@/settings/roles/states/settingsDraftRoleFamilyState';
 import { useRecoilValue } from 'recoil';
+import { RecordAccessLevel } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { type ObjectPermission } from '~/generated/graphql';
 
@@ -43,6 +44,8 @@ export const useUpsertObjectPermission = ({ roleId }: { roleId: string }) => {
     if (!isDefined(existingObjectPermission)) {
       const newObjectPermission = {
         objectMetadataId: objectMetadataItemId,
+        recordAccessLevel: RecordAccessLevel.EVERYTHING,
+        ownershipFieldNames: ['ownerWorkspaceMemberId'],
         ...newPermissions,
       } satisfies ObjectPermission;
 
@@ -50,6 +53,9 @@ export const useUpsertObjectPermission = ({ roleId }: { roleId: string }) => {
     } else {
       const updatedObjectPermission = {
         ...existingObjectPermission,
+        ownershipFieldNames: existingObjectPermission.ownershipFieldNames ?? [
+          'ownerWorkspaceMemberId',
+        ],
         ...newPermissions,
       };
 
@@ -59,5 +65,54 @@ export const useUpsertObjectPermission = ({ roleId }: { roleId: string }) => {
 
   return {
     upsertObjectPermission,
+    upsertRecordAccessLevel: (
+      objectMetadataItemId: string,
+      recordAccessLevel: RecordAccessLevel,
+    ) => {
+      const existingObjectPermission =
+        settingsDraftRole.objectPermissions?.find(
+          (objectPermissionToFind) =>
+            objectPermissionToFind.objectMetadataId === objectMetadataItemId,
+        );
+
+      if (!existingObjectPermission) {
+        upsertObjectPermissionInDraftRole({
+          objectMetadataId: objectMetadataItemId,
+          recordAccessLevel,
+        });
+      } else {
+        upsertObjectPermissionInDraftRole({
+          ...existingObjectPermission,
+          recordAccessLevel,
+        });
+      }
+    },
+    upsertOwnershipFieldNames: (
+      objectMetadataItemId: string,
+      ownershipFieldNames: string[],
+    ) => {
+      const sanitizedOwnershipFieldNames =
+        ownershipFieldNames.length > 0
+          ? ownershipFieldNames
+          : ['ownerWorkspaceMemberId'];
+
+      const existingObjectPermission =
+        settingsDraftRole.objectPermissions?.find(
+          (objectPermissionToFind) =>
+            objectPermissionToFind.objectMetadataId === objectMetadataItemId,
+        );
+
+      if (!existingObjectPermission) {
+        upsertObjectPermissionInDraftRole({
+          objectMetadataId: objectMetadataItemId,
+          ownershipFieldNames: sanitizedOwnershipFieldNames,
+        });
+      } else {
+        upsertObjectPermissionInDraftRole({
+          ...existingObjectPermission,
+          ownershipFieldNames: sanitizedOwnershipFieldNames,
+        });
+      }
+    },
   };
 };

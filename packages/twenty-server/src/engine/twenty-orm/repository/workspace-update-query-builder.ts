@@ -1,8 +1,12 @@
 import { msg } from '@lingui/core/macro';
 import { QUERY_MAX_RECORDS } from 'twenty-shared/constants';
-import { type ObjectsPermissions } from 'twenty-shared/types';
+import {
+  RecordAccessLevel,
+  type ObjectsPermissions,
+} from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import {
+  Brackets,
   UpdateQueryBuilder,
   type EntityTarget,
   type ObjectLiteral,
@@ -24,6 +28,12 @@ import {
   TwentyORMException,
   TwentyORMExceptionCode,
 } from 'src/engine/twenty-orm/exceptions/twenty-orm.exception';
+import {
+  PermissionsException,
+  PermissionsExceptionCode,
+  PermissionsExceptionMessage,
+} from 'src/engine/metadata-modules/permissions/permissions.exception';
+import { buildFieldMapsFromFlatObjectMetadata } from 'src/engine/metadata-modules/flat-field-metadata/utils/build-field-maps-from-flat-object-metadata.util';
 import { RelationNestedQueries } from 'src/engine/twenty-orm/relation-nested-queries/relation-nested-queries';
 import { validateQueryIsPermittedOrThrow } from 'src/engine/twenty-orm/repository/permissions.utils';
 import { type WorkspaceDeleteQueryBuilder } from 'src/engine/twenty-orm/repository/workspace-delete-query-builder';
@@ -53,6 +63,7 @@ export class WorkspaceUpdateQueryBuilder<
     criteria: string;
     partialEntity: QueryDeepPartialEntity<T>;
   }[];
+  private recordAccessFilterApplied = false;
 
   constructor(
     queryBuilder: UpdateQueryBuilder<T>,
@@ -91,6 +102,8 @@ export class WorkspaceUpdateQueryBuilder<
       if (this.manyInputs) {
         return this.executeMany();
       }
+
+      this.applyRecordAccessFilter();
 
       validateQueryIsPermittedOrThrow({
         expressionMap: this.expressionMap,
@@ -229,6 +242,8 @@ export class WorkspaceUpdateQueryBuilder<
 
   public async executeMany(): Promise<UpdateResult> {
     try {
+      this.applyRecordAccessFilter();
+
       for (const input of this.manyInputs) {
         const fakeExpressionMapToValidatePermissions = Object.assign(
           {},
@@ -444,6 +459,118 @@ export class WorkspaceUpdateQueryBuilder<
       'This builder cannot morph into a soft delete builder',
       TwentyORMExceptionCode.METHOD_NOT_ALLOWED,
     );
+  }
+
+  private applyRecordAccessFilter(): void {
+    if (this.shouldBypassPermissionChecks || this.recordAccessFilterApplied) {
+      return;
+    }
+
+    const mainAliasTarget = this.expressionMap.mainAlias?.target;
+
+    if (!mainAliasTarget) {
+      throw new TwentyORMException(
+        'Main alias target is missing',
+        TwentyORMExceptionCode.MISSING_MAIN_ALIAS_TARGET,
+      );
+    }
+
+    const objectMetadata = getObjectMetadataFromEntityTarget(
+      mainAliasTarget,
+      this.internalContext,
+    );
+
+    const objectPermissions = this.objectRecordsPermissions[objectMetadata.id];
+
+    if (
+      !objectPermissions ||
+      objectPermissions.recordAccessLevel !== RecordAccessLevel.OWNED_ONLY ||
+      objectMetadata.isSystem === true
+    ) {
+      return;
+    }
+
+    const workspaceMemberId = this.authContext?.workspaceMemberId;
+
+    if (!workspaceMemberId) {
+      throw new PermissionsException(
+        PermissionsExceptionMessage.PERMISSION_DENIED,
+        PermissionsExceptionCode.PERMISSION_DENIED,
+      );
+    }
+
+    const ownershipFieldNames =
+      objectPermissions.ownershipFieldNames?.length &&
+      objectPermissions.ownershipFieldNames.length > 0
+        ? objectPermissions.ownershipFieldNames
+        : ['ownerWorkspaceMemberId'];
+
+    const { fieldIdByName, fieldIdByJoinColumnName } =
+      buildFieldMapsFromFlatObjectMetadata(
+        this.internalContext.flatFieldMetadataMaps,
+        objectMetadata,
+      );
+
+    const ownershipColumns = ownershipFieldNames
+      .map((fieldName) => {
+        const fieldId =
+          fieldIdByName[fieldName] ?? fieldIdByJoinColumnName[fieldName];
+
+        if (!fieldId) {
+          return null;
+        }
+
+        const fieldMetadata =
+          this.internalContext.flatFieldMetadataMaps.byId[fieldId];
+
+        if (!fieldMetadata) {
+          return null;
+        }
+
+        const joinColumnName = (
+          fieldMetadata.settings as
+            | { joinColumnName?: string }
+            | null
+            | undefined
+        )?.joinColumnName;
+
+        return joinColumnName ?? fieldName;
+      })
+      .filter((columnName): columnName is string => columnName !== null)
+      .filter(
+        (columnName, index, array) =>
+          array.findIndex((value) => value === columnName) === index,
+      );
+
+    if (ownershipColumns.length === 0) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `[PERMISSION DEBUG] No ownership columns found for "${objectMetadata.nameSingular}". Skipping OWNED_ONLY filter.`,
+      );
+      return;
+    }
+
+    const alias = this.expressionMap.mainAlias?.name ?? this.alias;
+
+    this.andWhere(
+      new Brackets((qb) => {
+        ownershipColumns.forEach((columnName, index) => {
+          const condition = `"${alias}"."${columnName}" = :recordAccessWorkspaceMemberId`;
+
+          if (index === 0) {
+            qb.where(condition, {
+              recordAccessWorkspaceMemberId: workspaceMemberId,
+            });
+          } else {
+            qb.orWhere(condition, {
+              recordAccessWorkspaceMemberId: workspaceMemberId,
+            });
+          }
+        });
+      }),
+    );
+
+    this.recordAccessFilterApplied = true;
   }
 
   private getMainAliasTarget(): EntityTarget<T> {

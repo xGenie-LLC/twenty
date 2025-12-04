@@ -21,8 +21,13 @@ export const getObjectMetadataFromEntityTarget = <T extends ObjectLiteral>(
 
   const objectMetadataName = entityTarget;
 
-  const objectMetadataId =
+  let objectMetadataId =
     internalContext.objectIdByNameSingular[objectMetadataName];
+
+  if (!objectMetadataId) {
+    objectMetadataId =
+      internalContext.objectIdByNamePlural?.[objectMetadataName];
+  }
 
   if (!objectMetadataId) {
     throw new TwentyORMException(
