@@ -48,6 +48,7 @@ import {
 } from 'src/engine/metadata-modules/permissions/permissions.exception';
 import { PermissionsService } from 'src/engine/metadata-modules/permissions/permissions.service';
 import { UserRoleService } from 'src/engine/metadata-modules/user-role/user-role.service';
+import { WorkspacePermissionsCacheService } from 'src/engine/metadata-modules/workspace-permissions-cache/workspace-permissions-cache.service';
 import { WorkspaceDataSource } from 'src/engine/twenty-orm/datasource/workspace.datasource';
 import { GlobalWorkspaceOrmManager } from 'src/engine/twenty-orm/global-workspace-datasource/global-workspace-orm.manager';
 import { TwentyORMGlobalManager } from 'src/engine/twenty-orm/twenty-orm-global.manager';
@@ -78,6 +79,8 @@ export abstract class CommonBaseQueryRunnerService<
   protected readonly apiKeyRoleService: ApiKeyRoleService;
   @Inject()
   protected readonly workspaceCacheService: WorkspaceCacheService;
+  @Inject()
+  protected readonly workspacePermissionsCacheService: WorkspacePermissionsCacheService;
   @Inject()
   protected readonly commonResultGettersService: CommonResultGettersService;
   @Inject()
@@ -336,10 +339,20 @@ export abstract class CommonBaseQueryRunnerService<
       workspaceId,
       queryRunnerContext.flatObjectMetadata.nameSingular,
       rolePermissionConfig,
+      authContext,
     );
 
     const globalWorkspaceDataSource =
       await this.globalWorkspaceOrmManager.getGlobalWorkspaceDataSource();
+
+    // Get objectsPermissions for the role
+    const objectMetadataPermissions =
+      await this.workspacePermissionsCacheService.getObjectRecordPermissionsForRoles(
+        {
+          workspaceId,
+          roleIds: [roleId],
+        },
+      );
 
     return {
       ...queryRunnerContext,
@@ -348,6 +361,7 @@ export abstract class CommonBaseQueryRunnerService<
         globalWorkspaceDataSource as unknown as WorkspaceDataSource,
       rolePermissionConfig,
       repository,
+      objectsPermissions: objectMetadataPermissions[roleId],
     };
   }
 
