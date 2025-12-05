@@ -178,6 +178,11 @@ msgstr "{deletedCount, plural, one {Успешно обрисан {deletedCount}
 msgid "{failedCount} file(s) failed to upload"
 msgstr "{failedCount} датотека(е) нису успеле да се отпреме"
 
+#. js-lingui-id: bv2QCV
+#: src/modules/command-menu/pages/page-layout/hooks/useChartSettingsValues.ts
+msgid "{filterRulesCount, plural, one {{filterRulesCount} rule} other {{filterRulesCount} rules}}"
+msgstr ""
+
 #. js-lingui-id: WS/avX
 #: src/modules/spreadsheet-import/steps/components/ImportDataStep.tsx
 msgid "{formattedCreatedRecordsProgress} out of {formattedRecordsToImportCount} records imported."
@@ -853,6 +858,11 @@ msgstr "Африканс"
 msgid "After a set amount of time"
 msgstr "После одређеног временског периода"
 
+#. js-lingui-id: fcYF58
+#: src/modules/metadata-error-handler/hooks/useMetadataErrorHandler.ts
+msgid "agent"
+msgstr ""
+
 #. js-lingui-id: iEQQyu
 #: src/pages/settings/ai/SettingsAgentTurnDetail.tsx
 #: src/pages/settings/ai/SettingsAgentTurnDetail.tsx
@@ -1094,12 +1104,10 @@ msgstr "Дошло је до грешке приликом обраде ваше
 #: src/modules/views/hooks/internal/usePersistViewGroup.ts
 #: src/modules/views/hooks/internal/usePersistViewGroup.ts
 #: src/modules/views/hooks/internal/usePersistViewGroup.ts
-#: src/modules/views/hooks/internal/usePersistViewGroup.ts
 #: src/modules/views/hooks/internal/usePersistViewFilter.ts
 #: src/modules/views/hooks/internal/usePersistViewFilter.ts
 #: src/modules/views/hooks/internal/usePersistViewFilter.ts
 #: src/modules/views/hooks/internal/usePersistViewFilter.ts
-#: src/modules/views/hooks/internal/usePersistViewField.ts
 #: src/modules/views/hooks/internal/usePersistViewField.ts
 #: src/modules/views/hooks/internal/usePersistViewField.ts
 #: src/modules/views/hooks/internal/usePersistViewField.ts
@@ -1129,6 +1137,11 @@ msgstr "Дошло је до унутрашње грешке приликом п
 #: src/modules/metadata-error-handler/hooks/useMetadataErrorHandler.ts
 msgid "An internal error occurred while validating your changes. Please contact support."
 msgstr "Дошло је до унутрашње грешке приликом валидације ваших промена. Молимо контактирајте подршку."
+
+#. js-lingui-id: U+NKyj
+#: src/modules/settings/data-model/objects/forms/components/SettingsDataModelObjectAboutForm.tsx
+msgid "An object with this name already exists"
+msgstr ""
 
 #. js-lingui-id: lxentK
 #: src/modules/settings/playground/components/PlaygroundSetupForm.tsx
@@ -1328,6 +1341,11 @@ msgstr "Да ли сте сигурни да желите враћати ове 
 #: src/modules/action-menu/actions/record-actions/single-record/components/RestoreSingleRecordAction.tsx
 msgid "Are you sure you want to restore this record?"
 msgstr "Да ли сте сигурни да желите вратити овај запис?"
+
+#. js-lingui-id: 9JFf0y
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
+msgid "Are you sure you want to update the role of this user from \"{oldRoleLabel}\" to \"{newRoleLabel}\"?"
+msgstr ""
 
 #. js-lingui-id: rnCqBK
 #: src/modules/spreadsheet-import/provider/components/SpreadsheetImport.tsx
@@ -2244,6 +2262,11 @@ msgstr "Потврдите брисање улоге {roleName}? Ово не м�
 msgid "Confirm downgrade"
 msgstr "Потврди смањење услуге"
 
+#. js-lingui-id: 28b8wO
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
+msgid "Confirm role update"
+msgstr ""
+
 #. js-lingui-id: DDbn3x
 #: src/modules/billing/components/internal/MeteredPriceSelector.tsx
 msgid "Confirm upgrade"
@@ -2662,6 +2685,11 @@ msgstr ""
 msgid "CRUD"
 msgstr ""
 
+#. js-lingui-id: J1QT+3
+#: src/modules/command-menu/pages/page-layout/constants/settings/ChartConfigurationSettingLabels.ts
+msgid "Cumulative"
+msgstr ""
+
 #. js-lingui-id: R3PLzn
 #: src/modules/object-record/object-filter-dropdown/components/ObjectFilterDropdownCurrencySelect.tsx
 msgid "currencies"
@@ -2741,6 +2769,11 @@ msgstr "Прилагодите поља"
 #: src/modules/settings/roles/role-permissions/permission-flags/hooks/useSettingsRolePermissionFlagConfig.ts
 msgid "Customize page layouts and UI structure"
 msgstr "Прилагодите изглед страница и структуру корисничког интерфејса"
+
+#. js-lingui-id: ZBgSzH
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
+msgid "Customize what this user can view and perform"
+msgstr ""
 
 #. js-lingui-id: bCJa9l
 #: src/pages/settings/security/SettingsSecurity.tsx
@@ -2963,6 +2996,8 @@ msgstr "Деактивирај радни ток"
 #. js-lingui-id: yAT3be
 #: src/pages/settings/SettingsProfile.tsx
 #: src/pages/settings/data-model/SettingsObjectTable.tsx
+#: src/modules/settings/data-model/object-details/components/SettingsObjectItemTableRow.tsx
+#: src/modules/settings/data-model/object-details/components/SettingsObjectFieldItemTableRow.tsx
 #: src/modules/settings/data-model/fields/forms/components/text/constants/TextDataModelSelectOptions.ts
 msgid "Deactivated"
 msgstr "Деактивирано"
@@ -3042,6 +3077,8 @@ msgstr "обриши"
 #. js-lingui-id: cnGeoo
 #: src/pages/settings/developers/api-keys/SettingsDevelopersApiKeyDetail.tsx
 #: src/pages/settings/developers/api-keys/SettingsDevelopersApiKeyDetail.tsx
+#: src/pages/settings/data-model/SettingsObjectFieldEdit.tsx
+#: src/pages/settings/data-model/SettingsObjectFieldEdit.tsx
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
 #: src/modules/workflow/workflow-steps/components/WorkflowStepFooter.tsx
@@ -3056,6 +3093,8 @@ msgstr "обриши"
 #: src/modules/settings/developers/components/SettingsDevelopersWebhookForm.tsx
 #: src/modules/settings/developers/components/SettingsDevelopersWebhookForm.tsx
 #: src/modules/settings/data-model/object-details/components/SettingsObjectFieldDisabledActionDropdown.tsx
+#: src/modules/settings/data-model/object-details/components/tabs/ObjectSettings.tsx
+#: src/modules/settings/data-model/object-details/components/tabs/ObjectSettings.tsx
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminQueueJobRowDropdownMenu.tsx
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminDeleteJobsConfirmationModal.tsx
 #: src/modules/command-menu/pages/page-layout/components/CommandMenuPageLayoutTabSettings.tsx
@@ -3066,6 +3105,16 @@ msgstr "обриши"
 #: src/modules/action-menu/actions/record-actions/constants/DefaultRecordActionsConfig.tsx
 msgid "Delete"
 msgstr "Обриши"
+
+#. js-lingui-id: EsGY/k
+#: src/pages/settings/data-model/SettingsObjectFieldEdit.tsx
+msgid "Delete {fieldLabel} field?"
+msgstr ""
+
+#. js-lingui-id: j/OgnL
+#: src/modules/settings/data-model/object-details/components/tabs/ObjectSettings.tsx
+msgid "Delete {objectLabel} object?"
+msgstr ""
 
 #. js-lingui-id: 65N6Yr
 #: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelObjectFormObjectLevel.tsx
@@ -3389,10 +3438,10 @@ msgstr "Преузми датотеку"
 msgid "Download Files"
 msgstr "Преузми датотеке"
 
-#. js-lingui-id: wrT4hq
+#. js-lingui-id: BU+6gf
 #: src/modules/spreadsheet-import/steps/components/UploadStep/components/DropZone.tsx
-msgid "Download sample file."
-msgstr "Преузми пример датотеке."
+msgid "Download sample"
+msgstr ""
 
 #. js-lingui-id: 6D/BnN
 #: src/modules/spreadsheet-import/steps/components/UploadStep/components/DropZone.tsx
@@ -3969,9 +4018,9 @@ msgstr ""
 msgid "Evaluate"
 msgstr ""
 
-#. js-lingui-id: 9uDn0Y
-#: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
-msgid "Evaluation input executed successfully"
+#. js-lingui-id: FDRUdE
+#: src/pages/settings/ai/components/SettingsAgentLogsTab.tsx
+msgid "Evaluating"
 msgstr ""
 
 #. js-lingui-id: Y3MReI
@@ -4339,6 +4388,11 @@ msgstr ""
 msgid "Failed to update price."
 msgstr "Није успело ажурирање цене."
 
+#. js-lingui-id: QGaQRo
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
+msgid "Failed to update role"
+msgstr ""
+
 #. js-lingui-id: h/0aT5
 #: src/pages/settings/ai/components/SettingsAIRouterSettings.tsx
 msgid "Failed to update smart model"
@@ -4399,6 +4453,11 @@ msgstr "поље"
 #: src/modules/command-menu/pages/page-layout/utils/getFieldLabelWithSubField.ts
 msgid "Field"
 msgstr "Поље"
+
+#. js-lingui-id: LX8Pu1
+#: src/pages/settings/data-model/SettingsObjectFieldEdit.tsx
+msgid "Field deleted"
+msgstr ""
 
 #. js-lingui-id: nrXDdR
 #: src/modules/settings/data-model/fields/forms/morph-relation/components/SettingsDataModelFieldRelationForm.tsx
@@ -5087,6 +5146,11 @@ msgstr "индекси"
 #: src/modules/settings/data-model/object-details/components/tabs/ObjectIndexes.tsx
 msgid "Indexes"
 msgstr "Индекси"
+
+#. js-lingui-id: 623chP
+#: src/pages/settings/members/SettingsWorkspaceMember.tsx
+msgid "Infos"
+msgstr ""
 
 #. js-lingui-id: XU5AOg
 #: src/pages/settings/ai/components/SettingsAgentLogsTab.tsx
@@ -6612,6 +6676,11 @@ msgstr "Нема резултата"
 msgid "No Results"
 msgstr "Нема резултата"
 
+#. js-lingui-id: FVzmGK
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
+msgid "No role assigned to this member"
+msgstr ""
+
 #. js-lingui-id: 9mcJ/7
 #: src/modules/settings/roles/components/SettingsRolesList.tsx
 msgid "No roles found"
@@ -6770,13 +6839,18 @@ msgstr "објекат"
 msgid "Object"
 msgstr "Објекат"
 
+#. js-lingui-id: 5Dll32
+#: src/modules/settings/data-model/object-details/components/tabs/ObjectSettings.tsx
+msgid "Object deleted"
+msgstr ""
+
 #. js-lingui-id: Zrauom
 #: src/modules/settings/data-model/fields/forms/morph-relation/components/SettingsDataModelFieldRelationForm.tsx
 msgid "Object destination"
 msgstr "Одредишни објекат"
 
 #. js-lingui-id: rDycBw
-#: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowCreateRecordBody.tsx
+#: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionUpsertRecord.tsx
 msgid "Object unique fields"
 msgstr "Јединствена поља објекта"
 
@@ -6921,6 +6995,7 @@ msgid "Only the timestamp & participants will be shared with your team."
 msgstr "Само временска ознака & учесници ће бити подељени са вашим тимом."
 
 #. js-lingui-id: 1TNIig
+#: src/modules/settings/data-model/objects/forms/components/SettingsDataModelObjectAboutForm.tsx
 #: src/modules/action-menu/components/RecordShowRightDrawerOpenRecordButton.tsx
 msgid "Open"
 msgstr "Отвори"
@@ -6940,6 +7015,11 @@ msgstr "Отвори Gmail"
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownLayoutContent.tsx
 msgid "Open in"
 msgstr "Отвори у"
+
+#. js-lingui-id: DP5C7w
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
+msgid "Open in Roles"
+msgstr ""
 
 #. js-lingui-id: xGd6Ih
 #: src/modules/auth/sign-in-up/components/EmailVerificationSent.tsx
@@ -7047,6 +7127,11 @@ msgstr ""
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminQueueJobsTable.tsx
 msgid "Page"
 msgstr "Страница"
+
+#. js-lingui-id: HFlGEK
+#: src/modules/metadata-error-handler/hooks/useMetadataErrorHandler.ts
+msgid "page layout tab"
+msgstr ""
 
 #. js-lingui-id: boJlGf
 #: src/pages/not-found/NotFound.tsx
@@ -7181,6 +7266,7 @@ msgid "Permanently destroy workflows"
 msgstr "Трајно уништите радне процесе"
 
 #. js-lingui-id: 9cDpsw
+#: src/pages/settings/members/SettingsWorkspaceMember.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/ai-agent-action/components/WorkflowEditActionAiAgent.tsx
 #: src/modules/settings/roles/role/components/SettingsRole.tsx
 msgid "Permissions"
@@ -7317,6 +7403,11 @@ msgstr "Поштански број"
 #: src/pages/onboarding/CreateWorkspace.tsx
 msgid "Prefilling your workspace data..."
 msgstr "Унапред попуњавање података вашег радног простора..."
+
+#. js-lingui-id: rNqTKZ
+#: src/modules/command-menu/pages/page-layout/constants/settings/ChartConfigurationSettingLabels.ts
+msgid "Prefix"
+msgstr ""
 
 #. js-lingui-id: ut1ZY+
 #: src/modules/settings/data-model/fields/forms/components/SettingsDataModelFieldIsUniqueForm.tsx
@@ -7502,6 +7593,11 @@ msgstr "Поново повежи"
 #: src/modules/workflow/workflow-steps/workflow-actions/utils/getActionHeaderTypeOrThrow.ts
 msgid "Record"
 msgstr "Запис"
+
+#. js-lingui-id: aGGOPJ
+#: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionUpsertRecord.tsx
+msgid "Record (ID)"
+msgstr ""
 
 #. js-lingui-id: 2CUci6
 #: src/modules/object-record/hooks/useBatchCreateManyRecords.ts
@@ -7801,11 +7897,17 @@ msgstr "Вредност повраћаја"
 msgid "Revoked for this object"
 msgstr "Опозвано за овај објекат"
 
+#. js-lingui-id: E1BXUR
+#: src/modules/metadata-error-handler/hooks/useMetadataErrorHandler.ts
+msgid "role"
+msgstr ""
+
 #. js-lingui-id: GDvlUT
 #: src/pages/settings/developers/api-keys/SettingsDevelopersApiKeysNew.tsx
 #: src/pages/settings/developers/api-keys/SettingsDevelopersApiKeyDetail.tsx
 #: src/pages/settings/ai/SettingsAgentForm.tsx
 #: src/pages/settings/ai/components/SettingsAgentRoleTab.tsx
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
 #: src/modules/settings/developers/components/SettingsApiKeysTable.tsx
 msgid "Role"
 msgstr "Улога"
@@ -7826,8 +7928,14 @@ msgstr "Назив улоге"
 msgid "Role name cannot be empty"
 msgstr "Назив улоге не може бити празан"
 
+#. js-lingui-id: jLNGne
+#: src/modules/metadata-error-handler/hooks/useMetadataErrorHandler.ts
+msgid "role target"
+msgstr ""
+
 #. js-lingui-id: M9SCiK
 #: src/pages/settings/developers/api-keys/SettingsDevelopersApiKeyDetail.tsx
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
 msgid "Role updated successfully"
 msgstr "Улога је успешно ажурирана"
 
@@ -8864,6 +8972,11 @@ msgstr ""
 msgid "Successfully merged {recordCount} records"
 msgstr "Успешно спојено {recordCount} записа"
 
+#. js-lingui-id: QJz8/3
+#: src/modules/command-menu/pages/page-layout/constants/settings/ChartConfigurationSettingLabels.ts
+msgid "Suffix"
+msgstr ""
+
 #. js-lingui-id: nyQWMb
 #: src/modules/spreadsheet-import/components/MatchColumnSelectFieldSelectDropdownContent.tsx
 msgid "Suggested"
@@ -9304,6 +9417,16 @@ msgstr "Ово ће отказати заказану промену интер�
 msgid "This will cancel the scheduled plan change and keep your current plan ({planKeyWord})."
 msgstr "Ово ће отказати заказану промену плана и задржати ваш тренутни план ({planKeyWord})."
 
+#. js-lingui-id: XGDxrH
+#: src/pages/settings/data-model/SettingsObjectFieldEdit.tsx
+msgid "This will permanently delete the field and all its data from {objectLabel}. Type \"yes\" to confirm."
+msgstr ""
+
+#. js-lingui-id: L85ZX9
+#: src/modules/settings/data-model/object-details/components/tabs/ObjectSettings.tsx
+msgid "This will permanently delete the object and all its records. Type \"yes\" to confirm."
+msgstr ""
+
 #. js-lingui-id: 4YifBe
 #: src/pages/settings/admin-panel/SettingsAdminConfigVariableDetails.tsx
 msgid "This will revert the database value to environment/default value. The database override will be removed and the system will use the environment settings."
@@ -9606,9 +9729,15 @@ msgid "Unique"
 msgstr "Јединствен"
 
 #. js-lingui-id: +WHV0k
-#: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowCreateRecordBody.tsx
+#: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionUpsertRecord.tsx
 msgid "Unique fields"
 msgstr "Јединствена поља"
+
+#. js-lingui-id: pRpC/r
+#: src/modules/command-menu/pages/page-layout/constants/settings/SuffixSetting.ts
+#: src/modules/command-menu/pages/page-layout/constants/settings/PrefixSetting.ts
+msgid "unit"
+msgstr ""
 
 #. js-lingui-id: Ef7StM
 #: src/pages/settings/emailing-domains/utils/getEmailingDomainStatusText.ts
@@ -9677,6 +9806,11 @@ msgstr "ажурирај"
 #: src/modules/information-banner/components/billing/InformationBannerBillingSubscriptionPaused.tsx
 msgid "Update"
 msgstr "Ажурирати"
+
+#. js-lingui-id: 5bRMKt
+#: src/modules/settings/members/components/MemberPermissionsTab.tsx
+msgid "Update role"
+msgstr ""
 
 #. js-lingui-id: DUqztb
 #: src/modules/views/components/UpdateViewButtonGroup.tsx
@@ -10017,7 +10151,7 @@ msgid "We encountered an issue verifying"
 msgstr "Дошло је до проблема приликом верификације"
 
 #. js-lingui-id: 6d9mjh
-#: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowCreateRecordBody.tsx
+#: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionUpsertRecord.tsx
 msgid "We match on these fields. If a {objectLabelSingular} already exists, we update it. Otherwise, we create a new one."
 msgstr "Ми одговарамо на овим пољима. Ако {objectLabelSingular} већ постоји, ажурирамо га. У супротном, креирамо нови."
 
