@@ -1793,6 +1793,7 @@ export type Mutation = {
   deleteEmailingDomain: Scalars['Boolean'];
   deleteFile: File;
   deleteJobs: DeleteJobsResponse;
+  deleteObjectPermission: Scalars['Boolean'];
   deleteOneAgent: Agent;
   deleteOneCronTrigger: CronTrigger;
   deleteOneDatabaseEventTrigger: DatabaseEventTrigger;
@@ -2193,6 +2194,12 @@ export type MutationDeleteFileArgs = {
 export type MutationDeleteJobsArgs = {
   jobIds: Array<Scalars['String']>;
   queueName: Scalars['String'];
+};
+
+
+export type MutationDeleteObjectPermissionArgs = {
+  objectMetadataId: Scalars['UUID'];
+  roleId: Scalars['UUID'];
 };
 
 

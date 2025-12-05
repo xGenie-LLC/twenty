@@ -1819,6 +1819,7 @@ export type Mutation = {
   deleteEmailingDomain: Scalars['Boolean'];
   deleteFile: File;
   deleteJobs: DeleteJobsResponse;
+  deleteObjectPermission: Scalars['Boolean'];
   deleteOneAgent: Agent;
   deleteOneCronTrigger: CronTrigger;
   deleteOneDatabaseEventTrigger: DatabaseEventTrigger;
@@ -2236,6 +2237,12 @@ export type MutationDeleteFileArgs = {
 export type MutationDeleteJobsArgs = {
   jobIds: Array<Scalars['String']>;
   queueName: Scalars['String'];
+};
+
+
+export type MutationDeleteObjectPermissionArgs = {
+  objectMetadataId: Scalars['UUID'];
+  roleId: Scalars['UUID'];
 };
 
 
@@ -5863,6 +5870,14 @@ export type CreateOneRoleMutationVariables = Exact<{
 
 
 export type CreateOneRoleMutation = { __typename?: 'Mutation', createOneRole: { __typename?: 'Role', id: string, label: string, description?: string | null, icon?: string | null, canUpdateAllSettings: boolean, canAccessAllTools: boolean, isEditable: boolean, canReadAllObjectRecords: boolean, canUpdateAllObjectRecords: boolean, canSoftDeleteAllObjectRecords: boolean, canDestroyAllObjectRecords: boolean, canBeAssignedToUsers: boolean, canBeAssignedToAgents: boolean, canBeAssignedToApiKeys: boolean } };
+
+export type DeleteObjectPermissionMutationVariables = Exact<{
+  roleId: Scalars['UUID'];
+  objectMetadataId: Scalars['UUID'];
+}>;
+
+
+export type DeleteObjectPermissionMutation = { __typename?: 'Mutation', deleteObjectPermission: boolean };
 
 export type DeleteOneRoleMutationVariables = Exact<{
   roleId: Scalars['UUID'];
@@ -11695,6 +11710,38 @@ export function useCreateOneRoleMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateOneRoleMutationHookResult = ReturnType<typeof useCreateOneRoleMutation>;
 export type CreateOneRoleMutationResult = Apollo.MutationResult<CreateOneRoleMutation>;
 export type CreateOneRoleMutationOptions = Apollo.BaseMutationOptions<CreateOneRoleMutation, CreateOneRoleMutationVariables>;
+export const DeleteObjectPermissionDocument = gql`
+    mutation DeleteObjectPermission($roleId: UUID!, $objectMetadataId: UUID!) {
+  deleteObjectPermission(roleId: $roleId, objectMetadataId: $objectMetadataId)
+}
+    `;
+export type DeleteObjectPermissionMutationFn = Apollo.MutationFunction<DeleteObjectPermissionMutation, DeleteObjectPermissionMutationVariables>;
+
+/**
+ * __useDeleteObjectPermissionMutation__
+ *
+ * To run a mutation, you first call `useDeleteObjectPermissionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteObjectPermissionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteObjectPermissionMutation, { data, loading, error }] = useDeleteObjectPermissionMutation({
+ *   variables: {
+ *      roleId: // value for 'roleId'
+ *      objectMetadataId: // value for 'objectMetadataId'
+ *   },
+ * });
+ */
+export function useDeleteObjectPermissionMutation(baseOptions?: Apollo.MutationHookOptions<DeleteObjectPermissionMutation, DeleteObjectPermissionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteObjectPermissionMutation, DeleteObjectPermissionMutationVariables>(DeleteObjectPermissionDocument, options);
+      }
+export type DeleteObjectPermissionMutationHookResult = ReturnType<typeof useDeleteObjectPermissionMutation>;
+export type DeleteObjectPermissionMutationResult = Apollo.MutationResult<DeleteObjectPermissionMutation>;
+export type DeleteObjectPermissionMutationOptions = Apollo.BaseMutationOptions<DeleteObjectPermissionMutation, DeleteObjectPermissionMutationVariables>;
 export const DeleteOneRoleDocument = gql`
     mutation DeleteOneRole($roleId: UUID!) {
   deleteOneRole(roleId: $roleId)
