@@ -6,6 +6,7 @@ import { FeatureFlagModule } from 'src/engine/core-modules/feature-flag/feature-
 import { FileEntity } from 'src/engine/core-modules/file/entities/file.entity';
 import { FileModule } from 'src/engine/core-modules/file/file.module';
 import { RecordCrudModule } from 'src/engine/core-modules/record-crud/record-crud.module';
+import { ToolGeneratorModule } from 'src/engine/core-modules/tool-generator/tool-generator.module';
 import { ToolModule } from 'src/engine/core-modules/tool/tool.module';
 import { SearchArticlesTool } from 'src/engine/core-modules/tool/tools/search-articles-tool/search-articles-tool';
 import { ToolAdapterService } from 'src/engine/metadata-modules/ai/ai-tools/services/tool-adapter.service';
@@ -14,9 +15,9 @@ import { WorkspaceManyOrAllFlatEntityMapsCacheModule } from 'src/engine/metadata
 import { PermissionsModule } from 'src/engine/metadata-modules/permissions/permissions.module';
 import { RoleEntity } from 'src/engine/metadata-modules/role/role.entity';
 import { UserRoleModule } from 'src/engine/metadata-modules/user-role/user-role.module';
-import { WorkspacePermissionsCacheModule } from 'src/engine/metadata-modules/workspace-permissions-cache/workspace-permissions-cache.module';
 import { TwentyORMModule } from 'src/engine/twenty-orm/twenty-orm.module';
 import { WorkspaceCacheStorageModule } from 'src/engine/workspace-cache-storage/workspace-cache-storage.module';
+import { WorkspaceCacheModule } from 'src/engine/workspace-cache/workspace-cache.module';
 import { MessagingModule } from 'src/modules/messaging/messaging.module';
 
 @Global()
@@ -27,14 +28,15 @@ import { MessagingModule } from 'src/modules/messaging/messaging.module';
     TokenModule,
     FeatureFlagModule,
     RecordCrudModule,
+    ToolGeneratorModule,
     WorkspaceManyOrAllFlatEntityMapsCacheModule,
-    WorkspacePermissionsCacheModule,
     WorkspaceCacheStorageModule,
     UserRoleModule,
     TwentyORMModule,
     MessagingModule,
     PermissionsModule,
     ToolModule,
+    WorkspaceCacheModule,
   ],
   providers: [ToolService, ToolAdapterService, SearchArticlesTool],
   exports: [ToolService, ToolAdapterService, SearchArticlesTool],

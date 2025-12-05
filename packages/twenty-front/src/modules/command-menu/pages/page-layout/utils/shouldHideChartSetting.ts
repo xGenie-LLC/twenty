@@ -3,12 +3,15 @@ import { CHART_CONFIGURATION_SETTING_IDS } from '@/command-menu/pages/page-layou
 import { type ChartSettingsItem } from '@/command-menu/pages/page-layout/types/ChartSettingsGroup';
 import { type ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
 import { isFieldRelation } from '@/object-record/record-field/ui/types/guards/isFieldRelation';
+import { isRelationNestedFieldDateKind } from '@/page-layout/widgets/graph/utils/isRelationNestedFieldDateKind';
 import { isNonEmptyString } from '@sniptt/guards';
 import { isDefined, isFieldMetadataDateKind } from 'twenty-shared/utils';
 
 const shouldHideDateGranularityBasedOnFieldType = (
   fieldMetadataId: string | undefined | null,
+  subFieldName: string | undefined | null,
   objectMetadataItem: ObjectMetadataItem,
+  objectMetadataItems: ObjectMetadataItem[],
 ): boolean => {
   if (!isDefined(fieldMetadataId)) {
     return true;
@@ -22,8 +25,12 @@ const shouldHideDateGranularityBasedOnFieldType = (
     return true;
   }
 
-  if (isFieldRelation(field)) {
-    return true;
+  if (isFieldRelation(field) && isDefined(subFieldName)) {
+    return !isRelationNestedFieldDateKind({
+      relationField: field,
+      relationNestedFieldName: subFieldName,
+      objectMetadataItems: objectMetadataItems ?? [],
+    });
   }
 
   return !isFieldMetadataDateKind(field.type);
@@ -35,6 +42,7 @@ export const shouldHideChartSetting = (
   isGroupByEnabled: boolean,
   configuration?: ChartConfiguration,
   objectMetadataItem?: ObjectMetadataItem,
+  objectMetadataItems?: ObjectMetadataItem[],
 ): boolean => {
   const hasNoObjectMetadata = !isNonEmptyString(objectMetadataId);
   const dependsOnSource = item?.dependsOn?.includes(
@@ -53,7 +61,9 @@ export const shouldHideChartSetting = (
       if (isBarOrLineChart) {
         return shouldHideDateGranularityBasedOnFieldType(
           configuration.primaryAxisGroupByFieldMetadataId,
+          configuration.primaryAxisGroupBySubFieldName,
           objectMetadataItem,
+          objectMetadataItems ?? [],
         );
       }
     }
@@ -66,7 +76,9 @@ export const shouldHideChartSetting = (
       if (isBarOrLineChart) {
         return shouldHideDateGranularityBasedOnFieldType(
           configuration.secondaryAxisGroupByFieldMetadataId,
+          configuration.secondaryAxisGroupBySubFieldName,
           objectMetadataItem,
+          objectMetadataItems ?? [],
         );
       }
     }
@@ -75,7 +87,24 @@ export const shouldHideChartSetting = (
       if (configuration.__typename === 'PieChartConfiguration') {
         return shouldHideDateGranularityBasedOnFieldType(
           configuration.groupByFieldMetadataId,
+          configuration.groupBySubFieldName,
           objectMetadataItem,
+          objectMetadataItems ?? [],
+        );
+      }
+    }
+
+    if (item.id === CHART_CONFIGURATION_SETTING_IDS.CUMULATIVE) {
+      const isBarOrLineChart =
+        configuration.__typename === 'BarChartConfiguration' ||
+        configuration.__typename === 'LineChartConfiguration';
+
+      if (isBarOrLineChart) {
+        return shouldHideDateGranularityBasedOnFieldType(
+          configuration.primaryAxisGroupByFieldMetadataId,
+          configuration.primaryAxisGroupBySubFieldName,
+          objectMetadataItem,
+          objectMetadataItems ?? [],
         );
       }
     }

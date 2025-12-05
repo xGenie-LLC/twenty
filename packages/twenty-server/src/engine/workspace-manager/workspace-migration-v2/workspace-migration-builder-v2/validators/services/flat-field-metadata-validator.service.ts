@@ -131,11 +131,15 @@ export class FlatFieldMetadataValidatorService {
 
     if (updates.some((update) => update.property === 'name')) {
       validationResult.errors.push(
-        ...validateFlatFieldMetadataName(flatFieldMetadataToValidate.name),
+        ...validateFlatFieldMetadataName({
+          name: flatFieldMetadataToValidate.name,
+          buildOptions,
+        }),
         ...validateFlatFieldMetadataNameAvailability({
           name: flatFieldMetadataToValidate.name,
           flatFieldMetadataMaps: optimisticFlatFieldMetadataMaps,
           flatObjectMetadata,
+          buildOptions,
         }),
       );
     }
@@ -247,18 +251,6 @@ export class FlatFieldMetadataValidatorService {
       });
     }
 
-    if (
-      flatFieldMetadataToDelete.isActive &&
-      !relationTargetObjectMetadataHasBeenDeleted &&
-      !parentObjectMetadataHasBeenDeleted
-    ) {
-      validationResult.errors.push({
-        code: FieldMetadataExceptionCode.INVALID_FIELD_INPUT,
-        message: "Active fields can't be deleted",
-        userFriendlyMessage: msg`Active fields cannot be deleted`,
-      });
-    }
-
     return validationResult;
   }
 
@@ -319,6 +311,7 @@ export class FlatFieldMetadataValidatorService {
           name: flatFieldMetadataToValidate.name,
           flatFieldMetadataMaps: optimisticFlatFieldMetadataMaps,
           flatObjectMetadata: parentFlatObjectMetadata,
+          buildOptions,
         }),
       );
     }
@@ -336,7 +329,10 @@ export class FlatFieldMetadataValidatorService {
     }
 
     validationResult.errors.push(
-      ...validateFlatFieldMetadataName(flatFieldMetadataToValidate.name),
+      ...validateFlatFieldMetadataName({
+        name: flatFieldMetadataToValidate.name,
+        buildOptions,
+      }),
     );
 
     validationResult.errors.push(
