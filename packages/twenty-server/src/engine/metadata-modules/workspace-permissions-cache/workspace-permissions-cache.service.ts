@@ -14,7 +14,7 @@ import { STANDARD_OBJECT_IDS } from 'twenty-shared/metadata';
 
 import { ObjectMetadataEntity } from 'src/engine/metadata-modules/object-metadata/object-metadata.entity';
 import { PermissionFlagType } from 'src/engine/metadata-modules/permissions/constants/permission-flag-type.constants';
-import { RoleTargetsEntity } from 'src/engine/metadata-modules/role/role-targets.entity';
+import { RoleTargetEntity } from 'src/engine/metadata-modules/role-target/role-target.entity';
 import { RoleEntity } from 'src/engine/metadata-modules/role/role.entity';
 import { UserWorkspaceRoleMap } from 'src/engine/metadata-modules/workspace-permissions-cache/types/user-workspace-role-map.type';
 import { WorkspacePermissionsCacheStorageService } from 'src/engine/metadata-modules/workspace-permissions-cache/workspace-permissions-cache-storage.service';
@@ -43,8 +43,8 @@ export class WorkspacePermissionsCacheService {
     private readonly objectMetadataRepository: Repository<ObjectMetadataEntity>,
     @InjectRepository(RoleEntity)
     private readonly roleRepository: Repository<RoleEntity>,
-    @InjectRepository(RoleTargetsEntity)
-    private readonly roleTargetsRepository: Repository<RoleTargetsEntity>,
+    @InjectRepository(RoleTargetEntity)
+    private readonly roleTargetsRepository: Repository<RoleTargetEntity>,
     private readonly workspacePermissionsCacheStorageService: WorkspacePermissionsCacheStorageService,
     private readonly getRolesPermissionsFromCacheWithRecomputeService: GetDataFromCacheWithRecomputeService<
       string,
@@ -391,7 +391,9 @@ export class WorkspacePermissionsCacheService {
     });
 
     return roleTargetsMap.reduce((acc, roleTarget) => {
-      acc[roleTarget.userWorkspaceId] = roleTarget.roleId;
+      if (roleTarget.userWorkspaceId !== null) {
+        acc[roleTarget.userWorkspaceId] = roleTarget.roleId;
+      }
 
       return acc;
     }, {} as UserWorkspaceRoleMap);

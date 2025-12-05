@@ -318,10 +318,9 @@ export class ObjectPermissionService {
       );
     }
 
-    await this.workspacePermissionsCacheService.recomputeRolesPermissionsCache({
-      workspaceId,
-      roleIds: [roleId],
-    });
+    await this.workspaceCacheService.invalidateAndRecompute(workspaceId, [
+      'rolesPermissions',
+    ]);
 
     return true;
   }
