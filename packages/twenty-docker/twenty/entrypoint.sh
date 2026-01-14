@@ -17,11 +17,8 @@ setup_and_migrate_db() {
         yarn database:migrate:prod
     fi
 
+    # Run versioned upgrades (includes metadata migrations).
     yarn command:prod upgrade
-
-    # Always sync metadata to pick up any new fields/relations added in custom builds
-    echo "Syncing workspace metadata..."
-    yarn command:prod workspace:sync-metadata
 
     echo "Successfully migrated DB!"
 }

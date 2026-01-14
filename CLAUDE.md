@@ -65,8 +65,8 @@ npx nx affected --target=lint --base=main
 
 ### Database
 ```bash
-npx nx database:reset twenty-server                    # Reset database
-npx nx run twenty-server:command workspace:sync-metadata  # Sync metadata
+npx nx database:reset twenty-server           # Reset database
+npx nx run twenty-server:command upgrade      # Run versioned workspace upgrades (requires APP_VERSION)
 
 # Generate migration (after modifying *.entity.ts files)
 npx nx run twenty-server:typeorm migration:generate src/database/typeorm/core/migrations/common/[name] -d src/database/typeorm/core/core.datasource.ts
