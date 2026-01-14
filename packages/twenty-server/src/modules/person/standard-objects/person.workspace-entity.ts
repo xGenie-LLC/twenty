@@ -19,6 +19,7 @@ import { type NoteTargetWorkspaceEntity } from 'src/modules/note/standard-object
 import { type OpportunityWorkspaceEntity } from 'src/modules/opportunity/standard-objects/opportunity.workspace-entity';
 import { type TaskTargetWorkspaceEntity } from 'src/modules/task/standard-objects/task-target.workspace-entity';
 import { type TimelineActivityWorkspaceEntity } from 'src/modules/timeline/standard-objects/timeline-activity.workspace-entity';
+import { type WorkspaceMemberWorkspaceEntity } from 'src/modules/workspace-member/standard-objects/workspace-member.workspace-entity';
 
 const NAME_FIELD_NAME = 'name';
 const EMAILS_FIELD_NAME = 'emails';
@@ -48,6 +49,8 @@ export class PersonWorkspaceEntity extends BaseWorkspaceEntity {
   updatedBy: ActorMetadata;
   company: EntityRelation<CompanyWorkspaceEntity> | null;
   companyId: string | null;
+  owner: EntityRelation<WorkspaceMemberWorkspaceEntity> | null;
+  ownerId: string | null;
   pointOfContactForOpportunities: EntityRelation<OpportunityWorkspaceEntity[]>;
   taskTargets: EntityRelation<TaskTargetWorkspaceEntity[]>;
   noteTargets: EntityRelation<NoteTargetWorkspaceEntity[]>;

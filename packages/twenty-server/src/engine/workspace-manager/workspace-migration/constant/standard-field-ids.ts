@@ -334,6 +334,7 @@ export const PERSON_STANDARD_FIELD_IDS = {
   createdBy: '20202020-f6ab-4d98-af24-a3d5b664148a',
   updatedBy: 'e9e0dd35-184c-4742-84da-afadf45ce59a',
   company: '20202020-e2f3-448e-b34c-2d625f0025fd',
+  owner: '20202020-5c7a-4c2b-9f1a-0b2c3d4e5f60',
   pointOfContactForOpportunities: '20202020-911b-4a7d-b67b-918aa9a5b33a',
   // TODO: check if activityTargets field can be deleted
   activityTargets: '20202020-dee7-4b7f-b50a-1f50bd3be452',
@@ -519,6 +520,7 @@ export const WORKSPACE_MEMBER_STANDARD_FIELD_IDS = {
   searchVector: '20202020-46d0-4e7f-bc26-74c0edaeb619',
   calendarStartDay: '20202020-92d0-1d7f-a126-25ededa6b142',
   numberFormat: '20202020-7f40-4e7f-b126-11c0eda6b141',
+  ownedPeople: '20202020-6d8b-4b3c-8e1f-2a3b4c5d6e7f',
 } as const;
 export const CUSTOM_OBJECT_STANDARD_FIELD_IDS = {
   name: '20202020-ba07-4ffd-ba63-009491f5749c',

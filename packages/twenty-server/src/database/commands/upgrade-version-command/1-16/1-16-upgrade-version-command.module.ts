@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { BackfillOpportunityOwnerFieldCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-backfill-opportunity-owner-field.command';
+import { BackfillPersonOwnerFieldCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-backfill-person-owner-field.command';
 import { BackfillStandardPageLayoutsCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-backfill-standard-page-layouts.command';
 import { IdentifyFieldMetadataCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-identify-field-metadata.command';
 import { IdentifyObjectMetadataCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-identify-object-metadata.command';
@@ -37,6 +38,7 @@ import { WorkspaceMigrationModule } from 'src/engine/workspace-manager/workspace
   providers: [
     UpdateTaskOnDeleteActionCommand,
     BackfillOpportunityOwnerFieldCommand,
+    BackfillPersonOwnerFieldCommand,
     BackfillStandardPageLayoutsCommand,
     IdentifyFieldMetadataCommand,
     IdentifyObjectMetadataCommand,
@@ -46,6 +48,7 @@ import { WorkspaceMigrationModule } from 'src/engine/workspace-manager/workspace
   exports: [
     UpdateTaskOnDeleteActionCommand,
     BackfillOpportunityOwnerFieldCommand,
+    BackfillPersonOwnerFieldCommand,
     BackfillStandardPageLayoutsCommand,
     IdentifyFieldMetadataCommand,
     IdentifyObjectMetadataCommand,

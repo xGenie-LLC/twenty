@@ -23,6 +23,7 @@ import { BackfillUpdatedByFieldCommand } from 'src/database/commands/upgrade-ver
 import { FixNanPositionValuesInNotesCommand } from 'src/database/commands/upgrade-version-command/1-15/1-15-fix-nan-position-values-in-notes.command';
 import { MigratePageLayoutWidgetConfigurationCommand } from 'src/database/commands/upgrade-version-command/1-15/1-15-migrate-page-layout-widget-configuration.command';
 import { BackfillOpportunityOwnerFieldCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-backfill-opportunity-owner-field.command';
+import { BackfillPersonOwnerFieldCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-backfill-person-owner-field.command';
 import { BackfillStandardPageLayoutsCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-backfill-standard-page-layouts.command';
 import { IdentifyFieldMetadataCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-identify-field-metadata.command';
 import { IdentifyObjectMetadataCommand } from 'src/database/commands/upgrade-version-command/1-16/1-16-identify-object-metadata.command';
@@ -70,6 +71,7 @@ export class UpgradeCommand extends UpgradeCommandRunner {
     // 1.16 Commands
     protected readonly updateTaskOnDeleteActionCommand: UpdateTaskOnDeleteActionCommand,
     protected readonly backfillOpportunityOwnerFieldCommand: BackfillOpportunityOwnerFieldCommand,
+    protected readonly backfillPersonOwnerFieldCommand: BackfillPersonOwnerFieldCommand,
     protected readonly backfillStandardPageLayoutsCommand: BackfillStandardPageLayoutsCommand,
     protected readonly identifyFieldMetadataCommand: IdentifyFieldMetadataCommand,
     protected readonly identifyObjectMetadataCommand: IdentifyObjectMetadataCommand,
@@ -111,6 +113,7 @@ export class UpgradeCommand extends UpgradeCommandRunner {
     const commands_1160: VersionCommands = [
       this.updateTaskOnDeleteActionCommand,
       this.backfillOpportunityOwnerFieldCommand,
+      this.backfillPersonOwnerFieldCommand,
       this.backfillStandardPageLayoutsCommand,
       this.identifyFieldMetadataCommand,
       this.identifyObjectMetadataCommand,

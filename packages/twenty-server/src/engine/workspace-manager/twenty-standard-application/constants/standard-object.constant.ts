@@ -1269,6 +1269,7 @@ export const STANDARD_OBJECTS = {
       createdBy: { universalIdentifier: PERSON_STANDARD_FIELD_IDS.createdBy },
       updatedBy: { universalIdentifier: PERSON_STANDARD_FIELD_IDS.updatedBy },
       company: { universalIdentifier: PERSON_STANDARD_FIELD_IDS.company },
+      owner: { universalIdentifier: PERSON_STANDARD_FIELD_IDS.owner },
       pointOfContactForOpportunities: {
         universalIdentifier:
           PERSON_STANDARD_FIELD_IDS.pointOfContactForOpportunities,
@@ -1947,6 +1948,9 @@ export const STANDARD_OBJECTS = {
       },
       ownedOpportunities: {
         universalIdentifier: '20202020-9e4d-4b3a-8c1f-6d7e8f9a0b1c',
+      },
+      ownedPeople: {
+        universalIdentifier: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.ownedPeople,
       },
       favorites: {
         universalIdentifier: WORKSPACE_MEMBER_STANDARD_FIELD_IDS.favorites,
