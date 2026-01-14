@@ -1,6 +1,6 @@
-import { type Meta, type StoryObj } from '@storybook/react';
-import { expect, userEvent, waitFor, within } from '@storybook/test';
+import { type Meta, type StoryObj } from '@storybook/react-vite';
 import { useEffect } from 'react';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import { FieldContext } from '@/object-record/record-field/ui/contexts/FieldContext';
 import { useArrayField } from '@/object-record/record-field/ui/meta-types/hooks/useArrayField';
@@ -10,8 +10,10 @@ import { RECORD_TABLE_CELL_INPUT_ID_PREFIX } from '@/object-record/record-table/
 import { getRecordFieldInputInstanceId } from '@/object-record/utils/getRecordFieldInputId';
 import { usePushFocusItemToFocusStack } from '@/ui/utilities/focus/hooks/usePushFocusItemToFocusStack';
 import { FocusComponentType } from '@/ui/utilities/focus/types/FocusComponentType';
+
+import { ArrayFieldInput } from '@/object-record/record-field/ui/meta-types/input/components/ArrayFieldInput';
 import { FieldMetadataType } from '~/generated-metadata/graphql';
-import { ArrayFieldInput } from '../ArrayFieldInput';
+import { I18nFrontDecorator } from '~/testing/decorators/I18nFrontDecorator';
 
 const { FieldInputEventContextProviderWithJestMocks } =
   getFieldInputEventContextProviderWithJestMocks();
@@ -100,6 +102,7 @@ const ArrayInputWithContext = ({
 const meta: Meta<typeof ArrayInputWithContext> = {
   title: 'UI/Input/ArrayFieldInput',
   component: ArrayInputWithContext,
+  decorators: [I18nFrontDecorator],
 };
 
 export default meta;

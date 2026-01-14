@@ -1,0 +1,180 @@
+---
+title: Datový model
+description: Zjistěte, co je datový model a jak navrhnout takový, který bude vyhovovat vašemu podnikání.
+image: /images/user-guide/fields/custom_data_model.png
+---
+
+<Frame>
+  <img src="/images/user-guide/fields/custom_data_model.png" alt="Datový model" />
+</Frame>
+
+## Co je to datový model?
+
+Datový model je struktura, která definuje, jak jsou informace organizovány ve vašem CRM. Představte si ho jako **plán** vašich zákaznických dat — navrhnete ho jednou a potom ho naplníte skutečnými daty.
+
+## Klíčové pojmy
+
+### Objekty
+
+**Objekty** jsou hlavní kategorie dat ve vašem CRM. Každý objekt představuje typ entity, kterou chcete sledovat.
+
+Twenty obsahuje standardní objekty:
+
+* **Lidé** — jednotlivci (kontakty, leady, partneři)
+* **Společnosti** — organizace
+* **Příležitosti** — obchodní případy či prodeje
+* **Poznámky** — připojené poznámky u záznamů
+* **Úkoly** — úkoly propojené se záznamy
+
+Můžete také vytvářet **vlastní objekty** pro cokoli specifického pro vaše podnikání (např. Projekty, Předplatná, Události).
+
+### Pole
+
+**Pole** jsou vlastnosti nebo atributy, které popisují každý objekt. Ukládají skutečné informace.
+
+Například objekt **Lidé** má pole jako:
+
+* Název
+* Email
+* Telefon
+* Pracovní pozice
+* Společnost (vztah k objektu Společnosti)
+
+Pole mají různé **typy**: text, číslo, datum, výběr, vícenásobný výběr, vztah a další. Do libovolného objektu můžete přidat vlastní pole.
+
+### Záznamy
+
+**Záznamy** jsou jednotlivé položky v rámci objektu — skutečná data, která vytváříte a spravujete.
+
+Například:
+
+* "John Smith" je **záznam** v objektu Lidé
+* "Acme Corp" je **záznam** v objektu Společnosti
+
+**Přirovnání:**
+
+| Koncept datového modelu | Přirovnání z reálného světa        |
+| ----------------------- | ---------------------------------- |
+| **Objekty**             | Oddíly v knize (kategorie)         |
+| **Polí**                | Sloupce v tabulce (vlastnosti)     |
+| **Záznamy**             | Řádky v tabulce (skutečné položky) |
+
+Datový model (objekty + pole) navrhnete jednou a poté v této struktuře vytváříte mnoho záznamů.
+
+## Proč přizpůsobit svůj datový model?
+
+Každý podnik funguje jinak. Přizpůsobením datového modelu můžete přetvořit Twenty podle **svých** procesů namísto toho, abyste své procesy nutili do rigidního systému.
+
+Twenty nabízí plnou flexibilitu:
+
+* Vytvořte tolik vlastních objektů, kolik potřebujete
+* Přidejte neomezený počet vlastních polí
+* Cena se podle rozsahu přizpůsobení nemění
+
+## Tipy pro návrh vašeho datového modelu
+
+### 1. Začněte se svými klíčovými objekty
+
+Identifikujte hlavní pojmy, se kterými pracujete. Twenty již poskytuje:
+
+* **Lidé** — vaše kontakty
+* **Společnosti** — vaše účty
+* **Příležitosti** — vaše obchodní případy
+
+Zamyslete se, co dalšího můžete potřebovat:
+
+* Stripe by potřeboval objekt `Subscriptions`
+* Airbnb by potřebovalo objekt `Trips`
+* Akcelerátor by potřeboval objekt `Batches`
+
+### 2. Na varianty používejte pole, ne nové objekty
+
+Pokud je něco jen charakteristikou existujícího objektu, udělejte z toho **pole**.
+
+**Pole používejte pro:**
+
+* Kategorie a štítky (např. `Industry` u Společností)
+* Stavové hodnoty (např. `Stage` u Příležitostí)
+* Atributy a vlastnosti
+
+### 3. Vytvořte objekt, když stojí samostatně
+
+Pokud má koncept svůj vlastní životní cyklus, vlastnosti nebo vztahy, zaslouží si objekt.
+
+**Vytvořte objekt pro:**
+
+* **Projekty** — mají termíny, vlastníky a úkoly
+* **Předplatná** — propojují společnosti, produkty a faktury
+* **Události** — zahrnují účastníky a následné akce
+
+Tyto jdou nad rámec jednoho pole, protože nesou svá vlastní data a vztahy.
+
+### 4. Vytvořte objekt, když je počet záznamů neurčený
+
+Pokud lze něco propojit vícekrát a nevíte, kolikrát, použijte objekt.
+
+**Špatný přístup:**
+Vytváření polí jako `Product 1`, `Product 2`, `Product 3`...
+
+**Správný přístup:**
+Vytvořte objekt `Products` a propojte ho se záznamy. Tímto způsobem podpoříte jeden, dva nebo sto produktů, aniž byste měnili svůj model.
+
+### 5. Začněte jednoduše
+
+Začněte s poli. Přejděte na nové objekty teprve, když narazíte na limity:
+
+* Too many fields on one object
+* Repeated records that should be separate
+* Relationships that don't fit neatly
+
+## Special Note on People, Companies, and Opportunities
+
+<Warning>
+  **Email and calendar sync only works with People, Companies, and Opportunities.**
+
+  These are the only objects where you can access synchronized emails and meetings from your mailbox/calendar. We recommend using them as much as possible.
+</Warning>
+
+**Best practices:**
+
+* If you need categories of People, use fields (not new objects)
+* Example: Use a `Person Type` field with values "Prospect" and "Partner" instead of creating separate objects
+* Create different **views** to filter: one showing partners, another showing prospects
+
+**It's okay to have fields that don't apply to every record.** For example, a `Referral Link` field on People that only applies when `Person Type = Partner`. Hide this field from views where it's not relevant.
+
+## Questions to Guide Your Choice
+
+Zeptejte se sami sebe:
+
+<Check>Is this just a property of something I already have, or does it need its own properties?</Check>
+<Check>Will I ever need to track multiple of these per record, without knowing how many?</Check>
+<Check>Does this concept connect to several different objects, not just one?</Check>
+<Check>Will it have its own lifecycle (stages, start/end dates)?</Check>
+
+If the answer is "yes" to one or more, it's probably time for a new object.
+
+## Accessing Your Data Model
+
+1. Go to **Settings** in the left sidebar
+2. Click **Data Model**
+3. View all your objects (standard and custom)
+4. Click any object to see and edit its fields
+
+<Note>
+  **Don't see Data Model in Settings?**
+
+  Access to the data model is usually restricted to administrators. Contact your workspace admin if you need access.
+</Note>
+
+## Další kroky
+
+Once you've planned your data model:
+
+* [How to Create Custom Objects](/l/cs/user-guide/data-model/how-tos/create-custom-objects)
+* [How to Create Custom Fields](/l/cs/user-guide/data-model/how-tos/create-custom-fields)
+* [How to Create Relation Fields](/l/cs/user-guide/data-model/how-tos/create-relation-fields)
+
+## Potřebujete pomoc?
+
+Our team can help you design and create the data model you need. Discover our [Implementation Services](/l/cs/user-guide/getting-started/capabilities/implementation-services).

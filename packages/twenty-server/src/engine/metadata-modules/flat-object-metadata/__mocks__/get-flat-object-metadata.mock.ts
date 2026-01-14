@@ -9,7 +9,7 @@ type FlatObjectMetadataOverrides = Required<
 export const getFlatObjectMetadataMock = (
   overrides: FlatObjectMetadataOverrides,
 ): FlatObjectMetadata => {
-  const createdAt = '2024-01-01T00:00:00.000Z' as unknown as Date;
+  const createdAt = '2024-01-01T00:00:00.000Z';
 
   return {
     viewIds: [],
@@ -34,7 +34,7 @@ export const getFlatObjectMetadataMock = (
     nameSingular: 'defaultflatObjectMetadataNameSingular',
     shortcut: 'shortcut',
     standardId: null,
-    applicationId: null,
+    applicationId: faker.string.uuid(),
     standardOverrides: null,
     targetTableName: '',
     workspaceId: faker.string.uuid(),

@@ -14,6 +14,8 @@ import { ApolloCoreProvider } from '@/object-metadata/components/ApolloCoreProvi
 import { ObjectMetadataItemsLoadEffect } from '@/object-metadata/components/ObjectMetadataItemsLoadEffect';
 import { ObjectMetadataItemsProvider } from '@/object-metadata/components/ObjectMetadataItemsProvider';
 import { PrefetchDataProvider } from '@/prefetch/components/PrefetchDataProvider';
+import { SSEProvider } from '@/sse-db-event/components/SSEProvider';
+import { SupportChatEffect } from '@/support/components/SupportChatEffect';
 import { DialogManager } from '@/ui/feedback/dialog-manager/components/DialogManager';
 import { DialogComponentInstanceContext } from '@/ui/feedback/dialog-manager/contexts/DialogComponentInstanceContext';
 import { SnackBarProvider } from '@/ui/feedback/snack-bar-manager/components/SnackBarProvider';
@@ -45,30 +47,33 @@ export const AppRouterProviders = () => {
               <UserProvider>
                 <AuthProvider>
                   <ApolloCoreProvider>
-                    <ObjectMetadataItemsLoadEffect />
-                    <ObjectMetadataItemsProvider>
-                      <PrefetchDataProvider>
-                        <UserThemeProviderEffect />
-                        <SnackBarProvider>
-                          <ErrorMessageEffect />
-                          <DialogComponentInstanceContext.Provider
-                            value={{ instanceId: 'dialog-manager' }}
-                          >
-                            <DialogManager>
-                              <StrictMode>
-                                <PromiseRejectionEffect />
-                                <GotoHotkeysEffectsProvider />
-                                <PageTitle title={pageTitle} />
-                                <PageFavicon />
-                                <Outlet />
-                              </StrictMode>
-                            </DialogManager>
-                          </DialogComponentInstanceContext.Provider>
-                        </SnackBarProvider>
-                        <MainContextStoreProvider />
-                      </PrefetchDataProvider>
-                      <PageChangeEffect />
-                    </ObjectMetadataItemsProvider>
+                    <SSEProvider>
+                      <ObjectMetadataItemsLoadEffect />
+                      <ObjectMetadataItemsProvider>
+                        <PrefetchDataProvider>
+                          <UserThemeProviderEffect />
+                          <SnackBarProvider>
+                            <ErrorMessageEffect />
+                            <DialogComponentInstanceContext.Provider
+                              value={{ instanceId: 'dialog-manager' }}
+                            >
+                              <DialogManager>
+                                <StrictMode>
+                                  <PromiseRejectionEffect />
+                                  <GotoHotkeysEffectsProvider />
+                                  <PageTitle title={pageTitle} />
+                                  <PageFavicon />
+                                  <Outlet />
+                                </StrictMode>
+                              </DialogManager>
+                            </DialogComponentInstanceContext.Provider>
+                          </SnackBarProvider>
+                          <MainContextStoreProvider />
+                          <SupportChatEffect />
+                        </PrefetchDataProvider>
+                        <PageChangeEffect />
+                      </ObjectMetadataItemsProvider>
+                    </SSEProvider>
                   </ApolloCoreProvider>
                 </AuthProvider>
               </UserProvider>

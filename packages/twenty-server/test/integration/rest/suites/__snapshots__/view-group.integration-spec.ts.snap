@@ -1,60 +1,34 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`View Group REST API POST /metadata/viewGroups should fail to create view group with missing required fields 1`] = `
 {
   "error": "METADATA_VALIDATION_ERROR",
   "errors": {
-    "agent": [],
-    "cronTrigger": [],
-    "databaseEventTrigger": [],
-    "fieldMetadata": [],
-    "index": [],
-    "objectMetadata": [],
-    "pageLayoutTab": [],
-    "role": [],
-    "roleTarget": [],
-    "routeTrigger": [],
-    "serverlessFunction": [],
-    "view": [],
-    "viewField": [],
-    "viewFilter": [],
     "viewGroup": [
       {
         "errors": [
           {
             "code": "INVALID_VIEW_DATA",
-            "message": "Field metadata not found",
-            "userFriendlyMessage": "Field metadata not found",
+            "message": "Field value is required",
+            "userFriendlyMessage": "Field value is required",
           },
         ],
         "flatEntityMinimalInformation": {
           "id": Any<String>,
+          "universalIdentifier": Any<String>,
           "viewId": Any<String>,
         },
+        "metadataName": "viewGroup",
         "status": "fail",
-        "type": "create_view_group",
+        "type": "create",
       },
     ],
   },
   "message": "Multiple validation errors occurred while creating view groups",
   "statusCode": 400,
   "summary": {
-    "invalidAgent": 0,
-    "invalidCronTrigger": 0,
-    "invalidDatabaseEventTrigger": 0,
-    "invalidFieldMetadata": 0,
-    "invalidIndex": 0,
-    "invalidObjectMetadata": 0,
-    "invalidPageLayoutTab": 0,
-    "invalidRole": 0,
-    "invalidRoleTarget": 0,
-    "invalidRouteTrigger": 0,
-    "invalidServerlessFunction": 0,
-    "invalidView": 0,
-    "invalidViewField": 0,
-    "invalidViewFilter": 0,
-    "invalidViewGroup": 0,
-    "totalErrors": 0,
+    "totalErrors": 1,
+    "viewGroup": 1,
   },
 }
 `;

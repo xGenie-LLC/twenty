@@ -1,8 +1,13 @@
-import { type Decorator, type Meta, type StoryObj } from '@storybook/react';
-import { expect, fn, userEvent, within } from '@storybook/test';
+import {
+  type Decorator,
+  type Meta,
+  type StoryObj,
+} from '@storybook/react-vite';
+import { expect, fn, userEvent, within } from 'storybook/test';
 
+import { SettingsObjectInactiveMenuDropDown } from '@/settings/data-model/objects/components/SettingsObjectInactiveMenuDropDown';
 import { ComponentDecorator } from 'twenty-ui/testing';
-import { SettingsObjectInactiveMenuDropDown } from '../SettingsObjectInactiveMenuDropDown';
+import { I18nFrontDecorator } from '~/testing/decorators/I18nFrontDecorator';
 
 const handleActivateMockFunction = fn();
 const handleDeleteMockFunction = fn();
@@ -23,7 +28,7 @@ const meta: Meta<typeof SettingsObjectInactiveMenuDropDown> = {
     onActivate: handleActivateMockFunction,
     onDelete: handleDeleteMockFunction,
   },
-  decorators: [ComponentDecorator, ClearMocksDecorator],
+  decorators: [I18nFrontDecorator, ComponentDecorator, ClearMocksDecorator],
   parameters: {
     clearMocks: true,
   },

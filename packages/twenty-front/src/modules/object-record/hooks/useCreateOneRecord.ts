@@ -13,7 +13,7 @@ import { getObjectTypename } from '@/object-record/cache/utils/getObjectTypename
 import { getRecordFromRecordNode } from '@/object-record/cache/utils/getRecordFromRecordNode';
 import { getRecordNodeFromRecord } from '@/object-record/cache/utils/getRecordNodeFromRecord';
 import { useGenerateDepthRecordGqlFieldsFromObject } from '@/object-record/graphql/record-gql-fields/hooks/useGenerateDepthRecordGqlFieldsFromObject';
-import { type RecordGqlOperationGqlRecordFields } from '@/object-record/graphql/types/RecordGqlOperationGqlRecordFields';
+import { type RecordGqlOperationGqlRecordFields } from 'twenty-shared/types';
 import { useCreateOneRecordMutation } from '@/object-record/hooks/useCreateOneRecordMutation';
 import { useObjectPermissions } from '@/object-record/hooks/useObjectPermissions';
 import { useRefetchAggregateQueries } from '@/object-record/hooks/useRefetchAggregateQueries';
@@ -187,7 +187,7 @@ export const useCreateOneRecord = <
 
     await refetchAggregateQueries();
 
-    registerObjectOperation(objectNameSingular, { type: 'create-one' });
+    registerObjectOperation(objectMetadataItem, { type: 'create-one' });
 
     if (!isDefined(createdObject.data?.[mutationResponseField])) {
       throw new CustomError('Failed to create record');

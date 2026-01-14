@@ -1,4 +1,4 @@
-import { type Meta, type StoryObj } from '@storybook/react';
+import { type Meta, type StoryObj } from '@storybook/react-vite';
 
 import { type TaskGroups } from '@/activities/tasks/components/TaskGroups';
 import { contextStoreCurrentViewIdComponentState } from '@/context-store/states/contextStoreCurrentViewIdComponentState';
@@ -16,10 +16,10 @@ import { RecordComponentInstanceContextsWrapper } from '@/object-record/componen
 import { currentRecordFieldsComponentState } from '@/object-record/record-field/states/currentRecordFieldsComponentState';
 import { type RecordField } from '@/object-record/record-field/types/RecordField';
 import { useRecordIndexFieldMetadataDerivedStates } from '@/object-record/record-index/hooks/useRecordIndexFieldMetadataDerivedStates';
-import { VIEW_BAR_FILTER_DROPDOWN_ID } from '@/views/constants/ViewBarFilterDropdownId';
+import { ViewBarFilterDropdownIds } from '@/views/constants/ViewBarFilterDropdownIds';
 import { coreViewsState } from '@/views/states/coreViewState';
-import { within } from '@storybook/test';
 import { useSetRecoilState } from 'recoil';
+import { within } from 'storybook/test';
 import {
   ComponentDecorator,
   getCanvasElementForDropdownTesting,
@@ -104,7 +104,7 @@ const meta: Meta<typeof ViewBarFilterDropdown> = {
             componentInstanceId={instanceId}
           >
             <ObjectFilterDropdownComponentInstanceContext.Provider
-              value={{ instanceId: VIEW_BAR_FILTER_DROPDOWN_ID }}
+              value={{ instanceId: ViewBarFilterDropdownIds.MAIN }}
             >
               <RecordTableComponentInstanceContext.Provider
                 value={{

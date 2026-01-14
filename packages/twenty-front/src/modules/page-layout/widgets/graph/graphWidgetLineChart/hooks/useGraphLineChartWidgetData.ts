@@ -2,9 +2,12 @@ import { useObjectMetadataItemById } from '@/object-metadata/hooks/useObjectMeta
 import { useObjectMetadataItems } from '@/object-metadata/hooks/useObjectMetadataItems';
 import { type LineChartSeries } from '@/page-layout/widgets/graph/graphWidgetLineChart/types/LineChartSeries';
 import { getLineChartQueryLimit } from '@/page-layout/widgets/graph/graphWidgetLineChart/utils/getLineChartQueryLimit';
+import { transformGroupByDataToLineChartData } from '@/page-layout/widgets/graph/graphWidgetLineChart/utils/transformGroupByDataToLineChartData';
 import { useGraphWidgetGroupByQuery } from '@/page-layout/widgets/graph/hooks/useGraphWidgetGroupByQuery';
+import { type GraphColorMode } from '@/page-layout/widgets/graph/types/GraphColorMode';
 import { type RawDimensionValue } from '@/page-layout/widgets/graph/types/RawDimensionValue';
-import { transformGroupByDataToLineChartData } from '@/page-layout/widgets/graph/utils/transformGroupByDataToLineChartData';
+import { useUserFirstDayOfTheWeek } from '@/ui/input/components/internal/date/hooks/useUserFirstDayOfTheWeek';
+import { useUserTimezone } from '@/ui/input/components/internal/date/hooks/useUserTimezone';
 import { useMemo } from 'react';
 import { type LineChartConfiguration } from '~/generated/graphql';
 
@@ -21,6 +24,7 @@ type UseGraphLineChartWidgetDataResult = {
   showLegend: boolean;
   hasTooManyGroups: boolean;
   formattedToRawLookup: Map<string, RawDimensionValue>;
+  colorMode: GraphColorMode;
   loading: boolean;
   error?: Error;
   objectMetadataItem: ReturnType<
@@ -50,6 +54,9 @@ export const useGraphLineChartWidgetData = ({
     limit,
   });
 
+  const { userTimezone } = useUserTimezone();
+  const { userFirstDayOfTheWeek } = useUserFirstDayOfTheWeek();
+
   const transformedData = useMemo(
     () =>
       transformGroupByDataToLineChartData({
@@ -58,6 +65,8 @@ export const useGraphLineChartWidgetData = ({
         objectMetadataItems: objectMetadataItems ?? [],
         configuration,
         aggregateOperation,
+        userTimezone,
+        firstDayOfTheWeek: userFirstDayOfTheWeek,
       }),
     [
       groupByData,
@@ -65,6 +74,8 @@ export const useGraphLineChartWidgetData = ({
       objectMetadataItems,
       configuration,
       aggregateOperation,
+      userTimezone,
+      userFirstDayOfTheWeek,
     ],
   );
 

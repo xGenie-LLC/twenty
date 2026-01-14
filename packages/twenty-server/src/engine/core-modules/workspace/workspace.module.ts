@@ -25,7 +25,6 @@ import { UserEntity } from 'src/engine/core-modules/user/user.entity';
 import { CheckCustomDomainValidRecordsCronCommand } from 'src/engine/core-modules/workspace/crons/commands/check-custom-domain-valid-records.cron.command';
 import { CheckCustomDomainValidRecordsCronJob } from 'src/engine/core-modules/workspace/crons/jobs/check-custom-domain-valid-records.cron.job';
 import { WorkspaceService } from 'src/engine/core-modules/workspace/services/workspace.service';
-import { WorkspaceWorkspaceMemberListener } from 'src/engine/core-modules/workspace/workspace-workspace-member.listener';
 import { workspaceAutoResolverOpts } from 'src/engine/core-modules/workspace/workspace.auto-resolver-opts';
 import { WorkspaceEntity } from 'src/engine/core-modules/workspace/workspace.entity';
 import { WorkspaceResolver } from 'src/engine/core-modules/workspace/workspace.resolver';
@@ -36,6 +35,7 @@ import { PermissionsModule } from 'src/engine/metadata-modules/permissions/permi
 import { RoleModule } from 'src/engine/metadata-modules/role/role.module';
 import { ViewModule } from 'src/engine/metadata-modules/view/view.module';
 import { WorkspaceCacheStorageModule } from 'src/engine/workspace-cache-storage/workspace-cache-storage.module';
+import { WorkspaceDataSourceModule } from 'src/engine/workspace-datasource/workspace-datasource.module';
 import { WorkspaceManagerModule } from 'src/engine/workspace-manager/workspace-manager.module';
 
 @Module({
@@ -60,6 +60,7 @@ import { WorkspaceManagerModule } from 'src/engine/workspace-manager/workspace-m
         FeatureFlagModule,
         DataSourceModule,
         OnboardingModule,
+        WorkspaceDataSourceModule,
         TypeORMModule,
         PermissionsModule,
         WorkspaceCacheStorageModule,
@@ -81,7 +82,6 @@ import { WorkspaceManagerModule } from 'src/engine/workspace-manager/workspace-m
   providers: [
     WorkspaceResolver,
     WorkspaceService,
-    WorkspaceWorkspaceMemberListener,
     CheckCustomDomainValidRecordsCronCommand,
     CheckCustomDomainValidRecordsCronJob,
   ],

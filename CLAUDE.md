@@ -41,10 +41,23 @@ npx nx storybook:serve-and-test:static twenty-front
 
 ### Code Quality
 ```bash
-npx nx lint twenty-front --fix       # Lint with auto-fix
-npx nx typecheck twenty-front        # Type checking
-npx nx fmt twenty-front              # Format code
+# Linting (diff with main - fastest)
+npx nx lint:diff-with-main twenty-front           # Lint only files changed vs main
+npx nx lint:diff-with-main twenty-server          # Lint only files changed vs main
+npx nx lint:diff-with-main twenty-front --configuration=fix  # Auto-fix files changed vs main
 
+# Linting (full project)
+npx nx lint twenty-front      # Lint all files in frontend
+npx nx lint twenty-server     # Lint all files in backend
+npx nx lint twenty-front --fix  # Auto-fix all linting issues
+
+# Type checking
+npx nx typecheck twenty-front
+npx nx typecheck twenty-server
+
+# Format code
+npx nx fmt twenty-front
+npx nx fmt twenty-server
 # Run only affected by changes
 npx nx affected --target=test --base=main
 npx nx affected --target=lint --base=main

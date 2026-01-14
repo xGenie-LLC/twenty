@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { msg } from '@lingui/core/macro';
+import { type PermissionFlagType } from 'twenty-shared/constants';
 import { isDefined } from 'twenty-shared/utils';
-import { Omit } from 'zod/v4/core/util.cjs';
 
 import { WorkspaceAuthContext } from 'src/engine/api/common/interfaces/workspace-auth-context.interface';
 import { QueryResultFieldValue } from 'src/engine/api/graphql/workspace-query-runner/factories/query-result-getters/interfaces/query-result-field-value';
@@ -13,6 +12,7 @@ import {
   CommonQueryRunnerException,
   CommonQueryRunnerExceptionCode,
 } from 'src/engine/api/common/common-query-runners/errors/common-query-runner.exception';
+import { STANDARD_ERROR_MESSAGE } from 'src/engine/api/common/common-query-runners/errors/standard-error-message.constant';
 import { CommonResultGettersService } from 'src/engine/api/common/common-result-getters/common-result-getters.service';
 import { CommonBaseQueryRunnerContext } from 'src/engine/api/common/types/common-base-query-runner-context.type';
 import { CommonExtendedQueryRunnerContext } from 'src/engine/api/common/types/common-extended-query-runner-context.type';
@@ -40,7 +40,6 @@ import { TwentyConfigService } from 'src/engine/core-modules/twenty-config/twent
 import { FlatEntityMaps } from 'src/engine/metadata-modules/flat-entity/types/flat-entity-maps.type';
 import { FlatFieldMetadata } from 'src/engine/metadata-modules/flat-field-metadata/types/flat-field-metadata.type';
 import { FlatObjectMetadata } from 'src/engine/metadata-modules/flat-object-metadata/types/flat-object-metadata.type';
-import { type PermissionFlagType } from 'src/engine/metadata-modules/permissions/constants/permission-flag-type.constants';
 import {
   PermissionsException,
   PermissionsExceptionCode,
@@ -48,9 +47,8 @@ import {
 } from 'src/engine/metadata-modules/permissions/permissions.exception';
 import { PermissionsService } from 'src/engine/metadata-modules/permissions/permissions.service';
 import { UserRoleService } from 'src/engine/metadata-modules/user-role/user-role.service';
-import { WorkspaceDataSource } from 'src/engine/twenty-orm/datasource/workspace.datasource';
 import { GlobalWorkspaceOrmManager } from 'src/engine/twenty-orm/global-workspace-datasource/global-workspace-orm.manager';
-import { TwentyORMGlobalManager } from 'src/engine/twenty-orm/twenty-orm-global.manager';
+import type { RolePermissionConfig } from 'src/engine/twenty-orm/types/role-permission-config';
 import { WorkspaceCacheService } from 'src/engine/workspace-cache/services/workspace-cache.service';
 
 @Injectable()
@@ -64,8 +62,6 @@ export abstract class CommonBaseQueryRunnerService<
   protected readonly queryRunnerArgsFactory: QueryRunnerArgsFactory;
   @Inject()
   protected readonly dataArgProcessor: DataArgProcessor;
-  @Inject()
-  protected readonly twentyORMGlobalManager: TwentyORMGlobalManager;
   @Inject()
   protected readonly globalWorkspaceOrmManager: GlobalWorkspaceOrmManager;
   @Inject()
@@ -91,6 +87,8 @@ export abstract class CommonBaseQueryRunnerService<
 
   protected abstract readonly operationName: CommonQueryNames;
 
+  protected readonly isReadOnly: boolean = false;
+
   public async execute(
     args: CommonInput<Args>,
     queryRunnerContext: CommonBaseQueryRunnerContext,
@@ -106,6 +104,7 @@ export abstract class CommonBaseQueryRunnerService<
       throw new CommonQueryRunnerException(
         'Invalid auth context',
         CommonQueryRunnerExceptionCode.INVALID_AUTH_CONTEXT,
+        { userFriendlyMessage: STANDARD_ERROR_MESSAGE },
       );
     }
 
@@ -130,7 +129,11 @@ export abstract class CommonBaseQueryRunnerService<
       args.selectedFields,
     );
 
-    this.validateQueryComplexity(selectedFieldsResult, args);
+    this.validateQueryComplexity(
+      selectedFieldsResult,
+      args,
+      queryRunnerContext,
+    );
 
     const processedArgs = {
       ...(await this.processArgs(args, queryRunnerContext, this.operationName)),
@@ -175,6 +178,7 @@ export abstract class CommonBaseQueryRunnerService<
   protected computeQueryComplexity(
     selectedFieldsResult: CommonSelectedFieldsResult,
     _args: CommonInput<Args>,
+    _queryRunnerContext: CommonBaseQueryRunnerContext,
   ): number {
     const simpleFieldsComplexity = 1;
     const selectedFieldsComplexity =
@@ -303,16 +307,21 @@ export abstract class CommonBaseQueryRunnerService<
     workspaceId: string,
   ): Promise<string> {
     if (isDefined(authContext.apiKey)) {
-      return this.apiKeyRoleService.getRoleIdForApiKey(
+      return this.apiKeyRoleService.getRoleIdForApiKeyId(
         authContext.apiKey.id,
         workspaceId,
       );
+    }
+
+    if (isDefined(authContext.application?.defaultServerlessFunctionRoleId)) {
+      return authContext.application?.defaultServerlessFunctionRoleId;
     }
 
     if (!isDefined(authContext.userWorkspaceId)) {
       throw new CommonQueryRunnerException(
         'Invalid auth context',
         CommonQueryRunnerExceptionCode.INVALID_AUTH_CONTEXT,
+        { userFriendlyMessage: STANDARD_ERROR_MESSAGE },
       );
     }
 
@@ -330,22 +339,23 @@ export abstract class CommonBaseQueryRunnerService<
 
     const roleId = await this.getRoleIdOrThrow(authContext, workspaceId);
 
-    const rolePermissionConfig = { unionOf: [roleId] };
+    const rolePermissionConfig: RolePermissionConfig = {
+      intersectionOf: [roleId],
+    };
 
-    const repository = await this.globalWorkspaceOrmManager.getRepository(
-      workspaceId,
+    const globalWorkspaceDataSource = this.isReadOnly
+      ? await this.globalWorkspaceOrmManager.getGlobalWorkspaceDataSourceReplica()
+      : await this.globalWorkspaceOrmManager.getGlobalWorkspaceDataSource();
+
+    const repository = globalWorkspaceDataSource.getRepository(
       queryRunnerContext.flatObjectMetadata.nameSingular,
       rolePermissionConfig,
     );
 
-    const globalWorkspaceDataSource =
-      await this.globalWorkspaceOrmManager.getGlobalWorkspaceDataSource();
-
     return {
       ...queryRunnerContext,
       authContext,
-      workspaceDataSource:
-        globalWorkspaceDataSource as unknown as WorkspaceDataSource,
+      workspaceDataSource: globalWorkspaceDataSource,
       rolePermissionConfig,
       repository,
     };
@@ -401,6 +411,7 @@ export abstract class CommonBaseQueryRunnerService<
   private validateQueryComplexity(
     selectedFieldsResult: CommonSelectedFieldsResult,
     args: CommonInput<Args>,
+    queryRunnerContext: CommonBaseQueryRunnerContext,
   ) {
     const maximumComplexity = this.twentyConfigService.get(
       'COMMON_QUERY_COMPLEXITY_LIMIT',
@@ -411,7 +422,7 @@ export abstract class CommonBaseQueryRunnerService<
         `Query complexity is too high. One-to-Many relation cannot be nested in another One-to-Many relation.`,
         CommonQueryRunnerExceptionCode.TOO_COMPLEX_QUERY,
         {
-          userFriendlyMessage: msg`Query complexity is too high. One-to-Many relation cannot be nested in another One-to-Many relation.`,
+          userFriendlyMessage: STANDARD_ERROR_MESSAGE,
         },
       );
     }
@@ -419,6 +430,7 @@ export abstract class CommonBaseQueryRunnerService<
     const queryComplexity = this.computeQueryComplexity(
       selectedFieldsResult,
       args,
+      queryRunnerContext,
     );
 
     if (queryComplexity > maximumComplexity) {
@@ -426,7 +438,7 @@ export abstract class CommonBaseQueryRunnerService<
         `Query complexity is too high. Please, reduce the amount of relation fields requested. Query complexity: ${queryComplexity}. Maximum complexity: ${maximumComplexity}.`,
         CommonQueryRunnerExceptionCode.TOO_COMPLEX_QUERY,
         {
-          userFriendlyMessage: msg`Query complexity is too high. Please, reduce the amount of relation fields requested. Query complexity: ${queryComplexity}. Maximum complexity: ${maximumComplexity}.`,
+          userFriendlyMessage: STANDARD_ERROR_MESSAGE,
         },
       );
     }

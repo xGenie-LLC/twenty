@@ -25,6 +25,12 @@ export type ActivateWorkspaceInput = {
   displayName?: InputMaybe<Scalars['String']>;
 };
 
+export type AddQuerySubscriptionInput = {
+  eventStreamId: Scalars['String'];
+  operationSignature: Scalars['JSON'];
+  queryId: Scalars['String'];
+};
+
 export type AdminPanelHealthServiceData = {
   __typename?: 'AdminPanelHealthServiceData';
   description: Scalars['String'];
@@ -70,9 +76,14 @@ export type Agent = {
 
 export type AgentChatThread = {
   __typename?: 'AgentChatThread';
+  contextWindowTokens?: Maybe<Scalars['Int']>;
   createdAt: Scalars['DateTime'];
   id: Scalars['UUID'];
   title?: Maybe<Scalars['String']>;
+  totalInputCredits: Scalars['Int'];
+  totalInputTokens: Scalars['Int'];
+  totalOutputCredits: Scalars['Int'];
+  totalOutputTokens: Scalars['Int'];
   updatedAt: Scalars['DateTime'];
 };
 
@@ -144,14 +155,15 @@ export type AggregateChartConfiguration = {
   __typename?: 'AggregateChartConfiguration';
   aggregateFieldMetadataId: Scalars['UUID'];
   aggregateOperation: AggregateOperations;
+  configurationType: WidgetConfigurationType;
   description?: Maybe<Scalars['String']>;
   displayDataLabel?: Maybe<Scalars['Boolean']>;
   filter?: Maybe<Scalars['JSON']>;
   firstDayOfTheWeek?: Maybe<Scalars['Int']>;
   format?: Maybe<Scalars['String']>;
-  graphType: GraphType;
   label?: Maybe<Scalars['String']>;
   prefix?: Maybe<Scalars['String']>;
+  ratioAggregateConfig?: Maybe<RatioAggregateConfig>;
   suffix?: Maybe<Scalars['String']>;
   timezone?: Maybe<Scalars['String']>;
 };
@@ -196,8 +208,6 @@ export type ApiKey = {
   revokedAt?: Maybe<Scalars['DateTime']>;
   role: Role;
   updatedAt: Scalars['DateTime'];
-  workspace: Workspace;
-  workspaceId: Scalars['UUID'];
 };
 
 export type ApiKeyForRole = {
@@ -235,6 +245,8 @@ export type Application = {
   agents: Array<Agent>;
   applicationVariables: Array<ApplicationVariable>;
   canBeUninstalled: Scalars['Boolean'];
+  defaultServerlessFunctionRole?: Maybe<Role>;
+  defaultServerlessFunctionRoleId?: Maybe<Scalars['String']>;
   description: Scalars['String'];
   id: Scalars['UUID'];
   name: Scalars['String'];
@@ -343,24 +355,27 @@ export type BarChartConfiguration = {
   aggregateOperation: AggregateOperations;
   axisNameDisplay?: Maybe<AxisNameDisplay>;
   color?: Maybe<Scalars['String']>;
+  configurationType: WidgetConfigurationType;
   description?: Maybe<Scalars['String']>;
   displayDataLabel?: Maybe<Scalars['Boolean']>;
   displayLegend?: Maybe<Scalars['Boolean']>;
   filter?: Maybe<Scalars['JSON']>;
   firstDayOfTheWeek?: Maybe<Scalars['Int']>;
-  graphType: GraphType;
   groupMode?: Maybe<BarChartGroupMode>;
   isCumulative?: Maybe<Scalars['Boolean']>;
+  layout: BarChartLayout;
   omitNullValues?: Maybe<Scalars['Boolean']>;
   primaryAxisDateGranularity?: Maybe<ObjectRecordGroupByDateGranularity>;
   primaryAxisGroupByFieldMetadataId: Scalars['UUID'];
   primaryAxisGroupBySubFieldName?: Maybe<Scalars['String']>;
+  primaryAxisManualSortOrder?: Maybe<Array<Scalars['String']>>;
   primaryAxisOrderBy?: Maybe<GraphOrderBy>;
   rangeMax?: Maybe<Scalars['Float']>;
   rangeMin?: Maybe<Scalars['Float']>;
   secondaryAxisGroupByDateGranularity?: Maybe<ObjectRecordGroupByDateGranularity>;
   secondaryAxisGroupByFieldMetadataId?: Maybe<Scalars['UUID']>;
   secondaryAxisGroupBySubFieldName?: Maybe<Scalars['String']>;
+  secondaryAxisManualSortOrder?: Maybe<Array<Scalars['String']>>;
   secondaryAxisOrderBy?: Maybe<GraphOrderBy>;
   timezone?: Maybe<Scalars['String']>;
 };
@@ -369,6 +384,12 @@ export type BarChartConfiguration = {
 export enum BarChartGroupMode {
   GROUPED = 'GROUPED',
   STACKED = 'STACKED'
+}
+
+/** Layout orientation for bar charts */
+export enum BarChartLayout {
+  HORIZONTAL = 'HORIZONTAL',
+  VERTICAL = 'VERTICAL'
 }
 
 export type Billing = {
@@ -380,6 +401,8 @@ export type Billing = {
 
 export type BillingEndTrialPeriodOutput = {
   __typename?: 'BillingEndTrialPeriodOutput';
+  /** Billing portal URL for payment method update (returned when no payment method exists) */
+  billingPortalUrl?: Maybe<Scalars['String']>;
   /** Boolean that confirms if a payment method was found */
   hasPaymentMethod: Scalars['Boolean'];
   /** Updated subscription status */
@@ -410,6 +433,8 @@ export type BillingMeteredProductUsageOutput = {
   periodEnd: Scalars['DateTime'];
   periodStart: Scalars['DateTime'];
   productKey: BillingProductKey;
+  rolloverCredits: Scalars['Float'];
+  totalGrantedCredits: Scalars['Float'];
   unitPriceCents: Scalars['Float'];
   usedCredits: Scalars['Float'];
 };
@@ -545,6 +570,11 @@ export enum CalendarChannelVisibility {
   SHARE_EVERYTHING = 'SHARE_EVERYTHING'
 }
 
+export type CalendarConfiguration = {
+  __typename?: 'CalendarConfiguration';
+  configurationType: WidgetConfigurationType;
+};
+
 export type Captcha = {
   __typename?: 'Captcha';
   provider?: Maybe<CaptchaDriverType>;
@@ -570,6 +600,7 @@ export type CheckUserExistOutput = {
 
 export type ClientAiModelConfig = {
   __typename?: 'ClientAIModelConfig';
+  deprecated?: Maybe<Scalars['Boolean']>;
   inputCostPer1kTokensInCredits: Scalars['Float'];
   label: Scalars['String'];
   modelId: Scalars['String'];
@@ -617,6 +648,7 @@ export enum ConfigVariablesGroup {
   BILLING_CONFIG = 'BILLING_CONFIG',
   CAPTCHA_CONFIG = 'CAPTCHA_CONFIG',
   CLOUDFLARE_CONFIG = 'CLOUDFLARE_CONFIG',
+  CODE_INTERPRETER_CONFIG = 'CODE_INTERPRETER_CONFIG',
   EMAIL_SETTINGS = 'EMAIL_SETTINGS',
   EXCEPTION_HANDLER = 'EXCEPTION_HANDLER',
   GOOGLE_AUTH = 'GOOGLE_AUTH',
@@ -694,6 +726,7 @@ export type CoreView = {
   objectMetadataId: Scalars['UUID'];
   openRecordIn: ViewOpenRecordIn;
   position: Scalars['Float'];
+  shouldHideEmptyGroups: Scalars['Boolean'];
   type: ViewType;
   updatedAt: Scalars['DateTime'];
   viewFields: Array<CoreViewField>;
@@ -753,7 +786,6 @@ export type CoreViewGroup = {
   __typename?: 'CoreViewGroup';
   createdAt: Scalars['DateTime'];
   deletedAt?: Maybe<Scalars['DateTime']>;
-  fieldMetadataId: Scalars['UUID'];
   fieldValue: Scalars['String'];
   id: Scalars['UUID'];
   isVisible: Scalars['Boolean'];
@@ -876,12 +908,12 @@ export type CreatePageLayoutTabInput = {
 };
 
 export type CreatePageLayoutWidgetInput = {
-  configuration?: InputMaybe<Scalars['JSON']>;
+  configuration: Scalars['JSON'];
   gridPosition: GridPositionInput;
   objectMetadataId?: InputMaybe<Scalars['UUID']>;
   pageLayoutTabId: Scalars['UUID'];
   title: Scalars['String'];
-  type?: InputMaybe<WidgetType>;
+  type: WidgetType;
 };
 
 export type CreateRoleInput = {
@@ -907,13 +939,36 @@ export type CreateRouteTriggerInput = {
   serverlessFunctionId: Scalars['String'];
 };
 
+export type CreateRowLevelPermissionPredicateGroupInput = {
+  logicalOperator: RowLevelPermissionPredicateGroupLogicalOperator;
+  objectMetadataId: Scalars['String'];
+  parentRowLevelPermissionPredicateGroupId?: InputMaybe<Scalars['String']>;
+  positionInRowLevelPermissionPredicateGroup?: InputMaybe<Scalars['Float']>;
+  roleId: Scalars['String'];
+};
+
+export type CreateRowLevelPermissionPredicateInput = {
+  fieldMetadataId: Scalars['String'];
+  objectMetadataId: Scalars['String'];
+  operand: RowLevelPermissionPredicateOperand;
+  positionInRowLevelPermissionPredicateGroup?: InputMaybe<Scalars['Float']>;
+  roleId: Scalars['String'];
+  rowLevelPermissionPredicateGroupId?: InputMaybe<Scalars['String']>;
+  subFieldName?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['JSON']>;
+  workspaceMemberFieldMetadataId?: InputMaybe<Scalars['String']>;
+  workspaceMemberSubFieldName?: InputMaybe<Scalars['String']>;
+};
+
 export type CreateServerlessFunctionInput = {
   code?: InputMaybe<Scalars['JSON']>;
   description?: InputMaybe<Scalars['String']>;
   handlerName?: InputMaybe<Scalars['String']>;
   handlerPath?: InputMaybe<Scalars['String']>;
+  isTool?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
   timeoutSeconds?: InputMaybe<Scalars['Float']>;
+  toolInputSchema?: InputMaybe<Scalars['JSON']>;
 };
 
 export type CreateViewFieldInput = {
@@ -946,7 +1001,6 @@ export type CreateViewFilterInput = {
 };
 
 export type CreateViewGroupInput = {
-  fieldMetadataId: Scalars['UUID'];
   fieldValue: Scalars['String'];
   id?: InputMaybe<Scalars['UUID']>;
   isVisible?: InputMaybe<Scalars['Boolean']>;
@@ -969,6 +1023,7 @@ export type CreateViewInput = {
   objectMetadataId: Scalars['UUID'];
   openRecordIn?: InputMaybe<ViewOpenRecordIn>;
   position?: InputMaybe<Scalars['Float']>;
+  shouldHideEmptyGroups?: InputMaybe<Scalars['Boolean']>;
   type?: InputMaybe<ViewType>;
   visibility?: InputMaybe<ViewVisibility>;
 };
@@ -1091,6 +1146,14 @@ export type DeleteOneObjectInput = {
   id: Scalars['UUID'];
 };
 
+export type DeleteRowLevelPermissionPredicateGroupInput = {
+  id: Scalars['String'];
+};
+
+export type DeleteRowLevelPermissionPredicateInput = {
+  id: Scalars['String'];
+};
+
 export type DeleteSsoInput = {
   identityProviderId: Scalars['UUID'];
 };
@@ -1156,14 +1219,6 @@ export type DestroyViewGroupInput = {
   id: Scalars['UUID'];
 };
 
-/** Schema update on a table */
-export enum DistantTableUpdate {
-  COLUMNS_ADDED = 'COLUMNS_ADDED',
-  COLUMNS_DELETED = 'COLUMNS_DELETED',
-  COLUMNS_TYPE_CHANGED = 'COLUMNS_TYPE_CHANGED',
-  TABLE_DELETED = 'TABLE_DELETED'
-}
-
 export type DomainRecord = {
   __typename?: 'DomainRecord';
   key: Scalars['String'];
@@ -1190,6 +1245,16 @@ export type DuplicateWorkflowInput = {
 export type DuplicateWorkflowVersionStepInput = {
   stepId: Scalars['String'];
   workflowVersionId: Scalars['String'];
+};
+
+export type DuplicatedDashboard = {
+  __typename?: 'DuplicatedDashboard';
+  createdAt: Scalars['String'];
+  id: Scalars['UUID'];
+  pageLayoutId?: Maybe<Scalars['UUID']>;
+  position: Scalars['Float'];
+  title?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['String'];
 };
 
 export type EditSsoInput = {
@@ -1241,6 +1306,23 @@ export enum EmailingDomainStatus {
   VERIFIED = 'VERIFIED'
 }
 
+export type EmailsConfiguration = {
+  __typename?: 'EmailsConfiguration';
+  configurationType: WidgetConfigurationType;
+};
+
+export type EventSubscription = {
+  __typename?: 'EventSubscription';
+  eventStreamId: Scalars['String'];
+  eventWithQueryIdsList: Array<EventWithQueryIds>;
+};
+
+export type EventWithQueryIds = {
+  __typename?: 'EventWithQueryIds';
+  event: ObjectRecordEvent;
+  queryIds: Array<Scalars['String']>;
+};
+
 export type ExecuteServerlessFunctionInput = {
   /** Id of the serverless function to execute */
   id: Scalars['UUID'];
@@ -1255,7 +1337,6 @@ export type FeatureFlag = {
   id: Scalars['UUID'];
   key: FeatureFlagKey;
   value: Scalars['Boolean'];
-  workspaceId: Scalars['UUID'];
 };
 
 export type FeatureFlagDto = {
@@ -1265,25 +1346,23 @@ export type FeatureFlagDto = {
 };
 
 export enum FeatureFlagKey {
-  IS_AIRTABLE_INTEGRATION_ENABLED = 'IS_AIRTABLE_INTEGRATION_ENABLED',
   IS_AI_ENABLED = 'IS_AI_ENABLED',
   IS_APPLICATION_ENABLED = 'IS_APPLICATION_ENABLED',
   IS_DASHBOARD_V2_ENABLED = 'IS_DASHBOARD_V2_ENABLED',
   IS_EMAILING_DOMAIN_ENABLED = 'IS_EMAILING_DOMAIN_ENABLED',
-  IS_GLOBAL_WORKSPACE_DATASOURCE_ENABLED = 'IS_GLOBAL_WORKSPACE_DATASOURCE_ENABLED',
-  IS_IMAP_SMTP_CALDAV_ENABLED = 'IS_IMAP_SMTP_CALDAV_ENABLED',
+  IS_IF_ELSE_ENABLED = 'IS_IF_ELSE_ENABLED',
   IS_JSON_FILTER_ENABLED = 'IS_JSON_FILTER_ENABLED',
   IS_PAGE_LAYOUT_ENABLED = 'IS_PAGE_LAYOUT_ENABLED',
-  IS_POSTGRESQL_INTEGRATION_ENABLED = 'IS_POSTGRESQL_INTEGRATION_ENABLED',
   IS_PUBLIC_DOMAIN_ENABLED = 'IS_PUBLIC_DOMAIN_ENABLED',
   IS_RECORD_PAGE_LAYOUT_ENABLED = 'IS_RECORD_PAGE_LAYOUT_ENABLED',
-  IS_STRIPE_INTEGRATION_ENABLED = 'IS_STRIPE_INTEGRATION_ENABLED',
-  IS_UNIQUE_INDEXES_ENABLED = 'IS_UNIQUE_INDEXES_ENABLED',
-  IS_WORKFLOW_RUN_STOPPAGE_ENABLED = 'IS_WORKFLOW_RUN_STOPPAGE_ENABLED'
+  IS_ROW_LEVEL_PERMISSION_PREDICATES_ENABLED = 'IS_ROW_LEVEL_PERMISSION_PREDICATES_ENABLED',
+  IS_TIMELINE_ACTIVITY_MIGRATED = 'IS_TIMELINE_ACTIVITY_MIGRATED',
+  IS_UNIQUE_INDEXES_ENABLED = 'IS_UNIQUE_INDEXES_ENABLED'
 }
 
 export type Field = {
   __typename?: 'Field';
+  applicationId?: Maybe<Scalars['UUID']>;
   createdAt: Scalars['DateTime'];
   defaultValue?: Maybe<Scalars['JSON']>;
   description?: Maybe<Scalars['String']>;
@@ -1306,6 +1385,11 @@ export type Field = {
   standardOverrides?: Maybe<StandardOverrides>;
   type: FieldMetadataType;
   updatedAt: Scalars['DateTime'];
+};
+
+export type FieldConfiguration = {
+  __typename?: 'FieldConfiguration';
+  configurationType: WidgetConfigurationType;
 };
 
 export type FieldConnection = {
@@ -1380,6 +1464,16 @@ export type FieldPermissionInput = {
   objectMetadataId: Scalars['UUID'];
 };
 
+export type FieldRichTextConfiguration = {
+  __typename?: 'FieldRichTextConfiguration';
+  configurationType: WidgetConfigurationType;
+};
+
+export type FieldsConfiguration = {
+  __typename?: 'FieldsConfiguration';
+  configurationType: WidgetConfigurationType;
+};
+
 export type File = {
   __typename?: 'File';
   createdAt: Scalars['DateTime'];
@@ -1400,6 +1494,11 @@ export enum FileFolder {
   ServerlessFunctionToDelete = 'ServerlessFunctionToDelete',
   WorkspaceLogo = 'WorkspaceLogo'
 }
+
+export type FilesConfiguration = {
+  __typename?: 'FilesConfiguration';
+  configurationType: WidgetConfigurationType;
+};
 
 export enum FilterIs {
   NotNull = 'NotNull',
@@ -1427,11 +1526,11 @@ export type GaugeChartConfiguration = {
   aggregateFieldMetadataId: Scalars['UUID'];
   aggregateOperation: AggregateOperations;
   color?: Maybe<Scalars['String']>;
+  configurationType: WidgetConfigurationType;
   description?: Maybe<Scalars['String']>;
   displayDataLabel?: Maybe<Scalars['Boolean']>;
   filter?: Maybe<Scalars['JSON']>;
   firstDayOfTheWeek?: Maybe<Scalars['Int']>;
-  graphType: GraphType;
   timezone?: Maybe<Scalars['String']>;
 };
 
@@ -1466,18 +1565,11 @@ export type GetWebhookInput = {
 export enum GraphOrderBy {
   FIELD_ASC = 'FIELD_ASC',
   FIELD_DESC = 'FIELD_DESC',
+  FIELD_POSITION_ASC = 'FIELD_POSITION_ASC',
+  FIELD_POSITION_DESC = 'FIELD_POSITION_DESC',
+  MANUAL = 'MANUAL',
   VALUE_ASC = 'VALUE_ASC',
   VALUE_DESC = 'VALUE_DESC'
-}
-
-/** Type of graph widget */
-export enum GraphType {
-  AGGREGATE = 'AGGREGATE',
-  GAUGE = 'GAUGE',
-  HORIZONTAL_BAR = 'HORIZONTAL_BAR',
-  LINE = 'LINE',
-  PIE = 'PIE',
-  VERTICAL_BAR = 'VERTICAL_BAR'
 }
 
 export type GridPosition = {
@@ -1518,6 +1610,7 @@ export enum IdentityProviderType {
 
 export type IframeConfiguration = {
   __typename?: 'IframeConfiguration';
+  configurationType: WidgetConfigurationType;
   url?: Maybe<Scalars['String']>;
 };
 
@@ -1671,24 +1764,26 @@ export type LineChartConfiguration = {
   aggregateOperation: AggregateOperations;
   axisNameDisplay?: Maybe<AxisNameDisplay>;
   color?: Maybe<Scalars['String']>;
+  configurationType: WidgetConfigurationType;
   description?: Maybe<Scalars['String']>;
   displayDataLabel?: Maybe<Scalars['Boolean']>;
   displayLegend?: Maybe<Scalars['Boolean']>;
   filter?: Maybe<Scalars['JSON']>;
   firstDayOfTheWeek?: Maybe<Scalars['Int']>;
-  graphType: GraphType;
   isCumulative?: Maybe<Scalars['Boolean']>;
   isStacked?: Maybe<Scalars['Boolean']>;
   omitNullValues?: Maybe<Scalars['Boolean']>;
   primaryAxisDateGranularity?: Maybe<ObjectRecordGroupByDateGranularity>;
   primaryAxisGroupByFieldMetadataId: Scalars['UUID'];
   primaryAxisGroupBySubFieldName?: Maybe<Scalars['String']>;
+  primaryAxisManualSortOrder?: Maybe<Array<Scalars['String']>>;
   primaryAxisOrderBy?: Maybe<GraphOrderBy>;
   rangeMax?: Maybe<Scalars['Float']>;
   rangeMin?: Maybe<Scalars['Float']>;
   secondaryAxisGroupByDateGranularity?: Maybe<ObjectRecordGroupByDateGranularity>;
   secondaryAxisGroupByFieldMetadataId?: Maybe<Scalars['UUID']>;
   secondaryAxisGroupBySubFieldName?: Maybe<Scalars['String']>;
+  secondaryAxisManualSortOrder?: Maybe<Array<Scalars['String']>>;
   secondaryAxisOrderBy?: Maybe<GraphOrderBy>;
   timezone?: Maybe<Scalars['String']>;
 };
@@ -1725,7 +1820,6 @@ export enum MessageChannelVisibility {
 
 export enum ModelProvider {
   ANTHROPIC = 'ANTHROPIC',
-  GOOGLE = 'GOOGLE',
   NONE = 'NONE',
   OPENAI = 'OPENAI',
   OPENAI_COMPATIBLE = 'OPENAI_COMPATIBLE',
@@ -1736,6 +1830,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   activateWorkflowVersion: Scalars['Boolean'];
   activateWorkspace: Workspace;
+  addQueryToEventStream: Scalars['Boolean'];
   assignRoleToAgent: Scalars['Boolean'];
   assignRoleToApiKey: Scalars['Boolean'];
   authorizeApp: AuthorizeAppOutput;
@@ -1776,6 +1871,8 @@ export type Mutation = {
   createPageLayoutTab: PageLayoutTab;
   createPageLayoutWidget: PageLayoutWidget;
   createPublicDomain: PublicDomain;
+  createRowLevelPermissionPredicate: RowLevelPermissionPredicate;
+  createRowLevelPermissionPredicateGroup: RowLevelPermissionPredicateGroup;
   createSAMLIdentityProvider: SetupSsoOutput;
   createWebhook: Webhook;
   createWorkflowVersionEdge: WorkflowVersionStepChanges;
@@ -1802,10 +1899,9 @@ export type Mutation = {
   deleteOneRole: Scalars['String'];
   deleteOneRouteTrigger: RouteTrigger;
   deleteOneServerlessFunction: ServerlessFunction;
-  deletePageLayout: PageLayout;
-  deletePageLayoutTab: Scalars['Boolean'];
-  deletePageLayoutWidget: PageLayoutWidget;
   deletePublicDomain: Scalars['Boolean'];
+  deleteRowLevelPermissionPredicate: RowLevelPermissionPredicate;
+  deleteRowLevelPermissionPredicateGroup: RowLevelPermissionPredicateGroup;
   deleteSSOIdentityProvider: DeleteSsoOutput;
   deleteTwoFactorAuthenticationMethod: DeleteTwoFactorAuthenticationMethodOutput;
   deleteUser: User;
@@ -1825,6 +1921,7 @@ export type Mutation = {
   destroyPageLayoutWidget: Scalars['Boolean'];
   disablePostgresProxy: PostgresCredentials;
   dismissReconnectAccountBanner: Scalars['Boolean'];
+  duplicateDashboard: DuplicatedDashboard;
   duplicateWorkflow: WorkflowVersionDto;
   duplicateWorkflowVersionStep: WorkflowVersionStepChanges;
   editSSOIdentityProvider: EditSsoOutput;
@@ -1842,13 +1939,11 @@ export type Mutation = {
   initiateOTPProvisioning: InitiateTwoFactorAuthenticationProvisioningOutput;
   initiateOTPProvisioningForAuthenticatedUser: InitiateTwoFactorAuthenticationProvisioningOutput;
   publishServerlessFunction: ServerlessFunction;
+  removeQueryFromEventStream: Scalars['Boolean'];
   removeRoleFromAgent: Scalars['Boolean'];
   renewToken: AuthTokens;
   resendEmailVerificationToken: ResendEmailVerificationTokenOutput;
   resendWorkspaceInvitation: SendInvitationsOutput;
-  restorePageLayout: PageLayout;
-  restorePageLayoutTab: PageLayoutTab;
-  restorePageLayoutWidget: PageLayoutWidget;
   retryJobs: RetryJobsResponse;
   revokeApiKey?: Maybe<ApiKey>;
   runWorkflowVersion: RunWorkflowVersionOutput;
@@ -1893,6 +1988,8 @@ export type Mutation = {
   updatePageLayoutWidget: PageLayoutWidget;
   updatePageLayoutWithTabsAndWidgets: PageLayout;
   updatePasswordViaResetToken: InvalidatePasswordOutput;
+  updateRowLevelPermissionPredicate: RowLevelPermissionPredicate;
+  updateRowLevelPermissionPredicateGroup: RowLevelPermissionPredicateGroup;
   updateUserEmail: Scalars['Boolean'];
   updateWebhook?: Maybe<Webhook>;
   updateWorkflowRunStep: WorkflowAction;
@@ -1903,12 +2000,12 @@ export type Mutation = {
   updateWorkspaceMemberRole: WorkspaceMember;
   uploadFile: SignedFile;
   uploadImage: SignedFile;
-  uploadProfilePicture: SignedFile;
   uploadWorkspaceLogo: SignedFile;
   uploadWorkspaceMemberProfilePicture: SignedFile;
   upsertFieldPermissions: Array<FieldPermission>;
   upsertObjectPermissions: Array<ObjectPermission>;
   upsertPermissionFlags: Array<PermissionFlag>;
+  upsertRowLevelPermissionPredicates: UpsertRowLevelPermissionPredicatesResult;
   userLookupAdminPanel: UserLookup;
   validateApprovedAccessDomain: ApprovedAccessDomain;
   verifyEmailAndGetLoginToken: VerifyEmailAndGetLoginTokenOutput;
@@ -1925,6 +2022,11 @@ export type MutationActivateWorkflowVersionArgs = {
 
 export type MutationActivateWorkspaceArgs = {
   data: ActivateWorkspaceInput;
+};
+
+
+export type MutationAddQueryToEventStreamArgs = {
+  input: AddQuerySubscriptionInput;
 };
 
 
@@ -2116,6 +2218,16 @@ export type MutationCreatePublicDomainArgs = {
 };
 
 
+export type MutationCreateRowLevelPermissionPredicateArgs = {
+  input: CreateRowLevelPermissionPredicateInput;
+};
+
+
+export type MutationCreateRowLevelPermissionPredicateGroupArgs = {
+  input: CreateRowLevelPermissionPredicateGroupInput;
+};
+
+
 export type MutationCreateSamlIdentityProviderArgs = {
   input: SetupSamlSsoInput;
 };
@@ -2243,23 +2355,18 @@ export type MutationDeleteOneServerlessFunctionArgs = {
 };
 
 
-export type MutationDeletePageLayoutArgs = {
-  id: Scalars['String'];
-};
-
-
-export type MutationDeletePageLayoutTabArgs = {
-  id: Scalars['String'];
-};
-
-
-export type MutationDeletePageLayoutWidgetArgs = {
-  id: Scalars['String'];
-};
-
-
 export type MutationDeletePublicDomainArgs = {
   domain: Scalars['String'];
+};
+
+
+export type MutationDeleteRowLevelPermissionPredicateArgs = {
+  input: DeleteRowLevelPermissionPredicateInput;
+};
+
+
+export type MutationDeleteRowLevelPermissionPredicateGroupArgs = {
+  input: DeleteRowLevelPermissionPredicateGroupInput;
 };
 
 
@@ -2348,6 +2455,11 @@ export type MutationDismissReconnectAccountBannerArgs = {
 };
 
 
+export type MutationDuplicateDashboardArgs = {
+  id: Scalars['UUID'];
+};
+
+
 export type MutationDuplicateWorkflowArgs = {
   input: DuplicateWorkflowInput;
 };
@@ -2426,6 +2538,11 @@ export type MutationPublishServerlessFunctionArgs = {
 };
 
 
+export type MutationRemoveQueryFromEventStreamArgs = {
+  input: RemoveQueryFromEventStreamInput;
+};
+
+
 export type MutationRemoveRoleFromAgentArgs = {
   agentId: Scalars['UUID'];
 };
@@ -2444,21 +2561,6 @@ export type MutationResendEmailVerificationTokenArgs = {
 
 export type MutationResendWorkspaceInvitationArgs = {
   appTokenId: Scalars['String'];
-};
-
-
-export type MutationRestorePageLayoutArgs = {
-  id: Scalars['String'];
-};
-
-
-export type MutationRestorePageLayoutTabArgs = {
-  id: Scalars['String'];
-};
-
-
-export type MutationRestorePageLayoutWidgetArgs = {
-  id: Scalars['String'];
 };
 
 
@@ -2692,6 +2794,16 @@ export type MutationUpdatePasswordViaResetTokenArgs = {
 };
 
 
+export type MutationUpdateRowLevelPermissionPredicateArgs = {
+  input: UpdateRowLevelPermissionPredicateInput;
+};
+
+
+export type MutationUpdateRowLevelPermissionPredicateGroupArgs = {
+  input: UpdateRowLevelPermissionPredicateGroupInput;
+};
+
+
 export type MutationUpdateUserEmailArgs = {
   newEmail: Scalars['String'];
   verifyEmailRedirectPath?: InputMaybe<Scalars['String']>;
@@ -2748,11 +2860,6 @@ export type MutationUploadImageArgs = {
 };
 
 
-export type MutationUploadProfilePictureArgs = {
-  file: Scalars['Upload'];
-};
-
-
 export type MutationUploadWorkspaceLogoArgs = {
   file: Scalars['Upload'];
 };
@@ -2775,6 +2882,11 @@ export type MutationUpsertObjectPermissionsArgs = {
 
 export type MutationUpsertPermissionFlagsArgs = {
   upsertPermissionFlagsInput: UpsertPermissionFlagsInput;
+};
+
+
+export type MutationUpsertRowLevelPermissionPredicatesArgs = {
+  input: UpsertRowLevelPermissionPredicatesInput;
 };
 
 
@@ -2816,6 +2928,11 @@ export type NativeModelCapabilities = {
   __typename?: 'NativeModelCapabilities';
   twitterSearch?: Maybe<Scalars['Boolean']>;
   webSearch?: Maybe<Scalars['Boolean']>;
+};
+
+export type NotesConfiguration = {
+  __typename?: 'NotesConfiguration';
+  configurationType: WidgetConfigurationType;
 };
 
 export type Object = {
@@ -2926,6 +3043,24 @@ export type ObjectPermissionInput = {
   recordAccessLevel?: InputMaybe<RecordAccessLevel>;
 };
 
+export type ObjectRecordEvent = {
+  __typename?: 'ObjectRecordEvent';
+  action: DatabaseEventAction;
+  objectNameSingular: Scalars['String'];
+  properties: ObjectRecordEventProperties;
+  recordId: Scalars['String'];
+  userId?: Maybe<Scalars['String']>;
+  workspaceMemberId?: Maybe<Scalars['String']>;
+};
+
+export type ObjectRecordEventProperties = {
+  __typename?: 'ObjectRecordEventProperties';
+  after?: Maybe<Scalars['JSON']>;
+  before?: Maybe<Scalars['JSON']>;
+  diff?: Maybe<Scalars['JSON']>;
+  updatedFields?: Maybe<Array<Scalars['String']>>;
+};
+
 export type ObjectRecordFilterInput = {
   and?: InputMaybe<Array<ObjectRecordFilterInput>>;
   createdAt?: InputMaybe<DateTimeFilter>;
@@ -3034,7 +3169,7 @@ export enum PageLayoutType {
 
 export type PageLayoutWidget = {
   __typename?: 'PageLayoutWidget';
-  configuration?: Maybe<WidgetConfiguration>;
+  configuration: WidgetConfiguration;
   createdAt: Scalars['DateTime'];
   deletedAt?: Maybe<Scalars['DateTime']>;
   gridPosition: GridPosition;
@@ -3059,6 +3194,7 @@ export enum PermissionFlagType {
   API_KEYS_AND_WEBHOOKS = 'API_KEYS_AND_WEBHOOKS',
   APPLICATIONS = 'APPLICATIONS',
   BILLING = 'BILLING',
+  CODE_INTERPRETER_TOOL = 'CODE_INTERPRETER_TOOL',
   CONNECTED_ACCOUNTS = 'CONNECTED_ACCOUNTS',
   DATA_MODEL = 'DATA_MODEL',
   DOWNLOAD_FILE = 'DOWNLOAD_FILE',
@@ -3084,15 +3220,17 @@ export type PieChartConfiguration = {
   aggregateFieldMetadataId: Scalars['UUID'];
   aggregateOperation: AggregateOperations;
   color?: Maybe<Scalars['String']>;
+  configurationType: WidgetConfigurationType;
   dateGranularity?: Maybe<ObjectRecordGroupByDateGranularity>;
   description?: Maybe<Scalars['String']>;
   displayDataLabel?: Maybe<Scalars['Boolean']>;
   displayLegend?: Maybe<Scalars['Boolean']>;
   filter?: Maybe<Scalars['JSON']>;
   firstDayOfTheWeek?: Maybe<Scalars['Int']>;
-  graphType: GraphType;
   groupByFieldMetadataId: Scalars['UUID'];
   groupBySubFieldName?: Maybe<Scalars['String']>;
+  hideEmptyCategory?: Maybe<Scalars['Boolean']>;
+  manualSortOrder?: Maybe<Array<Scalars['String']>>;
   orderBy?: Maybe<GraphOrderBy>;
   showCenterMetric?: Maybe<Scalars['Boolean']>;
   timezone?: Maybe<Scalars['String']>;
@@ -3210,6 +3348,9 @@ export type Query = {
   getQueueJobs: QueueJobsResponse;
   getQueueMetrics: QueueMetricsData;
   getRoles: Array<Role>;
+  getRowLevelPermissionPredicate?: Maybe<RowLevelPermissionPredicate>;
+  getRowLevelPermissionPredicateGroups: Array<RowLevelPermissionPredicateGroup>;
+  getRowLevelPermissionPredicates: Array<RowLevelPermissionPredicate>;
   getSSOIdentityProviders: Array<FindAvailableSsoidpOutput>;
   getServerlessFunctionSourceCode?: Maybe<Scalars['JSON']>;
   getSystemHealthStatus: SystemHealth;
@@ -3219,6 +3360,7 @@ export type Query = {
   getTimelineThreadsFromCompanyId: TimelineThreadsWithTotal;
   getTimelineThreadsFromOpportunityId: TimelineThreadsWithTotal;
   getTimelineThreadsFromPersonId: TimelineThreadsWithTotal;
+  getToolIndex: Array<ToolIndexEntry>;
   index: Index;
   indexMetadatas: IndexConnection;
   listPlans: Array<BillingPlanOutput>;
@@ -3431,6 +3573,22 @@ export type QueryGetQueueMetricsArgs = {
 };
 
 
+export type QueryGetRowLevelPermissionPredicateArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryGetRowLevelPermissionPredicateGroupsArgs = {
+  roleId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetRowLevelPermissionPredicatesArgs = {
+  objectMetadataId?: InputMaybe<Scalars['String']>;
+  roleId?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryGetServerlessFunctionSourceCodeArgs = {
   input: GetServerlessFunctionSourceCodeInput;
 };
@@ -3559,6 +3717,12 @@ export type QueueRetentionConfig = {
   failedMaxCount: Scalars['Float'];
 };
 
+export type RatioAggregateConfig = {
+  __typename?: 'RatioAggregateConfig';
+  fieldMetadataId: Scalars['UUID'];
+  optionValue: Scalars['String'];
+};
+
 export enum RecordAccessLevel {
   EVERYTHING = 'EVERYTHING',
   OWNED_ONLY = 'OWNED_ONLY'
@@ -3579,33 +3743,10 @@ export enum RelationType {
   ONE_TO_MANY = 'ONE_TO_MANY'
 }
 
-export type RemoteServer = {
-  __typename?: 'RemoteServer';
-  createdAt: Scalars['DateTime'];
-  foreignDataWrapperId: Scalars['UUID'];
-  foreignDataWrapperOptions?: Maybe<Scalars['JSON']>;
-  foreignDataWrapperType: Scalars['String'];
-  id: Scalars['UUID'];
-  label: Scalars['String'];
-  schema?: Maybe<Scalars['String']>;
-  updatedAt: Scalars['DateTime'];
-  userMappingOptions?: Maybe<UserMappingOptionsUser>;
+export type RemoveQueryFromEventStreamInput = {
+  eventStreamId: Scalars['String'];
+  queryId: Scalars['String'];
 };
-
-export type RemoteTable = {
-  __typename?: 'RemoteTable';
-  id?: Maybe<Scalars['UUID']>;
-  name: Scalars['String'];
-  schema?: Maybe<Scalars['String']>;
-  schemaPendingUpdates?: Maybe<Array<DistantTableUpdate>>;
-  status: RemoteTableStatus;
-};
-
-/** Status of the table */
-export enum RemoteTableStatus {
-  NOT_SYNCED = 'NOT_SYNCED',
-  SYNCED = 'SYNCED'
-}
 
 export type ResendEmailVerificationTokenOutput = {
   __typename?: 'ResendEmailVerificationTokenOutput';
@@ -3649,7 +3790,10 @@ export type Role = {
   label: Scalars['String'];
   objectPermissions?: Maybe<Array<ObjectPermission>>;
   permissionFlags?: Maybe<Array<PermissionFlag>>;
+  rowLevelPermissionPredicateGroups?: Maybe<Array<RowLevelPermissionPredicateGroup>>;
+  rowLevelPermissionPredicates?: Maybe<Array<RowLevelPermissionPredicate>>;
   standardId?: Maybe<Scalars['UUID']>;
+  universalIdentifier?: Maybe<Scalars['UUID']>;
   workspaceMembers: Array<WorkspaceMember>;
 };
 
@@ -3666,6 +3810,75 @@ export type RouteTrigger = {
 export type RouteTriggerIdInput = {
   id: Scalars['String'];
 };
+
+export type RowLevelPermissionPredicate = {
+  __typename?: 'RowLevelPermissionPredicate';
+  fieldMetadataId: Scalars['String'];
+  id: Scalars['String'];
+  objectMetadataId: Scalars['String'];
+  operand: RowLevelPermissionPredicateOperand;
+  positionInRowLevelPermissionPredicateGroup?: Maybe<Scalars['Float']>;
+  roleId: Scalars['String'];
+  rowLevelPermissionPredicateGroupId?: Maybe<Scalars['String']>;
+  subFieldName?: Maybe<Scalars['String']>;
+  value?: Maybe<Scalars['JSON']>;
+  workspaceMemberFieldMetadataId?: Maybe<Scalars['String']>;
+  workspaceMemberSubFieldName?: Maybe<Scalars['String']>;
+};
+
+export type RowLevelPermissionPredicateGroup = {
+  __typename?: 'RowLevelPermissionPredicateGroup';
+  id: Scalars['String'];
+  logicalOperator: RowLevelPermissionPredicateGroupLogicalOperator;
+  objectMetadataId: Scalars['String'];
+  parentRowLevelPermissionPredicateGroupId?: Maybe<Scalars['String']>;
+  positionInRowLevelPermissionPredicateGroup?: Maybe<Scalars['Float']>;
+  roleId: Scalars['String'];
+};
+
+export type RowLevelPermissionPredicateGroupInput = {
+  id?: InputMaybe<Scalars['UUID']>;
+  logicalOperator: RowLevelPermissionPredicateGroupLogicalOperator;
+  objectMetadataId: Scalars['UUID'];
+  parentRowLevelPermissionPredicateGroupId?: InputMaybe<Scalars['UUID']>;
+  positionInRowLevelPermissionPredicateGroup?: InputMaybe<Scalars['Float']>;
+};
+
+export enum RowLevelPermissionPredicateGroupLogicalOperator {
+  AND = 'AND',
+  OR = 'OR'
+}
+
+export type RowLevelPermissionPredicateInput = {
+  fieldMetadataId: Scalars['UUID'];
+  id?: InputMaybe<Scalars['UUID']>;
+  operand: RowLevelPermissionPredicateOperand;
+  positionInRowLevelPermissionPredicateGroup?: InputMaybe<Scalars['Float']>;
+  rowLevelPermissionPredicateGroupId?: InputMaybe<Scalars['UUID']>;
+  subFieldName?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['JSON']>;
+  workspaceMemberFieldMetadataId?: InputMaybe<Scalars['String']>;
+  workspaceMemberSubFieldName?: InputMaybe<Scalars['String']>;
+};
+
+export enum RowLevelPermissionPredicateOperand {
+  CONTAINS = 'CONTAINS',
+  DOES_NOT_CONTAIN = 'DOES_NOT_CONTAIN',
+  GREATER_THAN_OR_EQUAL = 'GREATER_THAN_OR_EQUAL',
+  IS = 'IS',
+  IS_AFTER = 'IS_AFTER',
+  IS_BEFORE = 'IS_BEFORE',
+  IS_EMPTY = 'IS_EMPTY',
+  IS_IN_FUTURE = 'IS_IN_FUTURE',
+  IS_IN_PAST = 'IS_IN_PAST',
+  IS_NOT = 'IS_NOT',
+  IS_NOT_EMPTY = 'IS_NOT_EMPTY',
+  IS_NOT_NULL = 'IS_NOT_NULL',
+  IS_RELATIVE = 'IS_RELATIVE',
+  IS_TODAY = 'IS_TODAY',
+  LESS_THAN_OR_EQUAL = 'LESS_THAN_OR_EQUAL',
+  VECTOR_SEARCH = 'VECTOR_SEARCH'
+}
 
 export type RunWorkflowVersionInput = {
   /** Execution result in JSON format */
@@ -3750,6 +3963,7 @@ export type Sentry = {
 
 export type ServerlessFunction = {
   __typename?: 'ServerlessFunction';
+  applicationId?: Maybe<Scalars['UUID']>;
   createdAt: Scalars['DateTime'];
   cronTriggers?: Maybe<Array<CronTrigger>>;
   databaseEventTriggers?: Maybe<Array<DatabaseEventTrigger>>;
@@ -3757,12 +3971,14 @@ export type ServerlessFunction = {
   handlerName: Scalars['String'];
   handlerPath: Scalars['String'];
   id: Scalars['UUID'];
+  isTool: Scalars['Boolean'];
   latestVersion?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   publishedVersions: Array<Scalars['String']>;
   routeTriggers?: Maybe<Array<RouteTrigger>>;
   runtime: Scalars['String'];
   timeoutSeconds: Scalars['Float'];
+  toolInputSchema?: Maybe<Scalars['JSON']>;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -3851,9 +4067,26 @@ export type SignedFile = {
   token: Scalars['String'];
 };
 
+export type Skill = {
+  __typename?: 'Skill';
+  applicationId?: Maybe<Scalars['UUID']>;
+  content: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  description?: Maybe<Scalars['String']>;
+  icon?: Maybe<Scalars['String']>;
+  id: Scalars['UUID'];
+  isActive: Scalars['Boolean'];
+  isCustom: Scalars['Boolean'];
+  label: Scalars['String'];
+  name: Scalars['String'];
+  standardId?: Maybe<Scalars['UUID']>;
+  updatedAt: Scalars['DateTime'];
+};
+
 export type StandaloneRichTextConfiguration = {
   __typename?: 'StandaloneRichTextConfiguration';
   body: RichTextV2Body;
+  configurationType: WidgetConfigurationType;
 };
 
 export type StandardOverrides = {
@@ -3876,6 +4109,8 @@ export type SubmitFormStepInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   onDbEvent: OnDbEvent;
+  onEventSubscription?: Maybe<EventSubscription>;
+  onSubscriptionMatch?: Maybe<SubscriptionMatches>;
   serverlessFunctionLogs: ServerlessFunctionLogs;
 };
 
@@ -3885,14 +4120,41 @@ export type SubscriptionOnDbEventArgs = {
 };
 
 
+export type SubscriptionOnEventSubscriptionArgs = {
+  eventStreamId: Scalars['String'];
+};
+
+
+export type SubscriptionOnSubscriptionMatchArgs = {
+  subscriptions: Array<SubscriptionInput>;
+};
+
+
 export type SubscriptionServerlessFunctionLogsArgs = {
   input: ServerlessFunctionLogsInput;
+};
+
+export type SubscriptionInput = {
+  id: Scalars['String'];
+  query: Scalars['String'];
+  selectedEventActions?: InputMaybe<Array<DatabaseEventAction>>;
 };
 
 export enum SubscriptionInterval {
   Month = 'Month',
   Year = 'Year'
 }
+
+export type SubscriptionMatch = {
+  __typename?: 'SubscriptionMatch';
+  event: OnDbEvent;
+  subscriptionIds: Array<Scalars['String']>;
+};
+
+export type SubscriptionMatches = {
+  __typename?: 'SubscriptionMatches';
+  matches: Array<SubscriptionMatch>;
+};
 
 export enum SubscriptionStatus {
   Active = 'Active',
@@ -3926,6 +4188,11 @@ export type SystemHealthService = {
   id: HealthIndicatorId;
   label: Scalars['String'];
   status: AdminPanelHealthServiceStatus;
+};
+
+export type TasksConfiguration = {
+  __typename?: 'TasksConfiguration';
+  configurationType: WidgetConfigurationType;
 };
 
 export type TestHttpRequestInput = {
@@ -3990,6 +4257,11 @@ export type TimelineCalendarEventsWithTotal = {
   totalNumberOfCalendarEvents: Scalars['Int'];
 };
 
+export type TimelineConfiguration = {
+  __typename?: 'TimelineConfiguration';
+  configurationType: WidgetConfigurationType;
+};
+
 export type TimelineThread = {
   __typename?: 'TimelineThread';
   firstParticipant: TimelineThreadParticipant;
@@ -4019,6 +4291,15 @@ export type TimelineThreadsWithTotal = {
   __typename?: 'TimelineThreadsWithTotal';
   timelineThreads: Array<TimelineThread>;
   totalNumberOfThreads: Scalars['Int'];
+};
+
+export type ToolIndexEntry = {
+  __typename?: 'ToolIndexEntry';
+  category: Scalars['String'];
+  description: Scalars['String'];
+  inputSchema?: Maybe<Scalars['JSON']>;
+  name: Scalars['String'];
+  objectName?: Maybe<Scalars['String']>;
 };
 
 export type TransientTokenOutput = {
@@ -4230,6 +4511,25 @@ export type UpdateRouteTriggerInputUpdates = {
   path: Scalars['String'];
 };
 
+export type UpdateRowLevelPermissionPredicateGroupInput = {
+  id: Scalars['String'];
+  logicalOperator?: InputMaybe<RowLevelPermissionPredicateGroupLogicalOperator>;
+  parentRowLevelPermissionPredicateGroupId?: InputMaybe<Scalars['String']>;
+  positionInRowLevelPermissionPredicateGroup?: InputMaybe<Scalars['Float']>;
+};
+
+export type UpdateRowLevelPermissionPredicateInput = {
+  fieldMetadataId?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
+  operand?: InputMaybe<RowLevelPermissionPredicateOperand>;
+  positionInRowLevelPermissionPredicateGroup?: InputMaybe<Scalars['Float']>;
+  rowLevelPermissionPredicateGroupId?: InputMaybe<Scalars['String']>;
+  subFieldName?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['JSON']>;
+  workspaceMemberFieldMetadataId?: InputMaybe<Scalars['String']>;
+  workspaceMemberSubFieldName?: InputMaybe<Scalars['String']>;
+};
+
 export type UpdateServerlessFunctionInput = {
   /** Id of the serverless function to update */
   id: Scalars['UUID'];
@@ -4242,8 +4542,10 @@ export type UpdateServerlessFunctionInputUpdates = {
   description?: InputMaybe<Scalars['String']>;
   handlerName?: InputMaybe<Scalars['String']>;
   handlerPath?: InputMaybe<Scalars['String']>;
+  isTool?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
   timeoutSeconds?: InputMaybe<Scalars['Float']>;
+  toolInputSchema?: InputMaybe<Scalars['JSON']>;
 };
 
 export type UpdateViewFieldInput = {
@@ -4311,6 +4613,7 @@ export type UpdateViewInput = {
   name?: InputMaybe<Scalars['String']>;
   openRecordIn?: InputMaybe<ViewOpenRecordIn>;
   position?: InputMaybe<Scalars['Float']>;
+  shouldHideEmptyGroups?: InputMaybe<Scalars['Boolean']>;
   type?: InputMaybe<ViewType>;
   visibility?: InputMaybe<ViewVisibility>;
 };
@@ -4388,6 +4691,19 @@ export type UpsertPermissionFlagsInput = {
   roleId: Scalars['UUID'];
 };
 
+export type UpsertRowLevelPermissionPredicatesInput = {
+  objectMetadataId: Scalars['UUID'];
+  predicateGroups: Array<RowLevelPermissionPredicateGroupInput>;
+  predicates: Array<RowLevelPermissionPredicateInput>;
+  roleId: Scalars['UUID'];
+};
+
+export type UpsertRowLevelPermissionPredicatesResult = {
+  __typename?: 'UpsertRowLevelPermissionPredicatesResult';
+  predicateGroups: Array<RowLevelPermissionPredicateGroup>;
+  predicates: Array<RowLevelPermissionPredicate>;
+};
+
 export type User = {
   __typename?: 'User';
   availableWorkspaces: AvailableWorkspaces;
@@ -4440,11 +4756,6 @@ export type UserLookup = {
   workspaces: Array<WorkspaceInfo>;
 };
 
-export type UserMappingOptionsUser = {
-  __typename?: 'UserMappingOptionsUser';
-  user?: Maybe<Scalars['String']>;
-};
-
 export type UserWorkspace = {
   __typename?: 'UserWorkspace';
   createdAt: Scalars['DateTime'];
@@ -4458,8 +4769,6 @@ export type UserWorkspace = {
   updatedAt: Scalars['DateTime'];
   user: User;
   userId: Scalars['UUID'];
-  workspace?: Maybe<Workspace>;
-  workspaceId: Scalars['UUID'];
 };
 
 export type ValidateApprovedAccessDomainInput = {
@@ -4504,6 +4813,11 @@ export enum ViewCalendarLayout {
   MONTH = 'MONTH',
   WEEK = 'WEEK'
 }
+
+export type ViewConfiguration = {
+  __typename?: 'ViewConfiguration';
+  configurationType: WidgetConfigurationType;
+};
 
 export enum ViewFilterGroupLogicalOperator {
   AND = 'AND',
@@ -4565,15 +4879,37 @@ export type Webhook = {
   secret: Scalars['String'];
   targetUrl: Scalars['String'];
   updatedAt: Scalars['DateTime'];
-  workspace: Workspace;
-  workspaceId: Scalars['UUID'];
 };
 
-export type WidgetConfiguration = AggregateChartConfiguration | BarChartConfiguration | GaugeChartConfiguration | IframeConfiguration | LineChartConfiguration | PieChartConfiguration | StandaloneRichTextConfiguration;
+export type WidgetConfiguration = AggregateChartConfiguration | BarChartConfiguration | CalendarConfiguration | EmailsConfiguration | FieldConfiguration | FieldRichTextConfiguration | FieldsConfiguration | FilesConfiguration | GaugeChartConfiguration | IframeConfiguration | LineChartConfiguration | NotesConfiguration | PieChartConfiguration | StandaloneRichTextConfiguration | TasksConfiguration | TimelineConfiguration | ViewConfiguration | WorkflowConfiguration | WorkflowRunConfiguration | WorkflowVersionConfiguration;
+
+export enum WidgetConfigurationType {
+  AGGREGATE_CHART = 'AGGREGATE_CHART',
+  BAR_CHART = 'BAR_CHART',
+  CALENDAR = 'CALENDAR',
+  EMAILS = 'EMAILS',
+  FIELD = 'FIELD',
+  FIELDS = 'FIELDS',
+  FIELD_RICH_TEXT = 'FIELD_RICH_TEXT',
+  FILES = 'FILES',
+  GAUGE_CHART = 'GAUGE_CHART',
+  IFRAME = 'IFRAME',
+  LINE_CHART = 'LINE_CHART',
+  NOTES = 'NOTES',
+  PIE_CHART = 'PIE_CHART',
+  STANDALONE_RICH_TEXT = 'STANDALONE_RICH_TEXT',
+  TASKS = 'TASKS',
+  TIMELINE = 'TIMELINE',
+  VIEW = 'VIEW',
+  WORKFLOW = 'WORKFLOW',
+  WORKFLOW_RUN = 'WORKFLOW_RUN',
+  WORKFLOW_VERSION = 'WORKFLOW_VERSION'
+}
 
 export enum WidgetType {
   CALENDAR = 'CALENDAR',
   EMAILS = 'EMAILS',
+  FIELD = 'FIELD',
   FIELDS = 'FIELDS',
   FIELD_RICH_TEXT = 'FIELD_RICH_TEXT',
   FILES = 'FILES',
@@ -4623,16 +4959,27 @@ export enum WorkflowActionType {
   FIND_RECORDS = 'FIND_RECORDS',
   FORM = 'FORM',
   HTTP_REQUEST = 'HTTP_REQUEST',
+  IF_ELSE = 'IF_ELSE',
   ITERATOR = 'ITERATOR',
   SEND_EMAIL = 'SEND_EMAIL',
   UPDATE_RECORD = 'UPDATE_RECORD',
   UPSERT_RECORD = 'UPSERT_RECORD'
 }
 
+export type WorkflowConfiguration = {
+  __typename?: 'WorkflowConfiguration';
+  configurationType: WidgetConfigurationType;
+};
+
 export type WorkflowRun = {
   __typename?: 'WorkflowRun';
   id: Scalars['UUID'];
   status: WorkflowRunStatusEnum;
+};
+
+export type WorkflowRunConfiguration = {
+  __typename?: 'WorkflowRunConfiguration';
+  configurationType: WidgetConfigurationType;
 };
 
 /** Status of the workflow run */
@@ -4662,6 +5009,11 @@ export type WorkflowStepPositionUpdateInput = {
   id: Scalars['String'];
   /** Position of the step or trigger */
   position: WorkflowStepPositionInput;
+};
+
+export type WorkflowVersionConfiguration = {
+  __typename?: 'WorkflowVersionConfiguration';
+  configurationType: WidgetConfigurationType;
 };
 
 export type WorkflowVersionDto = {
@@ -4841,7 +5193,7 @@ export type SearchQueryVariables = Exact<{
 
 export type SearchQuery = { __typename?: 'Query', search: { __typename?: 'SearchResultConnection', edges: Array<{ __typename?: 'SearchResultEdge', cursor: string, node: { __typename?: 'SearchRecord', recordId: any, objectNameSingular: string, label: string, imageUrl?: string | null, tsRankCD: number, tsRank: number } }>, pageInfo: { __typename?: 'SearchResultPageInfo', hasNextPage: boolean, endCursor?: string | null } } };
 
-export type PageLayoutWidgetFragmentFragment = { __typename?: 'PageLayoutWidget', id: any, title: string, type: WidgetType, objectMetadataId?: any | null, createdAt: string, updatedAt: string, deletedAt?: string | null, pageLayoutTabId: any, gridPosition: { __typename?: 'GridPosition', column: number, columnSpan: number, row: number, rowSpan: number }, configuration?: { __typename?: 'AggregateChartConfiguration', graphType: GraphType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, label?: string | null, displayDataLabel?: boolean | null, format?: string | null, description?: string | null, filter?: any | null, prefix?: string | null, suffix?: string | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'BarChartConfiguration', graphType: GraphType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, primaryAxisGroupByFieldMetadataId: any, primaryAxisGroupBySubFieldName?: string | null, primaryAxisDateGranularity?: ObjectRecordGroupByDateGranularity | null, primaryAxisOrderBy?: GraphOrderBy | null, secondaryAxisGroupByFieldMetadataId?: any | null, secondaryAxisGroupBySubFieldName?: string | null, secondaryAxisGroupByDateGranularity?: ObjectRecordGroupByDateGranularity | null, secondaryAxisOrderBy?: GraphOrderBy | null, omitNullValues?: boolean | null, axisNameDisplay?: AxisNameDisplay | null, displayDataLabel?: boolean | null, displayLegend?: boolean | null, rangeMin?: number | null, rangeMax?: number | null, color?: string | null, description?: string | null, filter?: any | null, groupMode?: BarChartGroupMode | null, isCumulative?: boolean | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'GaugeChartConfiguration', graphType: GraphType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, displayDataLabel?: boolean | null, color?: string | null, description?: string | null, filter?: any | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'IframeConfiguration', url?: string | null } | { __typename?: 'LineChartConfiguration', graphType: GraphType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, primaryAxisGroupByFieldMetadataId: any, primaryAxisGroupBySubFieldName?: string | null, primaryAxisDateGranularity?: ObjectRecordGroupByDateGranularity | null, primaryAxisOrderBy?: GraphOrderBy | null, secondaryAxisGroupByFieldMetadataId?: any | null, secondaryAxisGroupBySubFieldName?: string | null, secondaryAxisGroupByDateGranularity?: ObjectRecordGroupByDateGranularity | null, secondaryAxisOrderBy?: GraphOrderBy | null, omitNullValues?: boolean | null, axisNameDisplay?: AxisNameDisplay | null, displayDataLabel?: boolean | null, displayLegend?: boolean | null, rangeMin?: number | null, rangeMax?: number | null, color?: string | null, description?: string | null, filter?: any | null, isStacked?: boolean | null, isCumulative?: boolean | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'PieChartConfiguration', graphType: GraphType, groupByFieldMetadataId: any, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, groupBySubFieldName?: string | null, dateGranularity?: ObjectRecordGroupByDateGranularity | null, orderBy?: GraphOrderBy | null, displayDataLabel?: boolean | null, showCenterMetric?: boolean | null, displayLegend?: boolean | null, color?: string | null, description?: string | null, filter?: any | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'StandaloneRichTextConfiguration', body: { __typename?: 'RichTextV2Body', blocknote?: string | null, markdown?: string | null } } | null };
+export type PageLayoutWidgetFragmentFragment = { __typename?: 'PageLayoutWidget', id: any, title: string, type: WidgetType, objectMetadataId?: any | null, createdAt: string, updatedAt: string, deletedAt?: string | null, pageLayoutTabId: any, gridPosition: { __typename?: 'GridPosition', column: number, columnSpan: number, row: number, rowSpan: number }, configuration: { __typename?: 'AggregateChartConfiguration', configurationType: WidgetConfigurationType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, label?: string | null, displayDataLabel?: boolean | null, format?: string | null, description?: string | null, filter?: any | null, prefix?: string | null, suffix?: string | null, timezone?: string | null, firstDayOfTheWeek?: number | null, ratioAggregateConfig?: { __typename?: 'RatioAggregateConfig', fieldMetadataId: any, optionValue: string } | null } | { __typename?: 'BarChartConfiguration', configurationType: WidgetConfigurationType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, primaryAxisGroupByFieldMetadataId: any, primaryAxisGroupBySubFieldName?: string | null, primaryAxisDateGranularity?: ObjectRecordGroupByDateGranularity | null, primaryAxisOrderBy?: GraphOrderBy | null, primaryAxisManualSortOrder?: Array<string> | null, secondaryAxisGroupByFieldMetadataId?: any | null, secondaryAxisGroupBySubFieldName?: string | null, secondaryAxisGroupByDateGranularity?: ObjectRecordGroupByDateGranularity | null, secondaryAxisOrderBy?: GraphOrderBy | null, secondaryAxisManualSortOrder?: Array<string> | null, omitNullValues?: boolean | null, axisNameDisplay?: AxisNameDisplay | null, displayDataLabel?: boolean | null, displayLegend?: boolean | null, rangeMin?: number | null, rangeMax?: number | null, color?: string | null, description?: string | null, filter?: any | null, groupMode?: BarChartGroupMode | null, layout: BarChartLayout, isCumulative?: boolean | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'CalendarConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'EmailsConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'FieldConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'FieldRichTextConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'FieldsConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'FilesConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'GaugeChartConfiguration', configurationType: WidgetConfigurationType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, displayDataLabel?: boolean | null, color?: string | null, description?: string | null, filter?: any | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'IframeConfiguration', configurationType: WidgetConfigurationType, url?: string | null } | { __typename?: 'LineChartConfiguration', configurationType: WidgetConfigurationType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, primaryAxisGroupByFieldMetadataId: any, primaryAxisGroupBySubFieldName?: string | null, primaryAxisDateGranularity?: ObjectRecordGroupByDateGranularity | null, primaryAxisOrderBy?: GraphOrderBy | null, primaryAxisManualSortOrder?: Array<string> | null, secondaryAxisGroupByFieldMetadataId?: any | null, secondaryAxisGroupBySubFieldName?: string | null, secondaryAxisGroupByDateGranularity?: ObjectRecordGroupByDateGranularity | null, secondaryAxisOrderBy?: GraphOrderBy | null, secondaryAxisManualSortOrder?: Array<string> | null, omitNullValues?: boolean | null, axisNameDisplay?: AxisNameDisplay | null, displayDataLabel?: boolean | null, displayLegend?: boolean | null, rangeMin?: number | null, rangeMax?: number | null, color?: string | null, description?: string | null, filter?: any | null, isStacked?: boolean | null, isCumulative?: boolean | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'NotesConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'PieChartConfiguration', configurationType: WidgetConfigurationType, groupByFieldMetadataId: any, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, groupBySubFieldName?: string | null, dateGranularity?: ObjectRecordGroupByDateGranularity | null, orderBy?: GraphOrderBy | null, manualSortOrder?: Array<string> | null, displayDataLabel?: boolean | null, showCenterMetric?: boolean | null, displayLegend?: boolean | null, color?: string | null, description?: string | null, filter?: any | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'StandaloneRichTextConfiguration', configurationType: WidgetConfigurationType, body: { __typename?: 'RichTextV2Body', blocknote?: string | null, markdown?: string | null } } | { __typename?: 'TasksConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'TimelineConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'ViewConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'WorkflowConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'WorkflowRunConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'WorkflowVersionConfiguration', configurationType: WidgetConfigurationType } };
 
 export type UpdatePageLayoutWithTabsAndWidgetsMutationVariables = Exact<{
   id: Scalars['String'];
@@ -4849,14 +5201,7 @@ export type UpdatePageLayoutWithTabsAndWidgetsMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePageLayoutWithTabsAndWidgetsMutation = { __typename?: 'Mutation', updatePageLayoutWithTabsAndWidgets: { __typename?: 'PageLayout', id: any, name: string, type: PageLayoutType, objectMetadataId?: any | null, createdAt: string, updatedAt: string, deletedAt?: string | null, tabs?: Array<{ __typename?: 'PageLayoutTab', id: any, title: string, position: number, pageLayoutId: any, createdAt: string, updatedAt: string, widgets?: Array<{ __typename?: 'PageLayoutWidget', id: any, title: string, type: WidgetType, objectMetadataId?: any | null, createdAt: string, updatedAt: string, deletedAt?: string | null, pageLayoutTabId: any, gridPosition: { __typename?: 'GridPosition', column: number, columnSpan: number, row: number, rowSpan: number }, configuration?: { __typename?: 'AggregateChartConfiguration', graphType: GraphType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, label?: string | null, displayDataLabel?: boolean | null, format?: string | null, description?: string | null, filter?: any | null, prefix?: string | null, suffix?: string | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'BarChartConfiguration', graphType: GraphType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, primaryAxisGroupByFieldMetadataId: any, primaryAxisGroupBySubFieldName?: string | null, primaryAxisDateGranularity?: ObjectRecordGroupByDateGranularity | null, primaryAxisOrderBy?: GraphOrderBy | null, secondaryAxisGroupByFieldMetadataId?: any | null, secondaryAxisGroupBySubFieldName?: string | null, secondaryAxisGroupByDateGranularity?: ObjectRecordGroupByDateGranularity | null, secondaryAxisOrderBy?: GraphOrderBy | null, omitNullValues?: boolean | null, axisNameDisplay?: AxisNameDisplay | null, displayDataLabel?: boolean | null, displayLegend?: boolean | null, rangeMin?: number | null, rangeMax?: number | null, color?: string | null, description?: string | null, filter?: any | null, groupMode?: BarChartGroupMode | null, isCumulative?: boolean | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'GaugeChartConfiguration', graphType: GraphType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, displayDataLabel?: boolean | null, color?: string | null, description?: string | null, filter?: any | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'IframeConfiguration', url?: string | null } | { __typename?: 'LineChartConfiguration', graphType: GraphType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, primaryAxisGroupByFieldMetadataId: any, primaryAxisGroupBySubFieldName?: string | null, primaryAxisDateGranularity?: ObjectRecordGroupByDateGranularity | null, primaryAxisOrderBy?: GraphOrderBy | null, secondaryAxisGroupByFieldMetadataId?: any | null, secondaryAxisGroupBySubFieldName?: string | null, secondaryAxisGroupByDateGranularity?: ObjectRecordGroupByDateGranularity | null, secondaryAxisOrderBy?: GraphOrderBy | null, omitNullValues?: boolean | null, axisNameDisplay?: AxisNameDisplay | null, displayDataLabel?: boolean | null, displayLegend?: boolean | null, rangeMin?: number | null, rangeMax?: number | null, color?: string | null, description?: string | null, filter?: any | null, isStacked?: boolean | null, isCumulative?: boolean | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'PieChartConfiguration', graphType: GraphType, groupByFieldMetadataId: any, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, groupBySubFieldName?: string | null, dateGranularity?: ObjectRecordGroupByDateGranularity | null, orderBy?: GraphOrderBy | null, displayDataLabel?: boolean | null, showCenterMetric?: boolean | null, displayLegend?: boolean | null, color?: string | null, description?: string | null, filter?: any | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'StandaloneRichTextConfiguration', body: { __typename?: 'RichTextV2Body', blocknote?: string | null, markdown?: string | null } } | null }> | null }> | null } };
-
-export type OnDbEventSubscriptionVariables = Exact<{
-  input: OnDbEventInput;
-}>;
-
-
-export type OnDbEventSubscription = { __typename?: 'Subscription', onDbEvent: { __typename?: 'OnDbEvent', eventDate: string, action: DatabaseEventAction, objectNameSingular: string, updatedFields?: Array<string> | null, record: any } };
+export type UpdatePageLayoutWithTabsAndWidgetsMutation = { __typename?: 'Mutation', updatePageLayoutWithTabsAndWidgets: { __typename?: 'PageLayout', id: any, name: string, type: PageLayoutType, objectMetadataId?: any | null, createdAt: string, updatedAt: string, deletedAt?: string | null, tabs?: Array<{ __typename?: 'PageLayoutTab', id: any, title: string, position: number, pageLayoutId: any, createdAt: string, updatedAt: string, widgets?: Array<{ __typename?: 'PageLayoutWidget', id: any, title: string, type: WidgetType, objectMetadataId?: any | null, createdAt: string, updatedAt: string, deletedAt?: string | null, pageLayoutTabId: any, gridPosition: { __typename?: 'GridPosition', column: number, columnSpan: number, row: number, rowSpan: number }, configuration: { __typename?: 'AggregateChartConfiguration', configurationType: WidgetConfigurationType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, label?: string | null, displayDataLabel?: boolean | null, format?: string | null, description?: string | null, filter?: any | null, prefix?: string | null, suffix?: string | null, timezone?: string | null, firstDayOfTheWeek?: number | null, ratioAggregateConfig?: { __typename?: 'RatioAggregateConfig', fieldMetadataId: any, optionValue: string } | null } | { __typename?: 'BarChartConfiguration', configurationType: WidgetConfigurationType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, primaryAxisGroupByFieldMetadataId: any, primaryAxisGroupBySubFieldName?: string | null, primaryAxisDateGranularity?: ObjectRecordGroupByDateGranularity | null, primaryAxisOrderBy?: GraphOrderBy | null, primaryAxisManualSortOrder?: Array<string> | null, secondaryAxisGroupByFieldMetadataId?: any | null, secondaryAxisGroupBySubFieldName?: string | null, secondaryAxisGroupByDateGranularity?: ObjectRecordGroupByDateGranularity | null, secondaryAxisOrderBy?: GraphOrderBy | null, secondaryAxisManualSortOrder?: Array<string> | null, omitNullValues?: boolean | null, axisNameDisplay?: AxisNameDisplay | null, displayDataLabel?: boolean | null, displayLegend?: boolean | null, rangeMin?: number | null, rangeMax?: number | null, color?: string | null, description?: string | null, filter?: any | null, groupMode?: BarChartGroupMode | null, layout: BarChartLayout, isCumulative?: boolean | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'CalendarConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'EmailsConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'FieldConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'FieldRichTextConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'FieldsConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'FilesConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'GaugeChartConfiguration', configurationType: WidgetConfigurationType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, displayDataLabel?: boolean | null, color?: string | null, description?: string | null, filter?: any | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'IframeConfiguration', configurationType: WidgetConfigurationType, url?: string | null } | { __typename?: 'LineChartConfiguration', configurationType: WidgetConfigurationType, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, primaryAxisGroupByFieldMetadataId: any, primaryAxisGroupBySubFieldName?: string | null, primaryAxisDateGranularity?: ObjectRecordGroupByDateGranularity | null, primaryAxisOrderBy?: GraphOrderBy | null, primaryAxisManualSortOrder?: Array<string> | null, secondaryAxisGroupByFieldMetadataId?: any | null, secondaryAxisGroupBySubFieldName?: string | null, secondaryAxisGroupByDateGranularity?: ObjectRecordGroupByDateGranularity | null, secondaryAxisOrderBy?: GraphOrderBy | null, secondaryAxisManualSortOrder?: Array<string> | null, omitNullValues?: boolean | null, axisNameDisplay?: AxisNameDisplay | null, displayDataLabel?: boolean | null, displayLegend?: boolean | null, rangeMin?: number | null, rangeMax?: number | null, color?: string | null, description?: string | null, filter?: any | null, isStacked?: boolean | null, isCumulative?: boolean | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'NotesConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'PieChartConfiguration', configurationType: WidgetConfigurationType, groupByFieldMetadataId: any, aggregateFieldMetadataId: any, aggregateOperation: AggregateOperations, groupBySubFieldName?: string | null, dateGranularity?: ObjectRecordGroupByDateGranularity | null, orderBy?: GraphOrderBy | null, manualSortOrder?: Array<string> | null, displayDataLabel?: boolean | null, showCenterMetric?: boolean | null, displayLegend?: boolean | null, color?: string | null, description?: string | null, filter?: any | null, timezone?: string | null, firstDayOfTheWeek?: number | null } | { __typename?: 'StandaloneRichTextConfiguration', configurationType: WidgetConfigurationType, body: { __typename?: 'RichTextV2Body', blocknote?: string | null, markdown?: string | null } } | { __typename?: 'TasksConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'TimelineConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'ViewConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'WorkflowConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'WorkflowRunConfiguration', configurationType: WidgetConfigurationType } | { __typename?: 'WorkflowVersionConfiguration', configurationType: WidgetConfigurationType } }> | null }> | null } };
 
 export type ViewFieldFragmentFragment = { __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null };
 
@@ -4864,9 +5209,9 @@ export type ViewFilterFragmentFragment = { __typename?: 'CoreViewFilter', id: an
 
 export type ViewFilterGroupFragmentFragment = { __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any };
 
-export type ViewFragmentFragment = { __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
+export type ViewFragmentFragment = { __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, mainGroupByFieldMetadataId?: any | null, shouldHideEmptyGroups: boolean, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
 
-export type ViewGroupFragmentFragment = { __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null };
+export type ViewGroupFragmentFragment = { __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null };
 
 export type ViewSortFragmentFragment = { __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any };
 
@@ -4875,7 +5220,7 @@ export type CreateCoreViewMutationVariables = Exact<{
 }>;
 
 
-export type CreateCoreViewMutation = { __typename?: 'Mutation', createCoreView: { __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> } };
+export type CreateCoreViewMutation = { __typename?: 'Mutation', createCoreView: { __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, mainGroupByFieldMetadataId?: any | null, shouldHideEmptyGroups: boolean, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> } };
 
 export type CreateCoreViewFieldMutationVariables = Exact<{
   input: CreateViewFieldInput;
@@ -4903,7 +5248,7 @@ export type CreateCoreViewGroupMutationVariables = Exact<{
 }>;
 
 
-export type CreateCoreViewGroupMutation = { __typename?: 'Mutation', createCoreViewGroup: { __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } };
+export type CreateCoreViewGroupMutation = { __typename?: 'Mutation', createCoreViewGroup: { __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } };
 
 export type CreateCoreViewSortMutationVariables = Exact<{
   input: CreateViewSortInput;
@@ -4924,7 +5269,7 @@ export type CreateManyCoreViewGroupsMutationVariables = Exact<{
 }>;
 
 
-export type CreateManyCoreViewGroupsMutation = { __typename?: 'Mutation', createManyCoreViewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
+export type CreateManyCoreViewGroupsMutation = { __typename?: 'Mutation', createManyCoreViewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
 
 export type DeleteCoreViewMutationVariables = Exact<{
   id: Scalars['String'];
@@ -4959,7 +5304,7 @@ export type DeleteCoreViewGroupMutationVariables = Exact<{
 }>;
 
 
-export type DeleteCoreViewGroupMutation = { __typename?: 'Mutation', deleteCoreViewGroup: { __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } };
+export type DeleteCoreViewGroupMutation = { __typename?: 'Mutation', deleteCoreViewGroup: { __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } };
 
 export type DeleteCoreViewSortMutationVariables = Exact<{
   id: Scalars['String'];
@@ -5001,7 +5346,7 @@ export type DestroyCoreViewGroupMutationVariables = Exact<{
 }>;
 
 
-export type DestroyCoreViewGroupMutation = { __typename?: 'Mutation', destroyCoreViewGroup: { __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } };
+export type DestroyCoreViewGroupMutation = { __typename?: 'Mutation', destroyCoreViewGroup: { __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } };
 
 export type DestroyCoreViewSortMutationVariables = Exact<{
   id: Scalars['String'];
@@ -5016,7 +5361,7 @@ export type UpdateCoreViewMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCoreViewMutation = { __typename?: 'Mutation', updateCoreView: { __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> } };
+export type UpdateCoreViewMutation = { __typename?: 'Mutation', updateCoreView: { __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, mainGroupByFieldMetadataId?: any | null, shouldHideEmptyGroups: boolean, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> } };
 
 export type UpdateCoreViewFieldMutationVariables = Exact<{
   input: UpdateViewFieldInput;
@@ -5045,7 +5390,7 @@ export type UpdateCoreViewGroupMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCoreViewGroupMutation = { __typename?: 'Mutation', updateCoreViewGroup: { __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } };
+export type UpdateCoreViewGroupMutation = { __typename?: 'Mutation', updateCoreViewGroup: { __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } };
 
 export type UpdateCoreViewSortMutationVariables = Exact<{
   id: Scalars['String'];
@@ -5058,7 +5403,7 @@ export type UpdateCoreViewSortMutation = { __typename?: 'Mutation', updateCoreVi
 export type FindAllCoreViewsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FindAllCoreViewsQuery = { __typename?: 'Query', getCoreViews: Array<{ __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> }> };
+export type FindAllCoreViewsQuery = { __typename?: 'Query', getCoreViews: Array<{ __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, mainGroupByFieldMetadataId?: any | null, shouldHideEmptyGroups: boolean, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> }> };
 
 export type FindManyCoreViewFieldsQueryVariables = Exact<{
   viewId: Scalars['String'];
@@ -5086,7 +5431,7 @@ export type FindManyCoreViewGroupsQueryVariables = Exact<{
 }>;
 
 
-export type FindManyCoreViewGroupsQuery = { __typename?: 'Query', getCoreViewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
+export type FindManyCoreViewGroupsQuery = { __typename?: 'Query', getCoreViewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
 
 export type FindManyCoreViewSortsQueryVariables = Exact<{
   viewId?: InputMaybe<Scalars['String']>;
@@ -5100,14 +5445,14 @@ export type FindManyCoreViewsQueryVariables = Exact<{
 }>;
 
 
-export type FindManyCoreViewsQuery = { __typename?: 'Query', getCoreViews: Array<{ __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> }> };
+export type FindManyCoreViewsQuery = { __typename?: 'Query', getCoreViews: Array<{ __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, mainGroupByFieldMetadataId?: any | null, shouldHideEmptyGroups: boolean, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> }> };
 
 export type FindOneCoreViewQueryVariables = Exact<{
   id: Scalars['String'];
 }>;
 
 
-export type FindOneCoreViewQuery = { __typename?: 'Query', getCoreView?: { __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> } | null };
+export type FindOneCoreViewQuery = { __typename?: 'Query', getCoreView?: { __typename?: 'CoreView', id: any, name: string, objectMetadataId: any, type: ViewType, key?: ViewKey | null, icon: string, position: number, isCompact: boolean, openRecordIn: ViewOpenRecordIn, kanbanAggregateOperation?: AggregateOperations | null, kanbanAggregateOperationFieldMetadataId?: any | null, mainGroupByFieldMetadataId?: any | null, shouldHideEmptyGroups: boolean, anyFieldFilterValue?: string | null, calendarFieldMetadataId?: any | null, calendarLayout?: ViewCalendarLayout | null, visibility: ViewVisibility, createdByUserWorkspaceId?: any | null, viewFields: Array<{ __typename?: 'CoreViewField', id: any, fieldMetadataId: any, viewId: any, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilters: Array<{ __typename?: 'CoreViewFilter', id: any, fieldMetadataId: any, operand: ViewFilterOperand, value: any, viewFilterGroupId?: any | null, positionInViewFilterGroup?: number | null, subFieldName?: string | null, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }>, viewFilterGroups: Array<{ __typename?: 'CoreViewFilterGroup', id: any, parentViewFilterGroupId?: any | null, logicalOperator: ViewFilterGroupLogicalOperator, positionInViewFilterGroup?: number | null, viewId: any }>, viewSorts: Array<{ __typename?: 'CoreViewSort', id: any, fieldMetadataId: any, direction: ViewSortDirection, viewId: any }>, viewGroups: Array<{ __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null }> } | null };
 
 export type FindOneCoreViewFieldQueryVariables = Exact<{
   id: Scalars['String'];
@@ -5135,7 +5480,7 @@ export type FindOneCoreViewGroupQueryVariables = Exact<{
 }>;
 
 
-export type FindOneCoreViewGroupQuery = { __typename?: 'Query', getCoreViewGroup?: { __typename?: 'CoreViewGroup', id: any, fieldMetadataId: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } | null };
+export type FindOneCoreViewGroupQuery = { __typename?: 'Query', getCoreViewGroup?: { __typename?: 'CoreViewGroup', id: any, isVisible: boolean, fieldValue: string, position: number, viewId: any, createdAt: string, updatedAt: string, deletedAt?: string | null } | null };
 
 export type FindOneCoreViewSortQueryVariables = Exact<{
   id: Scalars['String'];
@@ -5161,17 +5506,19 @@ export const PageLayoutWidgetFragmentFragmentDoc = gql`
   }
   configuration {
     ... on BarChartConfiguration {
-      graphType
+      configurationType
       aggregateFieldMetadataId
       aggregateOperation
       primaryAxisGroupByFieldMetadataId
       primaryAxisGroupBySubFieldName
       primaryAxisDateGranularity
       primaryAxisOrderBy
+      primaryAxisManualSortOrder
       secondaryAxisGroupByFieldMetadataId
       secondaryAxisGroupBySubFieldName
       secondaryAxisGroupByDateGranularity
       secondaryAxisOrderBy
+      secondaryAxisManualSortOrder
       omitNullValues
       axisNameDisplay
       displayDataLabel
@@ -5182,22 +5529,25 @@ export const PageLayoutWidgetFragmentFragmentDoc = gql`
       description
       filter
       groupMode
+      layout
       isCumulative
       timezone
       firstDayOfTheWeek
     }
     ... on LineChartConfiguration {
-      graphType
+      configurationType
       aggregateFieldMetadataId
       aggregateOperation
       primaryAxisGroupByFieldMetadataId
       primaryAxisGroupBySubFieldName
       primaryAxisDateGranularity
       primaryAxisOrderBy
+      primaryAxisManualSortOrder
       secondaryAxisGroupByFieldMetadataId
       secondaryAxisGroupBySubFieldName
       secondaryAxisGroupByDateGranularity
       secondaryAxisOrderBy
+      secondaryAxisManualSortOrder
       omitNullValues
       axisNameDisplay
       displayDataLabel
@@ -5213,13 +5563,14 @@ export const PageLayoutWidgetFragmentFragmentDoc = gql`
       firstDayOfTheWeek
     }
     ... on PieChartConfiguration {
-      graphType
+      configurationType
       groupByFieldMetadataId
       aggregateFieldMetadataId
       aggregateOperation
       groupBySubFieldName
       dateGranularity
       orderBy
+      manualSortOrder
       displayDataLabel
       showCenterMetric
       displayLegend
@@ -5230,7 +5581,7 @@ export const PageLayoutWidgetFragmentFragmentDoc = gql`
       firstDayOfTheWeek
     }
     ... on AggregateChartConfiguration {
-      graphType
+      configurationType
       aggregateFieldMetadataId
       aggregateOperation
       label
@@ -5242,9 +5593,13 @@ export const PageLayoutWidgetFragmentFragmentDoc = gql`
       suffix
       timezone
       firstDayOfTheWeek
+      ratioAggregateConfig {
+        fieldMetadataId
+        optionValue
+      }
     }
     ... on GaugeChartConfiguration {
-      graphType
+      configurationType
       aggregateFieldMetadataId
       aggregateOperation
       displayDataLabel
@@ -5255,13 +5610,54 @@ export const PageLayoutWidgetFragmentFragmentDoc = gql`
       firstDayOfTheWeek
     }
     ... on IframeConfiguration {
+      configurationType
       url
     }
     ... on StandaloneRichTextConfiguration {
+      configurationType
       body {
         blocknote
         markdown
       }
+    }
+    ... on CalendarConfiguration {
+      configurationType
+    }
+    ... on EmailsConfiguration {
+      configurationType
+    }
+    ... on FieldConfiguration {
+      configurationType
+    }
+    ... on FieldRichTextConfiguration {
+      configurationType
+    }
+    ... on FieldsConfiguration {
+      configurationType
+    }
+    ... on FilesConfiguration {
+      configurationType
+    }
+    ... on NotesConfiguration {
+      configurationType
+    }
+    ... on TasksConfiguration {
+      configurationType
+    }
+    ... on TimelineConfiguration {
+      configurationType
+    }
+    ... on ViewConfiguration {
+      configurationType
+    }
+    ... on WorkflowConfiguration {
+      configurationType
+    }
+    ... on WorkflowRunConfiguration {
+      configurationType
+    }
+    ... on WorkflowVersionConfiguration {
+      configurationType
     }
   }
   pageLayoutTabId
@@ -5316,7 +5712,6 @@ export const ViewSortFragmentFragmentDoc = gql`
 export const ViewGroupFragmentFragmentDoc = gql`
     fragment ViewGroupFragment on CoreViewGroup {
   id
-  fieldMetadataId
   isVisible
   fieldValue
   position
@@ -5339,6 +5734,8 @@ export const ViewFragmentFragmentDoc = gql`
   openRecordIn
   kanbanAggregateOperation
   kanbanAggregateOperationFieldMetadataId
+  mainGroupByFieldMetadataId
+  shouldHideEmptyGroups
   anyFieldFilterValue
   calendarFieldMetadataId
   calendarLayout
@@ -5477,40 +5874,6 @@ export function useUpdatePageLayoutWithTabsAndWidgetsMutation(baseOptions?: Apol
 export type UpdatePageLayoutWithTabsAndWidgetsMutationHookResult = ReturnType<typeof useUpdatePageLayoutWithTabsAndWidgetsMutation>;
 export type UpdatePageLayoutWithTabsAndWidgetsMutationResult = Apollo.MutationResult<UpdatePageLayoutWithTabsAndWidgetsMutation>;
 export type UpdatePageLayoutWithTabsAndWidgetsMutationOptions = Apollo.BaseMutationOptions<UpdatePageLayoutWithTabsAndWidgetsMutation, UpdatePageLayoutWithTabsAndWidgetsMutationVariables>;
-export const OnDbEventDocument = gql`
-    subscription OnDbEvent($input: OnDbEventInput!) {
-  onDbEvent(input: $input) {
-    eventDate
-    action
-    objectNameSingular
-    updatedFields
-    record
-  }
-}
-    `;
-
-/**
- * __useOnDbEventSubscription__
- *
- * To run a query within a React component, call `useOnDbEventSubscription` and pass it any options that fit your needs.
- * When your component renders, `useOnDbEventSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useOnDbEventSubscription({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useOnDbEventSubscription(baseOptions: Apollo.SubscriptionHookOptions<OnDbEventSubscription, OnDbEventSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<OnDbEventSubscription, OnDbEventSubscriptionVariables>(OnDbEventDocument, options);
-      }
-export type OnDbEventSubscriptionHookResult = ReturnType<typeof useOnDbEventSubscription>;
-export type OnDbEventSubscriptionResult = Apollo.SubscriptionResult<OnDbEventSubscription>;
 export const CreateCoreViewDocument = gql`
     mutation CreateCoreView($input: CreateViewInput!) {
   createCoreView(input: $input) {

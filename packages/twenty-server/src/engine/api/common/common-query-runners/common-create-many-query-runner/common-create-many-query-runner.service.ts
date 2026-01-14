@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { msg } from '@lingui/core/macro';
 import { QUERY_MAX_RECORDS } from 'twenty-shared/constants';
-import { ObjectRecord } from 'twenty-shared/types';
+import { ObjectRecord, RecordAccessLevel } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { FindOptionsRelations, In, InsertResult, ObjectLiteral } from 'typeorm';
 
@@ -17,6 +17,7 @@ import {
   CommonQueryRunnerException,
   CommonQueryRunnerExceptionCode,
 } from 'src/engine/api/common/common-query-runners/errors/common-query-runner.exception';
+import { STANDARD_ERROR_MESSAGE } from 'src/engine/api/common/common-query-runners/errors/standard-error-message.constant';
 import { CommonBaseQueryRunnerContext } from 'src/engine/api/common/types/common-base-query-runner-context.type';
 import { CommonExtendedQueryRunnerContext } from 'src/engine/api/common/types/common-extended-query-runner-context.type';
 import {
@@ -36,7 +37,7 @@ import { type FlatFieldMetadata } from 'src/engine/metadata-modules/flat-field-m
 import { buildFieldMapsFromFlatObjectMetadata } from 'src/engine/metadata-modules/flat-field-metadata/utils/build-field-maps-from-flat-object-metadata.util';
 import { type FlatObjectMetadata } from 'src/engine/metadata-modules/flat-object-metadata/types/flat-object-metadata.type';
 import { assertMutationNotOnRemoteObject } from 'src/engine/metadata-modules/object-metadata/utils/assert-mutation-not-on-remote-object.util';
-import { WorkspaceDataSource } from 'src/engine/twenty-orm/datasource/workspace.datasource';
+import { GlobalWorkspaceDataSource } from 'src/engine/twenty-orm/global-workspace-datasource/global-workspace-datasource';
 import { WorkspaceRepository } from 'src/engine/twenty-orm/repository/workspace.repository';
 import { RolePermissionConfig } from 'src/engine/twenty-orm/types/role-permission-config';
 
@@ -75,6 +76,7 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
       flatObjectMetadata,
       flatObjectMetadataMaps,
       flatFieldMetadataMaps,
+      authContext,
       args,
     });
 
@@ -117,7 +119,7 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
     flatObjectMetadataMaps: FlatEntityMaps<FlatObjectMetadata>;
     flatFieldMetadataMaps: FlatEntityMaps<FlatFieldMetadata>;
     authContext: AuthContext;
-    workspaceDataSource: WorkspaceDataSource;
+    workspaceDataSource: GlobalWorkspaceDataSource;
     rolePermissionConfig?: RolePermissionConfig;
   }): Promise<void> {
     if (!args.selectedFieldsResult.relations) {
@@ -179,12 +181,14 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
     flatObjectMetadata,
     flatObjectMetadataMaps,
     flatFieldMetadataMaps,
+    authContext,
     args,
   }: {
     repository: WorkspaceRepository<ObjectLiteral>;
     flatObjectMetadata: FlatObjectMetadata;
     flatObjectMetadataMaps: FlatEntityMaps<FlatObjectMetadata>;
     flatFieldMetadataMaps: FlatEntityMaps<FlatFieldMetadata>;
+    authContext: WorkspaceAuthContext;
     args: CommonExtendedInput<CreateManyQueryArgs>;
   }): Promise<InsertResult> {
     const { selectedFieldsResult } = args;
@@ -198,7 +202,19 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
         flatFieldMetadataMaps,
       });
 
-      return await repository.insert(args.data, undefined, selectedColumns);
+      const recordsToInsert = this.applyOwnershipDefaults({
+        records: args.data,
+        authContext,
+        flatObjectMetadata,
+        flatFieldMetadataMaps,
+        repository,
+      });
+
+      return await repository.insert(
+        recordsToInsert,
+        undefined,
+        selectedColumns,
+      );
     }
 
     return this.performUpsertOperation({
@@ -206,6 +222,7 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
       flatObjectMetadata,
       flatObjectMetadataMaps,
       flatFieldMetadataMaps,
+      authContext,
       args,
       selectedFieldsResult,
     });
@@ -216,6 +233,7 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
     flatObjectMetadata,
     flatObjectMetadataMaps,
     flatFieldMetadataMaps,
+    authContext,
     args,
     selectedFieldsResult,
   }: {
@@ -223,6 +241,7 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
     flatObjectMetadata: FlatObjectMetadata;
     flatObjectMetadataMaps: FlatEntityMaps<FlatObjectMetadata>;
     flatFieldMetadataMaps: FlatEntityMaps<FlatFieldMetadata>;
+    authContext: WorkspaceAuthContext;
     args: CreateManyQueryArgs;
     selectedFieldsResult: CommonSelectedFieldsResult;
   }): Promise<InsertResult> {
@@ -269,8 +288,16 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
       });
     }
 
+    const recordsToInsertWithOwnership = this.applyOwnershipDefaults({
+      records: recordsToInsert,
+      authContext,
+      flatObjectMetadata,
+      flatFieldMetadataMaps,
+      repository,
+    });
+
     await this.processRecordsToInsert({
-      recordsToInsert,
+      recordsToInsert: recordsToInsertWithOwnership,
       repository,
       result,
       columnsToReturn,
@@ -432,6 +459,66 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
     return upsertedRecords as ObjectRecord[];
   }
 
+  private applyOwnershipDefaults({
+    records,
+    authContext,
+    flatObjectMetadata,
+    flatFieldMetadataMaps,
+    repository,
+  }: {
+    records: Partial<ObjectRecord>[];
+    authContext: WorkspaceAuthContext;
+    flatObjectMetadata: FlatObjectMetadata;
+    flatFieldMetadataMaps: FlatEntityMaps<FlatFieldMetadata>;
+    repository: WorkspaceRepository<ObjectLiteral>;
+  }): Partial<ObjectRecord>[] {
+    const objectPermissions =
+      repository.objectRecordsPermissions?.[flatObjectMetadata.id];
+
+    if (objectPermissions?.recordAccessLevel !== RecordAccessLevel.OWNED_ONLY) {
+      return records;
+    }
+
+    const workspaceMemberId = authContext.workspaceMemberId;
+
+    if (!workspaceMemberId) {
+      return records;
+    }
+
+    const ownershipFieldNames =
+      objectPermissions.ownershipFieldNames ?? ['ownerWorkspaceMemberId'];
+
+    const { fieldIdByName, fieldIdByJoinColumnName } =
+      buildFieldMapsFromFlatObjectMetadata(
+        flatFieldMetadataMaps,
+        flatObjectMetadata,
+      );
+
+    const validOwnershipFieldNames = ownershipFieldNames.filter(
+      (fieldName) =>
+        fieldIdByName[fieldName] || fieldIdByJoinColumnName[fieldName],
+    );
+
+    if (validOwnershipFieldNames.length === 0) {
+      return records;
+    }
+
+    return records.map((record) => {
+      const hasOwnershipValue = validOwnershipFieldNames.some(
+        (fieldName) => record[fieldName] !== undefined,
+      );
+
+      if (hasOwnershipValue) {
+        return record;
+      }
+
+      return {
+        ...record,
+        [validOwnershipFieldNames[0]]: workspaceMemberId,
+      };
+    });
+  }
+
   async processQueryResult(
     queryResult: ObjectRecord[],
     flatObjectMetadata: FlatObjectMetadata,
@@ -467,6 +554,7 @@ export class CommonCreateManyQueryRunnerService extends CommonBaseQueryRunnerSer
       throw new CommonQueryRunnerException(
         `Missing createdBy field metadata for object ${flatObjectMetadata.nameSingular}`,
         CommonQueryRunnerExceptionCode.MISSING_SYSTEM_FIELD,
+        { userFriendlyMessage: STANDARD_ERROR_MESSAGE },
       );
     }
 

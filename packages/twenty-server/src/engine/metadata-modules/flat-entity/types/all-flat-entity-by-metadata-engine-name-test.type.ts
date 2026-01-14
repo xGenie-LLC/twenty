@@ -1,17 +1,18 @@
-import { type Expect } from 'twenty-shared/testing';
 import { type AllMetadataName } from 'twenty-shared/metadata';
+import { type Expect } from 'twenty-shared/testing';
 
 import { type AllFlatEntityTypesByMetadataName } from 'src/engine/metadata-modules/flat-entity/types/all-flat-entity-types-by-metadata-name';
-import { type FlatEntity } from 'src/engine/metadata-modules/flat-entity/types/flat-entity.type';
-import { type WorkspaceMigrationActionV2 } from 'src/engine/workspace-manager/workspace-migration-v2/workspace-migration-builder-v2/types/workspace-migration-action-common-v2';
+import { type SyncableFlatEntity } from 'src/engine/metadata-modules/flat-entity/types/flat-entity.type';
+import { type WorkspaceMigrationActionType } from 'src/engine/metadata-modules/flat-entity/types/metadata-workspace-migration-action.type';
+import { type WorkspaceMigrationAction } from 'src/engine/workspace-manager/workspace-migration/workspace-migration-builder/types/workspace-migration-action-common';
 
 type ExpectedGenericFlatEntityInformation = {
   actions: {
-    created: WorkspaceMigrationActionV2 | WorkspaceMigrationActionV2[];
-    deleted: WorkspaceMigrationActionV2 | WorkspaceMigrationActionV2[];
-    updated: WorkspaceMigrationActionV2 | WorkspaceMigrationActionV2[];
+    [P in WorkspaceMigrationActionType]:
+      | WorkspaceMigrationAction
+      | WorkspaceMigrationAction[];
   };
-  flatEntity: FlatEntity;
+  flatEntity: SyncableFlatEntity;
 };
 
 type ExpectedGenericAllFlatEntityInformationByMetadataEngine = {

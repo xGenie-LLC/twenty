@@ -12,6 +12,7 @@ export { ALLOWED_ADDRESS_SUBFIELDS } from './AddressFieldsType';
 export { AppBasePath } from './AppBasePath';
 export { AppPath } from './AppPath';
 export type { Arrayable } from './Arrayable';
+export type { ArraySortDirection } from './ArraySortDirection';
 export type { ActorMetadata } from './composite-types/actor.composite-type';
 export {
   FieldActorSource,
@@ -49,9 +50,11 @@ export {
 export type { CompositeFieldSubFieldName } from './CompositeFieldSubFieldNameType';
 export type { ConfigVariableValue } from './ConfigVariableValue';
 export { ConnectedAccountProvider } from './ConnectedAccountProvider';
+export { CrudOperationType } from './CrudOperationType';
 export type { EnumFieldMetadataType } from './EnumFieldMetadataType';
 export type { ExcludeFunctions } from './ExcludeFunctions';
 export type { ExtractPropertiesThatEndsWithId } from './ExtractPropertiesThatEndsWithId';
+export type { ExtractPropertiesThatEndsWithIds } from './ExtractPropertiesThatEndsWithIds';
 export type {
   FieldMetadataDefaultValueFunctionNames,
   FieldMetadataClassValidation,
@@ -84,6 +87,7 @@ export {
   FieldMetadataDefaultArray,
 } from './FieldMetadataDefaultValue';
 export type { FieldMetadataMultiItemSettings } from './FieldMetadataMultiItemSettings';
+export { FieldMetadataSettingsOnClickAction } from './FieldMetadataMultiItemSettings';
 export type { TagColor, FieldMetadataOptions } from './FieldMetadataOptions';
 export {
   FieldMetadataDefaultOption,
@@ -111,8 +115,10 @@ export type {
 export { FILTERABLE_FIELD_TYPES } from './FilterableFieldType';
 export { FirstDayOfTheWeek } from './FirstDayOfTheWeek';
 export type { FromTo } from './FromToType';
+export { HTTPMethod } from './HttpMethod';
 export type { IsEmptyRecord } from './IsEmptyRecord.type';
 export type { IsExactly } from './IsExactly';
+export { MessageParticipantRole } from './MessageParticipantRole';
 export type { ModifiedProperties } from './ModifiedProperties';
 export type { NonNullableRequired } from './NonNullableRequired';
 export type { Nullable } from './Nullable';
@@ -131,11 +137,14 @@ export { OrderByDirection } from './ObjectRecordGroupBy';
 export { ObjectRecordGroupByDateGranularity } from './ObjectRecordGroupByDateGranularity';
 export type { ObjectsPermissions } from './ObjectsPermissions';
 export type { ObjectsPermissionsByRoleId } from './ObjectsPermissionsByRoleId';
+export type { OrderBy } from './OrderBy';
 export type { PartialFieldMetadataItem } from './PartialFieldMetadataItem';
 export type { PartialFieldMetadataItemOption } from './PartialFieldMetadataOption';
+export type { QueryCursorDirection } from './QueryCursorDirection';
 export { RecordAccessLevel } from './RecordAccessLevel';
 export { RecordFilterGroupLogicalOperator } from './RecordFilterGroupLogicalOperator';
 export type { RecordFilterValueDependencies } from './RecordFilterValueDependencies';
+export type { RecordGqlFieldsDeprecated } from './RecordGqlFieldsDeprecated';
 export type {
   UUIDFilterValue,
   IsFilter,
@@ -169,6 +178,10 @@ export type {
   LeafObjectRecordFilter,
   RecordGqlOperationFilter,
 } from './RecordGqlOperationFilter';
+export type { RecordGqlOperationGqlRecordFields } from './RecordGqlOperationGqlRecordFields';
+export type { RecordGqlOperationOrderBy } from './RecordGqlOperationOrderBy';
+export type { RecordGqlOperationSignature } from './RecordGqlOperationSignature';
+export type { RecordGqlOperationVariables } from './RecordGqlOperationVariables';
 export type { RelationAndMorphRelationFieldMetadataType } from './RelationAndMorphRelationFieldMetadataType';
 export type { RelationCreationPayload } from './RelationCreationPayload';
 export { RelationOnDeleteAction } from './RelationOnDeleteAction.type';
@@ -177,6 +190,7 @@ export type { RelationUpdatePayload } from './RelationUpdatePayload';
 export type { RestrictedFieldPermissions } from './RestrictedFieldPermissions';
 export type { RestrictedFieldsPermissions } from './RestrictedFieldsPermissions';
 export { SettingsPath } from './SettingsPath';
+export type { Sources } from './SourcesType';
 export type {
   StepFilterGroup,
   StepFilter,

@@ -9,7 +9,6 @@ import {
   RecordCrudExceptionCode,
 } from 'src/engine/core-modules/record-crud/exceptions/record-crud.exception';
 import { UpsertRecordService } from 'src/engine/core-modules/record-crud/services/upsert-record.service';
-import { ScopedWorkspaceContextFactory } from 'src/engine/twenty-orm/factories/scoped-workspace-context.factory';
 import {
   WorkflowStepExecutorException,
   WorkflowStepExecutorExceptionCode,
@@ -19,13 +18,12 @@ import { type WorkflowActionInput } from 'src/modules/workflow/workflow-executor
 import { type WorkflowActionOutput } from 'src/modules/workflow/workflow-executor/types/workflow-action-output.type';
 import { findStepOrThrow } from 'src/modules/workflow/workflow-executor/utils/find-step-or-throw.util';
 import { isWorkflowUpsertRecordAction } from 'src/modules/workflow/workflow-executor/workflow-actions/record-crud/guards/is-workflow-upsert-record-action.guard';
-import { WorkflowUpsertRecordActionInput } from 'src/modules/workflow/workflow-executor/workflow-actions/record-crud/types/workflow-record-crud-action-input.type';
+import { type WorkflowUpsertRecordActionInput } from 'src/modules/workflow/workflow-executor/workflow-actions/record-crud/types/workflow-record-crud-action-input.type';
 
 @Injectable()
 export class UpsertRecordWorkflowAction implements WorkflowAction {
   constructor(
     private readonly upsertRecordService: UpsertRecordService,
-    private readonly scopedWorkspaceContextFactory: ScopedWorkspaceContextFactory,
     private readonly workflowExecutionContextService: WorkflowExecutionContextService,
   ) {}
 
@@ -59,22 +57,13 @@ export class UpsertRecordWorkflowAction implements WorkflowAction {
       );
     }
 
-    const { workspaceId } = this.scopedWorkspaceContextFactory.create();
-
-    if (!workspaceId) {
-      throw new RecordCrudException(
-        'Failed to update: Workspace ID is required',
-        RecordCrudExceptionCode.INVALID_REQUEST,
-      );
-    }
-
     const executionContext =
       await this.workflowExecutionContextService.getExecutionContext(runInfo);
 
     const toolOutput = await this.upsertRecordService.execute({
       objectName: workflowActionInput.objectName,
       objectRecord: workflowActionInput.objectRecord,
-      workspaceId,
+      authContext: executionContext.authContext,
       rolePermissionConfig: executionContext.rolePermissionConfig,
     });
 

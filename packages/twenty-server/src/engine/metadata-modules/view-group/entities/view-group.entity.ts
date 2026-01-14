@@ -7,15 +7,12 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
+  type Relation,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { SyncableEntity } from 'src/engine/workspace-manager/workspace-sync/interfaces/syncable-entity.interface';
-
-import { WorkspaceEntity } from 'src/engine/core-modules/workspace/workspace.entity';
-import { FieldMetadataEntity } from 'src/engine/metadata-modules/field-metadata/field-metadata.entity';
 import { ViewEntity } from 'src/engine/metadata-modules/view/entities/view.entity';
+import { SyncableEntity } from 'src/engine/workspace-manager/types/syncable-entity.interface';
 
 @Entity({ name: 'viewGroup', schema: 'core' })
 @Index('IDX_VIEW_GROUP_WORKSPACE_ID_VIEW_ID', ['workspaceId', 'viewId'])
@@ -29,15 +26,6 @@ export class ViewGroupEntity
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false, type: 'uuid' })
-  fieldMetadataId: string;
-
-  @ManyToOne(() => FieldMetadataEntity, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'fieldMetadataId' })
-  fieldMetadata: Relation<FieldMetadataEntity>;
-
   @Column({ nullable: false, default: true })
   isVisible: boolean;
 
@@ -50,9 +38,6 @@ export class ViewGroupEntity
   @Column({ nullable: false, type: 'uuid' })
   viewId: string;
 
-  @Column({ nullable: false, type: 'uuid' })
-  workspaceId: string;
-
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
@@ -61,10 +46,6 @@ export class ViewGroupEntity
 
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date | null;
-
-  @ManyToOne(() => WorkspaceEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'workspaceId' })
-  workspace: Relation<WorkspaceEntity>;
 
   @ManyToOne(() => ViewEntity, (view) => view.viewGroups, {
     onDelete: 'CASCADE',

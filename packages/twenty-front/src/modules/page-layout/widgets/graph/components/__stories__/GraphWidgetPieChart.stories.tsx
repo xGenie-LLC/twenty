@@ -1,18 +1,16 @@
-import { type Meta, type StoryObj } from '@storybook/react';
+import { type Meta, type StoryObj } from '@storybook/react-vite';
 
 import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
-import { GRAPH_WIDGET_TEST_INSTANCE_ID } from '@/page-layout/widgets/graph/__tests__/GraphWidgetTestWrapper';
+import { GraphWidgetTestWrapper } from '@/page-layout/widgets/graph/__tests__/GraphWidgetTestWrapper';
 import { GraphWidgetPieChart } from '@/page-layout/widgets/graph/graphWidgetPieChart/components/GraphWidgetPieChart';
-import { GraphWidgetComponentInstanceContext } from '@/page-layout/widgets/graph/states/contexts/GraphWidgetComponentInstanceContext';
 import { CatalogDecorator, ComponentDecorator } from 'twenty-ui/testing';
 import {
   AggregateOperations,
-  GraphType,
+  WidgetConfigurationType,
   type PieChartConfiguration,
 } from '~/generated/graphql';
 import { I18nFrontDecorator } from '~/testing/decorators/I18nFrontDecorator';
 import { ObjectMetadataItemsDecorator } from '~/testing/decorators/ObjectMetadataItemsDecorator';
-import { RootDecorator } from '~/testing/decorators/RootDecorator';
 import { getMockFieldMetadataItemOrThrow } from '~/testing/utils/getMockFieldMetadataItemOrThrow';
 import { getMockObjectMetadataItemOrThrow } from '~/testing/utils/getMockObjectMetadataItemOrThrow';
 
@@ -28,7 +26,7 @@ const mockObjectMetadataItemId = companyObjectMetadataItem.id;
 const mockConfiguration: PieChartConfiguration = {
   aggregateFieldMetadataId: idField.id,
   aggregateOperation: AggregateOperations.COUNT,
-  graphType: GraphType.PIE,
+  configurationType: WidgetConfigurationType.PIE_CHART,
   groupByFieldMetadataId: idField.id,
 };
 
@@ -36,17 +34,14 @@ const meta: Meta<typeof GraphWidgetPieChart> = {
   title: 'Modules/PageLayout/Widgets/GraphWidgetPieChart',
   component: GraphWidgetPieChart,
   decorators: [
-    (Story) => (
-      <GraphWidgetComponentInstanceContext.Provider
-        value={{ instanceId: GRAPH_WIDGET_TEST_INSTANCE_ID }}
-      >
-        <Story />
-      </GraphWidgetComponentInstanceContext.Provider>
-    ),
-    ComponentDecorator,
     I18nFrontDecorator,
     ObjectMetadataItemsDecorator,
-    RootDecorator,
+    (Story) => (
+      <GraphWidgetTestWrapper>
+        <Story />
+      </GraphWidgetTestWrapper>
+    ),
+    ComponentDecorator,
   ],
   parameters: {
     layout: 'centered',
@@ -80,6 +75,17 @@ const meta: Meta<typeof GraphWidgetPieChart> = {
     showDataLabels: {
       control: 'boolean',
     },
+    colorMode: {
+      control: 'select',
+      options: [
+        'automaticPalette',
+        'explicitSingleColor',
+        'selectFieldOptionColors',
+      ],
+    },
+  },
+  args: {
+    colorMode: 'automaticPalette',
   },
 };
 
@@ -114,6 +120,7 @@ export const Default: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -137,6 +144,7 @@ export const WithCenterMetric: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -160,6 +168,7 @@ export const WithDataLabels: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -189,6 +198,7 @@ export const Revenue: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -217,6 +227,7 @@ export const TaskStatus: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -244,6 +255,7 @@ export const TwoSlices: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -276,6 +288,7 @@ export const ManySlices: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -304,6 +317,7 @@ export const WithoutLegend: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -333,6 +347,7 @@ export const MarketShare: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -362,6 +377,7 @@ export const Storage: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),
@@ -369,17 +385,14 @@ export const Storage: Story = {
 
 export const Catalog: Story = {
   decorators: [
-    (Story) => (
-      <GraphWidgetComponentInstanceContext.Provider
-        value={{ instanceId: GRAPH_WIDGET_TEST_INSTANCE_ID }}
-      >
-        <Story />
-      </GraphWidgetComponentInstanceContext.Provider>
-    ),
-    CatalogDecorator,
     I18nFrontDecorator,
     ObjectMetadataItemsDecorator,
-    RootDecorator,
+    (Story) => (
+      <GraphWidgetTestWrapper>
+        <Story />
+      </GraphWidgetTestWrapper>
+    ),
+    CatalogDecorator,
   ],
   parameters: {
     catalog: {
@@ -429,6 +442,7 @@ export const Catalog: Story = {
         id={args.id}
         objectMetadataItemId={mockObjectMetadataItemId}
         configuration={mockConfiguration}
+        colorMode={args.colorMode}
       />
     </Container>
   ),

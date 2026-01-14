@@ -2,21 +2,21 @@ import { isPageLayoutInEditModeComponentState } from '@/page-layout/states/isPag
 import { ChartSkeletonLoader } from '@/page-layout/widgets/graph/components/ChartSkeletonLoader';
 import { GraphWidgetChartHasTooManyGroupsEffect } from '@/page-layout/widgets/graph/components/GraphWidgetChartHasTooManyGroupsEffect';
 import { useGraphBarChartWidgetData } from '@/page-layout/widgets/graph/graphWidgetBarChart/hooks/useGraphBarChartWidgetData';
+import { type BarChartSlice } from '@/page-layout/widgets/graph/graphWidgetBarChart/types/BarChartSlice';
 import { getEffectiveGroupMode } from '@/page-layout/widgets/graph/graphWidgetBarChart/utils/getEffectiveGroupMode';
+import { assertBarChartWidgetOrThrow } from '@/page-layout/widgets/graph/utils/assertBarChartWidget';
 import { buildChartDrilldownQueryParams } from '@/page-layout/widgets/graph/utils/buildChartDrilldownQueryParams';
 import { generateChartAggregateFilterKey } from '@/page-layout/widgets/graph/utils/generateChartAggregateFilterKey';
+import { useCurrentWidget } from '@/page-layout/widgets/hooks/useCurrentWidget';
+import { useUserFirstDayOfTheWeek } from '@/ui/input/components/internal/date/hooks/useUserFirstDayOfTheWeek';
+import { useUserTimezone } from '@/ui/input/components/internal/date/hooks/useUserTimezone';
 import { useRecoilComponentValue } from '@/ui/utilities/state/component-state/hooks/useRecoilComponentValue';
 import { coreIndexViewIdFromObjectMetadataItemFamilySelector } from '@/views/states/selectors/coreIndexViewIdFromObjectMetadataItemFamilySelector';
-import { type BarDatum, type ComputedDatum } from '@nivo/bar';
 import { lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { AppPath } from 'twenty-shared/types';
 import { getAppPath, isDefined } from 'twenty-shared/utils';
-import {
-  type BarChartConfiguration,
-  type PageLayoutWidget,
-} from '~/generated/graphql';
 
 const GraphWidgetBarChart = lazy(() =>
   import(
@@ -26,11 +26,14 @@ const GraphWidgetBarChart = lazy(() =>
   })),
 );
 
-export const GraphWidgetBarChartRenderer = ({
-  widget,
-}: {
-  widget: PageLayoutWidget;
-}) => {
+export const GraphWidgetBarChartRenderer = () => {
+  const widget = useCurrentWidget();
+
+  assertBarChartWidgetOrThrow(widget);
+
+  const { userTimezone } = useUserTimezone();
+  const { userFirstDayOfTheWeek } = useUserFirstDayOfTheWeek();
+
   const {
     data,
     indexBy,
@@ -44,14 +47,15 @@ export const GraphWidgetBarChartRenderer = ({
     loading,
     hasTooManyGroups,
     formattedToRawLookup,
+    colorMode,
     objectMetadataItem,
   } = useGraphBarChartWidgetData({
     objectMetadataItemId: widget.objectMetadataId,
-    configuration: widget.configuration as BarChartConfiguration,
+    configuration: widget.configuration,
   });
 
   const navigate = useNavigate();
-  const configuration = widget.configuration as BarChartConfiguration;
+  const configuration = widget.configuration;
   const isPageLayoutInEditMode = useRecoilComponentValue(
     isPageLayoutInEditModeComponentState,
   );
@@ -75,9 +79,9 @@ export const GraphWidgetBarChartRenderer = ({
     }),
   );
 
-  const handleBarClick = (datum: ComputedDatum<BarDatum>) => {
-    const displayValue = datum.data[indexBy];
-    const rawValue = formattedToRawLookup.get(displayValue as string) ?? null;
+  const handleSliceClick = (slice: BarChartSlice) => {
+    const displayValue = slice.indexValue;
+    const rawValue = formattedToRawLookup.get(displayValue) ?? null;
 
     const queryParams = buildChartDrilldownQueryParams({
       objectMetadataItem,
@@ -86,7 +90,8 @@ export const GraphWidgetBarChartRenderer = ({
         primaryBucketRawValue: rawValue,
       },
       viewId: indexViewId,
-      timezone: configuration.timezone ?? undefined,
+      timezone: userTimezone,
+      firstDayOfTheWeek: userFirstDayOfTheWeek,
     });
 
     const url = getAppPath(
@@ -119,12 +124,13 @@ export const GraphWidgetBarChartRenderer = ({
         showLegend={showLegend}
         layout={layout}
         groupMode={groupMode}
+        colorMode={colorMode}
         id={widget.id}
         displayType="shortNumber"
         rangeMin={configuration.rangeMin ?? undefined}
         rangeMax={configuration.rangeMax ?? undefined}
         omitNullValues={configuration.omitNullValues ?? false}
-        onBarClick={isPageLayoutInEditMode ? undefined : handleBarClick}
+        onSliceClick={isPageLayoutInEditMode ? undefined : handleSliceClick}
       />
     </Suspense>
   );

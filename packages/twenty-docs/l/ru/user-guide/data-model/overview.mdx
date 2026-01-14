@@ -1,0 +1,180 @@
+---
+title: Модель данных
+description: Узнайте, что такое модель данных и как спроектировать её под ваш бизнес.
+image: /images/user-guide/fields/custom_data_model.png
+---
+
+<Frame>
+  <img src="/images/user-guide/fields/custom_data_model.png" alt="Модель данных" />
+</Frame>
+
+## Что такое модель данных?
+
+Модель данных — это структура, определяющая, как информация организована в вашей CRM. Представьте это как **чертёж** ваших данных о клиентах — вы проектируете его один раз, а затем заполняете фактическими данными.
+
+## Ключевые понятия
+
+### Объекты
+
+**Объекты** — это основные категории данных в вашей CRM. Каждый объект представляет тип сущности, которую вы хотите отслеживать.
+
+В Twenty предусмотрены стандартные объекты:
+
+* **People** — физические лица (контакты, лиды, партнёры)
+* **Companies** — организации
+* **Opportunities** — сделки или продажи
+* **Notes** — прикреплённые к записям заметки
+* **Tasks** — задачи, связанные с записями
+
+Вы также можете создать **пользовательские объекты** для всего, что специфично для вашего бизнеса (например, Projects, Subscriptions, Events).
+
+### Поля
+
+**Поля** — это свойства или атрибуты, которые описывают каждый объект. Они хранят фактическую информацию.
+
+Например, у объекта **People** есть такие поля, как:
+
+* Имя
+* Электронная почта
+* Телефон
+* Должность
+* Company (связь с объектом Companies)
+
+Поля имеют разные **типы**: текст, число, дата, список, множественный выбор, связь и другие. Вы можете добавлять пользовательские поля к любому объекту.
+
+### Записи
+
+**Записи** — это отдельные элементы внутри объекта — реальные данные, которые вы создаёте и которыми управляете.
+
+Например:
+
+* "John Smith" — это **запись** в объекте People
+* "Acme Corp" — это **запись** в объекте Companies
+
+**Аналогия:**
+
+| Концепция модели данных | Аналогия из реального мира                     |
+| ----------------------- | ---------------------------------------------- |
+| **Объекты**             | Разделы в книге (категории)                    |
+| **Поля**                | Столбцы в электронной таблице (свойства)       |
+| **Записи**              | Строки в электронной таблице (реальные записи) |
+
+Вы проектируете модель данных (объекты + поля) один раз, затем создаёте множество записей в рамках этой структуры.
+
+## Зачем настраивать вашу модель данных?
+
+Каждый бизнес работает по-своему. Настройка вашей модели данных означает, что вы можете адаптировать Twenty под **ваши** процессы, а не загонять их в жёсткую систему.
+
+Twenty предоставляет полную гибкость:
+
+* Создавайте столько пользовательских объектов, сколько вам нужно
+* Добавляйте неограниченное количество пользовательских полей
+* Цена не меняется в зависимости от настроек
+
+## Советы по проектированию вашей модели данных
+
+### 1. Начните с основных объектов
+
+Определите основные сущности, с которыми вы работаете. В Twenty уже предусмотрено:
+
+* **People** — ваши контакты
+* **Companies** — ваши компании
+* **Opportunities** — ваши сделки
+
+Подумайте, что ещё может понадобиться:
+
+* Stripe нужен объект `Subscriptions`
+* Airbnb нужен объект `Trips`
+* Акселератору нужен объект `Batches`
+
+### 2. Используйте поля для вариаций, а не новые объекты
+
+Если что-то является лишь характеристикой существующего объекта, сделайте это **полем**.
+
+**Используйте поля для:**
+
+* Категорий и меток (например, `Industry` для Companies)
+* Значений статуса (например, `Stage` для Opportunities)
+* Атрибутов и свойств
+
+### 3. Создавайте объект, если он существует сам по себе
+
+Если у концепции есть свой жизненный цикл, свойства или отношения, она заслуживает отдельного объекта.
+
+**Создавайте объект для:**
+
+* **Projects** — со сроками, владельцами и задачами
+* **Subscriptions** — связывают компании, продукты и счета
+* **Events** — включают участников и последующие действия
+
+Они выходят за рамки одного поля, поскольку несут свои данные и связи.
+
+### 4. Создавайте объект, когда число записей не ограничено
+
+Если что-то может связываться многократно, и вы не знаете, сколько раз, используйте объект.
+
+**Плохой подход:**
+Создание полей вроде `Product 1`, `Product 2`, `Product 3`...
+
+**Хороший подход:**
+Создайте объект `Products` и свяжите его с записями. Таким образом, вы можете поддерживать один, два или сто товаров без изменения вашей модели.
+
+### 5. Сначала — простота
+
+Начните с полей. Move to new objects only when you feel the limits:
+
+* Too many fields on one object
+* Repeated records that should be separate
+* Relationships that don't fit neatly
+
+## Special Note on People, Companies, and Opportunities
+
+<Warning>
+  **Email and calendar sync only works with People, Companies, and Opportunities.**
+
+  These are the only objects where you can access synchronized emails and meetings from your mailbox/calendar. We recommend using them as much as possible.
+</Warning>
+
+**Best practices:**
+
+* If you need categories of People, use fields (not new objects)
+* Example: Use a `Person Type` field with values "Prospect" and "Partner" instead of creating separate objects
+* Create different **views** to filter: one showing partners, another showing prospects
+
+**It's okay to have fields that don't apply to every record.** For example, a `Referral Link` field on People that only applies when `Person Type = Partner`. Hide this field from views where it's not relevant.
+
+## Questions to Guide Your Choice
+
+Спросите себя:
+
+<Check>Is this just a property of something I already have, or does it need its own properties?</Check>
+<Check>Will I ever need to track multiple of these per record, without knowing how many?</Check>
+<Check>Does this concept connect to several different objects, not just one?</Check>
+<Check>Will it have its own lifecycle (stages, start/end dates)?</Check>
+
+If the answer is "yes" to one or more, it's probably time for a new object.
+
+## Accessing Your Data Model
+
+1. Go to **Settings** in the left sidebar
+2. Click **Data Model**
+3. View all your objects (standard and custom)
+4. Click any object to see and edit its fields
+
+<Note>
+  **Don't see Data Model in Settings?**
+
+  Access to the data model is usually restricted to administrators. Contact your workspace admin if you need access.
+</Note>
+
+## Следующие шаги
+
+Once you've planned your data model:
+
+* [Как создать пользовательские объекты](/l/ru/user-guide/data-model/how-tos/create-custom-objects)
+* [Как создать пользовательские поля](/l/ru/user-guide/data-model/how-tos/create-custom-fields)
+* [Как создать поля связей](/l/ru/user-guide/data-model/how-tos/create-relation-fields)
+
+## Нужна Помощь?
+
+Our team can help you design and create the data model you need. Discover our [Implementation Services](/l/ru/user-guide/getting-started/capabilities/implementation-services).

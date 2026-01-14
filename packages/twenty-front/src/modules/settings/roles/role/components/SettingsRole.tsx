@@ -87,7 +87,9 @@ export const SettingsRole = ({ roleId, isCreateMode }: SettingsRoleProps) => {
     },
   ];
 
-  const isDirty = !isDeeplyEqual(settingsDraftRole, settingsPersistedRole);
+  const isDirty =
+    isDefined(settingsPersistedRole) &&
+    !isDeeplyEqual(settingsDraftRole, settingsPersistedRole);
 
   const handleCancel = () => {
     if (isCreateMode) {
@@ -133,11 +135,11 @@ export const SettingsRole = ({ roleId, isCreateMode }: SettingsRoleProps) => {
       title={<SettingsRoleLabelContainer roleId={roleId} />}
       links={[
         {
-          children: 'Workspace',
+          children: t`Workspace`,
           href: getSettingsPath(SettingsPath.Workspace),
         },
         {
-          children: 'Roles',
+          children: t`Roles`,
           href: getSettingsPath(SettingsPath.Roles),
         },
         {

@@ -1,5 +1,5 @@
-import { type Meta, type StoryObj } from '@storybook/react';
-import { expect, within } from '@storybook/test';
+import { type Meta, type StoryObj } from '@storybook/react-vite';
+import { expect, within } from 'storybook/test';
 import { ComponentDecorator } from 'twenty-ui/testing';
 
 import { I18nFrontDecorator } from '~/testing/decorators/I18nFrontDecorator';
@@ -234,11 +234,12 @@ export const NetworkError: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     expect(await canvas.findByText('Request Failed')).toBeVisible();
-    expect(
-      await canvas.findByText(
-        'Network connection failed: timeout after 30 seconds',
-      ),
-    ).toBeVisible();
+    expect(await canvas.findByText('An error occurred')).toBeVisible();
+
+    const codeEditorValue = await canvas.findByTestId('code-editor-value');
+    expect(codeEditorValue).toHaveValue(
+      'Network connection failed: timeout after 30 seconds',
+    );
   },
 };
 

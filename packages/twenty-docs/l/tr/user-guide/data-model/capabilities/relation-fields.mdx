@@ -1,0 +1,92 @@
+---
+title: İlişki Alanları
+description: İlişki alanlarını kullanarak farklı nesnelerdeki kayıtları birbirine bağlayın.
+---
+
+## İlişki Türleri
+
+### Bire-çok
+
+Nesne A'daki bir kayıt, Nesne B'deki birçok kayda bağlanabilir.
+
+**Örnek:** Bir Şirketin birçok Kişisi (çalışanı) olabilir.
+
+### Çoktan-bire
+
+Nesne A'daki birçok kayıt, Nesne B'deki tek bir kayda bağlanabilir.
+
+**Örnek:** Birçok Kişi tek bir Şirkete ait olabilir.
+
+### Birden Fazla Nesne Türüne İşaret Eden İlişkiler
+
+Bazı nesneler, ilişkinin bir tarafında birden fazla nesne türüne bağlanabilir.
+
+**Örnek:** Bir Not aynı anda bir Kişiye VE bir Şirkete VE bir Fırsata eklenebilir. Not "çok" tarafındadır ve birden çok "bir" tarafına bağlanır.
+
+<img src="/images/user-guide/fields/many-to-one-morph.png" style={{width:'100%'}} />
+
+Benzer şekilde, bir Proje ("bir" tarafında) birden çok Kişiden, birden çok Şirketten ve birden çok Nottan bağlantılar alabilir.
+
+<img src="/images/user-guide/fields/one-to-many-morph.png" style={{width:'100%'}} />
+
+<Warning>
+  **İçe/Dışa Aktarma kısıtlaması**: Birden fazla nesne türüne işaret eden ilişkiler CSV içe/dışa aktarma için henüz desteklenmiyor. Bu özellik yol haritamızda.
+</Warning>
+
+### Çoktan-çoka
+
+Nesne A'daki birçok kayıt, Nesne B'deki birçok kayda bağlanabilir.
+
+**Örnek:** Birçok Kişi birçok Projeye bağlanabilir ve tersi de geçerlidir.
+
+<Warning>
+  **Çoktan-çoka ilişkiler henüz desteklenmiyor.**
+
+  Bu ilişki türü 2026'nın ilk yarısı için planlanıyor. Geçici bir çözüm olarak, her iki nesneyle de Çoktan-bire ilişkileri olan aracı bir "junction" nesnesi (ör. "Proje Atamaları") oluşturun.
+</Warning>
+
+## Bir İlişki Alanı Oluşturma
+
+1. **Ayarlar → Veri Modeli** bölümüne gidin
+2. İlişki eklemek istediğiniz nesneyi seçin
+3. **+ Alan Ekle**'ye tıklayın
+4. Alan türü olarak **İlişki**'yi seçin
+5. İlişkilendirilecek hedef nesne(leri) seçin
+6. İlişki ayarlarını yapılandırın:
+   * **Kaynak nesnedeki alan adı**: Düzenlediğiniz nesnedeki ilişki alanının adı
+   * **Hedef nesnedeki alan adı**: Hedef nesnede görünecek ilişki alanının adı
+   * İlişki türü (bire-çok, çoktan-bire)
+7. **Kaydet**'e tıklayın
+
+## Standart İlişkiler
+
+Twenty, standart nesneler arasında önceden oluşturulmuş ilişkilerle birlikte gelir:
+
+| Kaynak Nesne | Hedef Nesne | İlişki Türü |
+| ------------ | ----------- | ----------- |
+| İnsanlar     | Şirketler   | Çoktan-bire |
+| Fırsatlar    | Şirketler   | Çoktan-bire |
+| Fırsatlar    | İnsanlar    | Çoktan-bire |
+
+## En İyi Uygulamalar
+
+### İlişkileri Planlama
+
+* **Veri modelinizi haritalayın**: İlişkileri oluşturmadan önce planlayın
+* **Yönü değerlendirin**: İlişkiye hangi nesnenin "sahip" olduğunu düşünün
+* **Döngüsel bağımlılıklardan kaçının**: Veri modelinizi temiz tutun
+
+### İlişkileri Adlandırma
+
+* **Açık adlar kullanın**: İlişkinin neyi temsil ettiğini açıkça belirtin
+* **Tutarlı olun**: İlişkiler genelinde benzer adlandırma kalıpları kullanın
+* **Her iki tarafı da dikkate alın**: İlişkinin her iki tarafını da uygun şekilde adlandırın
+
+### Performans
+
+* **Aşırı ilişkilendirmeyin**: Çok fazla ilişki çalışma alanınızı yavaşlatabilir
+
+## Kısıtlamalar
+
+* **İlişkileri silmek** bağlantıyı kaldırır, ancak ilişkili kayıtları silmez
+* **Döngüsel ilişkiler** veri bütünlüğünü korumak için kaçınılmalıdır

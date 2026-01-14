@@ -1,3 +1,4 @@
+import { VIEW_GROUP_VISIBLE_OPTIONS_MAX } from 'twenty-shared/constants';
 import { type EnumFieldMetadataType } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { v4 } from 'uuid';
@@ -12,12 +13,12 @@ import { type FlatFieldMetadata } from 'src/engine/metadata-modules/flat-field-m
 import { compareTwoFlatFieldMetadataEnumOptions } from 'src/engine/metadata-modules/flat-field-metadata/utils/compare-two-flat-field-metadata-enum-options.util';
 import { type FlatViewGroup } from 'src/engine/metadata-modules/flat-view-group/types/flat-view-group.type';
 import { reduceFlatViewGroupsByViewId } from 'src/engine/metadata-modules/flat-view-group/utils/reduce-flat-view-groups-by-view-id.util';
-import { type PropertyUpdate } from 'src/engine/workspace-manager/workspace-migration-v2/types/property-update.type';
+import { type PropertyUpdate } from 'src/engine/workspace-manager/workspace-migration/types/property-update.type';
 
 type RecomputeViewGroupsOnFlatFieldMetadataOptionsUpdateArgs = {
   fromFlatFieldMetadata: FlatFieldMetadata<EnumFieldMetadataType>;
   update: PropertyUpdate<FlatFieldMetadata<EnumFieldMetadataType>, 'options'>;
-} & Pick<AllFlatEntityMaps, 'flatViewGroupMaps'>;
+} & Pick<AllFlatEntityMaps, 'flatViewMaps' | 'flatViewGroupMaps'>;
 
 export type FlatViewGroupsToDeleteUpdateAndCreate = {
   flatViewGroupsToDelete: FlatViewGroup[];
@@ -25,6 +26,7 @@ export type FlatViewGroupsToDeleteUpdateAndCreate = {
   flatViewGroupsToCreate: FlatViewGroup[];
 };
 export const recomputeViewGroupsOnFlatFieldMetadataOptionsUpdate = ({
+  flatViewMaps,
   flatViewGroupMaps,
   fromFlatFieldMetadata,
   update,
@@ -39,8 +41,15 @@ export const recomputeViewGroupsOnFlatFieldMetadataOptionsUpdate = ({
     toOptions: update.to,
   });
 
+  const flatViewsAffected = findManyFlatEntityByIdInFlatEntityMapsOrThrow({
+    flatEntityIds: fromFlatFieldMetadata.mainGroupByFieldMetadataViewIds,
+    flatEntityMaps: flatViewMaps,
+  });
+
   const flatViewGroups = findManyFlatEntityByIdInFlatEntityMapsOrThrow({
-    flatEntityIds: fromFlatFieldMetadata.viewGroupIds,
+    flatEntityIds: flatViewsAffected.flatMap(
+      (flatView) => flatView.viewGroupIds,
+    ),
     flatEntityMaps: flatViewGroupMaps,
   });
 
@@ -63,26 +72,38 @@ export const recomputeViewGroupsOnFlatFieldMetadataOptionsUpdate = ({
   const flatViewGroupsToUpdate = updatedFieldMetadataOptions.flatMap(
     ({ from: fromOption, to: toOption }) =>
       flatViewGroups.flatMap((flatViewGroup) =>
-        flatViewGroup.fieldValue === fromOption.value &&
-        flatViewGroup.fieldMetadataId === fromFlatFieldMetadata.id
+        flatViewGroup.fieldValue === fromOption.value
           ? { ...flatViewGroup, fieldValue: toOption.value }
           : [],
       ),
   );
 
+  const remainingFlatViewGroups = flatViewGroups.filter(
+    (flatViewGroup) =>
+      !flatViewGroupsToDelete.some(
+        (flatViewGroupToDelete) =>
+          flatViewGroupToDelete.id === flatViewGroup.id,
+      ),
+  );
+
   const viewGroupsByViewId = reduceFlatViewGroupsByViewId({
-    flatViewGroups: flatViewGroups.filter(
-      (flatViewGroup) =>
-        !flatViewGroupsToDelete.some(
-          (flatViewGroupToDelete) =>
-            flatViewGroupToDelete.id === flatViewGroup.id,
-        ),
-    ),
+    flatViewGroups: remainingFlatViewGroups,
   });
+
+  // Count visible view groups per view to enforce the limit
+  const visibleViewGroupCountByViewId = remainingFlatViewGroups.reduce<
+    Record<string, number>
+  >((acc, flatViewGroup) => {
+    if (flatViewGroup.isVisible) {
+      acc[flatViewGroup.viewId] = (acc[flatViewGroup.viewId] ?? 0) + 1;
+    }
+
+    return acc;
+  }, {});
 
   const viewIds = Object.keys(viewGroupsByViewId.flatViewGroupRecordByViewId);
 
-  const createdAt = new Date();
+  const createdAt = new Date().toISOString();
   const flatViewGroupsToCreate = createdFieldMetadataOptions.flatMap(
     (option, createdOptionIndex) =>
       viewIds.map<FlatViewGroup>((viewId) => {
@@ -96,6 +117,14 @@ export const recomputeViewGroupsOnFlatFieldMetadataOptionsUpdate = ({
           );
         }
 
+        const currentVisibleCount = visibleViewGroupCountByViewId[viewId] ?? 0;
+        const isVisible = currentVisibleCount < VIEW_GROUP_VISIBLE_OPTIONS_MAX;
+
+        // Increment the count for future iterations if this group will be visible
+        if (isVisible) {
+          visibleViewGroupCountByViewId[viewId] = currentVisibleCount + 1;
+        }
+
         const viewGroupId = v4();
 
         return {
@@ -107,7 +136,7 @@ export const recomputeViewGroupsOnFlatFieldMetadataOptionsUpdate = ({
           updatedAt: createdAt,
           deletedAt: null,
           universalIdentifier: viewGroupId,
-          isVisible: true,
+          isVisible,
           fieldValue: option.value,
           position: viewGroupHighestPosition + createdOptionIndex + 1,
           applicationId: fromFlatFieldMetadata.applicationId,

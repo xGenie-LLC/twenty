@@ -1,31 +1,31 @@
 import { GraphWidgetFloatingTooltip } from '@/page-layout/widgets/graph/components/GraphWidgetFloatingTooltip';
+import { BAR_CHART_CONSTANTS } from '@/page-layout/widgets/graph/graphWidgetBarChart/constants/BarChartConstants';
 import { graphWidgetBarTooltipComponentState } from '@/page-layout/widgets/graph/graphWidgetBarChart/states/graphWidgetBarTooltipComponentState';
 import { type BarChartEnrichedKey } from '@/page-layout/widgets/graph/graphWidgetBarChart/types/BarChartEnrichedKey';
+import { type BarChartSlice } from '@/page-layout/widgets/graph/graphWidgetBarChart/types/BarChartSlice';
 import { getBarChartTooltipData } from '@/page-layout/widgets/graph/graphWidgetBarChart/utils/getBarChartTooltipData';
-import { getTooltipReferenceFromBarChartElementAnchor } from '@/page-layout/widgets/graph/utils/getTooltipReferenceFromBarChartElementAnchor';
+import { createVirtualElementFromContainerOffset } from '@/page-layout/widgets/graph/utils/createVirtualElementFromContainerOffset';
 import { type GraphValueFormatOptions } from '@/page-layout/widgets/graph/utils/graphFormatters';
 import { useRecoilComponentValue } from '@/ui/utilities/state/component-state/hooks/useRecoilComponentValue';
-import { type BarDatum, type ComputedDatum } from '@nivo/bar';
+import { type RefObject } from 'react';
 import { isDefined } from 'twenty-shared/utils';
 
 type GraphBarChartTooltipProps = {
-  containerId: string;
+  containerRef: RefObject<HTMLDivElement>;
   enrichedKeys: BarChartEnrichedKey[];
   formatOptions: GraphValueFormatOptions;
-  enableGroupTooltip?: boolean;
   layout?: 'vertical' | 'horizontal';
-  onBarClick?: (datum: ComputedDatum<BarDatum>) => void;
+  onSliceClick?: (slice: BarChartSlice) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 };
 
 export const GraphBarChartTooltip = ({
-  containerId,
+  containerRef,
   enrichedKeys,
   formatOptions,
-  enableGroupTooltip = true,
   layout = 'vertical',
-  onBarClick,
+  onSliceClick,
   onMouseEnter,
   onMouseLeave,
 }: GraphBarChartTooltipProps) => {
@@ -33,10 +33,15 @@ export const GraphBarChartTooltip = ({
     graphWidgetBarTooltipComponentState,
   );
 
-  const handleTooltipClick: (() => void) | undefined = isDefined(onBarClick)
+  const containerElement = containerRef.current;
+  if (!isDefined(containerElement)) {
+    return null;
+  }
+
+  const handleTooltipClick: (() => void) | undefined = isDefined(onSliceClick)
     ? () => {
         if (isDefined(tooltipState)) {
-          onBarClick(tooltipState.datum);
+          onSliceClick(tooltipState.slice);
         }
       }
     : undefined;
@@ -44,45 +49,27 @@ export const GraphBarChartTooltip = ({
   const tooltipData = !isDefined(tooltipState)
     ? null
     : getBarChartTooltipData({
-        datum: tooltipState.datum,
+        slice: tooltipState.slice,
         enrichedKeys,
         formatOptions,
-        enableGroupTooltip,
         layout,
       });
 
-  let reference = null;
-  let boundary = null;
-
-  if (isDefined(tooltipState)) {
-    try {
-      const positioning = getTooltipReferenceFromBarChartElementAnchor(
-        tooltipState.anchorElement,
-        containerId,
+  const reference = !isDefined(tooltipState)
+    ? null
+    : createVirtualElementFromContainerOffset(
+        containerElement,
+        tooltipState.offsetLeft,
+        tooltipState.offsetTop,
       );
-      reference = positioning.reference;
-      boundary = positioning.boundary;
-    } catch {
-      reference = null;
-      boundary = null;
-    }
-  }
-
-  if (
-    !isDefined(tooltipData) ||
-    !isDefined(reference) ||
-    !isDefined(boundary)
-  ) {
-    return null;
-  }
 
   return (
     <GraphWidgetFloatingTooltip
       reference={reference}
-      boundary={boundary}
-      items={tooltipData.tooltipItems}
-      indexLabel={tooltipData.indexLabel}
-      highlightedKey={tooltipData.hoveredKey}
+      boundary={containerElement}
+      tooltipOffsetFromAnchorInPx={BAR_CHART_CONSTANTS.TOOLTIP_OFFSET_PX}
+      items={tooltipData?.tooltipItems ?? []}
+      indexLabel={tooltipData?.indexLabel}
       onGraphWidgetTooltipClick={handleTooltipClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

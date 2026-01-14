@@ -1,0 +1,180 @@
+---
+title: نموذج البيانات
+description: تعرّف إلى نموذج البيانات وكيفية تصميم نموذج يناسب نشاطك التجاري.
+image: /images/user-guide/fields/custom_data_model.png
+---
+
+<Frame>
+  <img src="/images/user-guide/fields/custom_data_model.png" alt="نموذج البيانات" />
+</Frame>
+
+## ما هو نموذج البيانات؟
+
+نموذج البيانات هو الهيكل الذي يحدّد كيفية تنظيم المعلومات في نظام إدارة علاقات العملاء (CRM) لديك. فكّر فيه باعتباره **المخطط** لبيانات عملائك — تصمّمه مرة واحدة، ثم تملؤه ببياناتك الفعلية.
+
+## المفاهيم الأساسية
+
+### كائنات
+
+**الكائنات** هي الفئات الرئيسية للبيانات في نظام إدارة علاقات العملاء (CRM) لديك. يمثّل كل كائن نوعًا من الأشياء التي تريد تتبّعها.
+
+يوفّر Twenty كائنات قياسية:
+
+* **الأشخاص** — أفراد (جهات اتصال، عملاء محتملون، شركاء)
+* **الشركات** — مؤسسات
+* **الفرص** — صفقات أو مبيعات
+* **الملاحظات** — ملاحظات مرفقة بالسجلات
+* **المهام** — عناصر قائمة المهام المرتبطة بالسجلات
+
+يمكنك أيضًا إنشاء **كائنات مخصّصة** لأي شيء خاص بنشاطك التجاري (مثل: المشروعات، الاشتراكات، الأحداث).
+
+### الحقول
+
+**الحقول** هي الخصائص أو السمات التي تصف كل كائن. إنها تخزّن المعلومات الفعلية.
+
+على سبيل المثال، يحتوي كائن **الأشخاص** على حقول مثل:
+
+* الاسم
+* البريد الإلكتروني
+* هاتف
+* المسمى الوظيفي
+* الشركة (علاقة بكائن الشركات)
+
+للحقول **أنواع** مختلفة: نص، رقم، تاريخ، اختيار، اختيار متعدد، علاقة، وغير ذلك. يمكنك إضافة حقول مخصّصة إلى أي كائن.
+
+### السجلات
+
+**السجلات** هي الإدخالات الفردية داخل الكائن — البيانات الفعلية التي تنشئها وتديرها.
+
+على سبيل المثال:
+
+* "John Smith" هو **سجل** في كائن الأشخاص
+* "Acme Corp" هو **سجل** في كائن الشركات
+
+**تشبيه:**
+
+| مفهوم نموذج البيانات | تشبيه من الواقع                         |
+| -------------------- | --------------------------------------- |
+| **الكائنات**         | أقسام في كتاب (الفئات)                  |
+| **حقول**             | أعمدة في جدول بيانات (الخصائص)          |
+| **السجلات**          | صفوف في جدول بيانات (الإدخالات الفعلية) |
+
+تصمّم نموذج البيانات (الكائنات + الحقول) مرة واحدة، ثم تنشئ العديد من السجلات ضمن تلك البنية.
+
+## لماذا تخصّص نموذج البيانات الخاص بك؟
+
+كل شركة تعمل بطريقة مختلفة. يعني تخصيص نموذج البيانات أنك تستطيع تكييف Twenty حول عملياتك بدلاً من فرض عملياتك داخل نظام جامد.
+
+توفر Twenty مرونة كاملة:
+
+* أنشئ عددًا من الكائنات المخصّصة بقدر ما تحتاج
+* أضِف حقولًا مخصّصة غير محدودة
+* لا يتغيّر السعر بناءً على التخصيص
+
+## نصائح لتصميم نموذج البيانات الخاص بك
+
+### 1. ابدأ بكائناتك الأساسية
+
+حدّد المفاهيم الرئيسية التي تعمل بها. توفّر Twenty مسبقًا:
+
+* **الأشخاص** — جهات الاتصال لديك
+* **الشركات** — حساباتك
+* **الفرص** — صفقاتك
+
+فكّر فيما قد تحتاج إليه أيضًا:
+
+* ستحتاج Stripe إلى كائن `Subscriptions`
+* ستحتاج Airbnb إلى كائن `Trips`
+* ستحتاج مُسرِّعة أعمال إلى كائن `Batches`
+
+### ٢. استخدم الحقول للاختلافات، وليس كائنات جديدة
+
+إذا كان الشيء مجرد سمة لكائن موجود، فاجعله **حقلًا**.
+
+**استخدم الحقول من أجل:**
+
+* الفئات والوسوم (مثل `Industry` للشركات)
+* قيم الحالة (مثل `Stage` للفرص)
+* السمات والخصائص
+
+### ٣. أنشئ كائنًا عندما يكون قائمًا بذاته
+
+إذا كان للمفهوم دورة حياة أو خصائص أو علاقات خاصة به، فهو يستحق كائنًا مستقلًا.
+
+**أنشئ كائنًا من أجل:**
+
+* **المشروعات** — لها مواعيد نهائية ومالكون ومهام
+* **الاشتراكات** — تربط بين الشركات والمنتجات والفواتير
+* **الأحداث** — تتضمن الحضور وإجراءات المتابعة
+
+تتجاوز هذه الأشياء مجرد ما يمكن تضمينه في حقل واحد لأنها تحمل بياناتها وعلاقاتها الخاصة.
+
+### 4. أنشئ كائنًا عندما تكون السجلات مفتوحة وغير محددة العدد
+
+إذا كان بالإمكان ربط الشيء مراتٍ متعددة ولا تعرف عددها، فاستخدم كائنًا.
+
+**نهج غير جيد:**
+إنشاء حقول مثل `Product 1`، `Product 2`، `Product 3`...
+
+**نهج جيد:**
+أنشئ كائنًا `Products` واربطه بالسجلات. يسمح ذلك بدعم منتج واحد أو اثنين أو حتى مائة منتج دون تغيير نموذجك.
+
+### 5. حافظ على البساطة أولًا
+
+ابدأ بالحقول. انتقل إلى كائنات جديدة فقط عندما تشعر بالقيود:
+
+* Too many fields on one object
+* Repeated records that should be separate
+* Relationships that don't fit neatly
+
+## Special Note on People, Companies, and Opportunities
+
+<Warning>
+  **Email and calendar sync only works with People, Companies, and Opportunities.**
+
+  These are the only objects where you can access synchronized emails and meetings from your mailbox/calendar. We recommend using them as much as possible.
+</Warning>
+
+**Best practices:**
+
+* If you need categories of People, use fields (not new objects)
+* Example: Use a `Person Type` field with values "Prospect" and "Partner" instead of creating separate objects
+* Create different **views** to filter: one showing partners, another showing prospects
+
+**It's okay to have fields that don't apply to every record.** For example, a `Referral Link` field on People that only applies when `Person Type = Partner`. Hide this field from views where it's not relevant.
+
+## Questions to Guide Your Choice
+
+اسأل نفسك:
+
+<Check>Is this just a property of something I already have, or does it need its own properties?</Check>
+<Check>Will I ever need to track multiple of these per record, without knowing how many?</Check>
+<Check>Does this concept connect to several different objects, not just one?</Check>
+<Check>Will it have its own lifecycle (stages, start/end dates)?</Check>
+
+If the answer is "yes" to one or more, it's probably time for a new object.
+
+## Accessing Your Data Model
+
+1. Go to **Settings** in the left sidebar
+2. Click **Data Model**
+3. View all your objects (standard and custom)
+4. Click any object to see and edit its fields
+
+<Note>
+  **Don't see Data Model in Settings?**
+
+  Access to the data model is usually restricted to administrators. Contact your workspace admin if you need access.
+</Note>
+
+## الخطوات التالية
+
+Once you've planned your data model:
+
+* [How to Create Custom Objects](/l/ar/user-guide/data-model/how-tos/create-custom-objects)
+* [How to Create Custom Fields](/l/ar/user-guide/data-model/how-tos/create-custom-fields)
+* [How to Create Relation Fields](/l/ar/user-guide/data-model/how-tos/create-relation-fields)
+
+## هل تحتاج إلى مساعدة؟
+
+Our team can help you design and create the data model you need. Discover our [Implementation Services](/l/ar/user-guide/getting-started/capabilities/implementation-services).

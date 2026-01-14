@@ -2,6 +2,8 @@ import * as fs from 'fs-extra';
 import { join } from 'path';
 import { v4 } from 'uuid';
 
+const APP_FOLDER = 'src/app';
+
 export const copyBaseApplicationProject = async ({
   appName,
   appDisplayName,
@@ -21,10 +23,19 @@ export const copyBaseApplicationProject = async ({
 
   await createYarnLock(appDirectory);
 
+  const appFolderPath = join(appDirectory, APP_FOLDER);
+
+  await fs.ensureDir(appFolderPath);
+
+  await createDefaultServerlessFunctionRoleConfig({
+    displayName: appDisplayName,
+    appDirectory: appFolderPath,
+  });
+
   await createApplicationConfig({
     displayName: appDisplayName,
     description: appDescription,
-    appDirectory,
+    appDirectory: appFolderPath,
   });
 };
 
@@ -76,6 +87,34 @@ yarn-error.log*
   await fs.writeFile(join(appDirectory, '.gitignore'), gitignoreContent);
 };
 
+const createDefaultServerlessFunctionRoleConfig = async ({
+  displayName,
+  appDirectory,
+}: {
+  displayName: string;
+  appDirectory: string;
+}) => {
+  const universalIdentifier = v4();
+
+  const content = `import { defineRole } from 'twenty-sdk';
+
+export const DEFAULT_FUNCTION_ROLE_UNIVERSAL_IDENTIFIER =
+  '${universalIdentifier}';
+
+export default defineRole({
+  universalIdentifier: DEFAULT_FUNCTION_ROLE_UNIVERSAL_IDENTIFIER,
+  label: '${displayName} default function role',
+  description: '${displayName} default function role',
+  canReadAllObjectRecords: true,
+  canUpdateAllObjectRecords: true,
+  canSoftDeleteAllObjectRecords: true,
+  canDestroyAllObjectRecords: false,
+});
+`;
+
+  await fs.writeFile(join(appDirectory, 'default-function.role.ts'), content);
+};
+
 const createApplicationConfig = async ({
   displayName,
   description,
@@ -85,15 +124,15 @@ const createApplicationConfig = async ({
   description?: string;
   appDirectory: string;
 }) => {
-  const content = `import { type ApplicationConfig } from 'twenty-sdk';
+  const content = `import { defineApp } from 'twenty-sdk';
+import { DEFAULT_FUNCTION_ROLE_UNIVERSAL_IDENTIFIER } from './default-function.role';
 
-const config: ApplicationConfig = {
+export default defineApp({
   universalIdentifier: '${v4()}',
   displayName: '${displayName}',
   description: '${description ?? ''}',
-};
-
-export default config;
+  functionRoleUniversalIdentifier: DEFAULT_FUNCTION_ROLE_UNIVERSAL_IDENTIFIER,
+});
 `;
 
   await fs.writeFile(join(appDirectory, 'application.config.ts'), content);
@@ -125,13 +164,17 @@ const createPackageJson = async ({
       uninstall: 'twenty app uninstall',
       help: 'twenty help',
       auth: 'twenty auth login',
+      lint: 'eslint',
+      'lint-fix': 'eslint --fix',
     },
     dependencies: {
-      'twenty-sdk': '0.1.3',
+      'twenty-sdk': '0.3.1',
     },
     devDependencies: {
-      '@types/node': '^24.7.2',
       typescript: '^5.9.3',
+      '@types/node': '^24.7.2',
+      eslint: '^9.32.0',
+      'typescript-eslint': '^8.50.0',
     },
   };
 

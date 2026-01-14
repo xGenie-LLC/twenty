@@ -1,0 +1,180 @@
+---
+title: Veri modeli
+description: Veri modelinin ne olduğunu ve işinize uygun bir modeli nasıl tasarlayacağınızı öğrenin.
+image: /images/user-guide/fields/custom_data_model.png
+---
+
+<Frame>
+  <img src="/images/user-guide/fields/custom_data_model.png" alt="Veri modeli" />
+</Frame>
+
+## Veri modeli nedir?
+
+Veri modeli, CRM'nizde bilgilerin nasıl organize edildiğini tanımlayan yapıdır. Bunu müşteri verilerinizin **mimari planı** olarak düşünün — bir kez tasarlarsınız, sonra gerçek verilerinizle doldurursunuz.
+
+## Temel Kavramlar
+
+### Nesneler
+
+**Objects**, CRM'inizdeki verilerin ana kategorileridir. Her nesne, izlemek istediğiniz bir şeyin türünü temsil eder.
+
+Twenty, standart nesnelerle birlikte gelir:
+
+* **People** — bireyler (kişiler, potansiyel müşteriler, iş ortakları)
+* **Companies** — kuruluşlar
+* **Opportunities** — anlaşmalar veya satışlar
+* **Notes** — kayıtlara ekli notlar
+* **Tasks** — kayıtlara bağlı yapılacaklar
+
+İşinize özgü herhangi bir şey için **özel nesneler** de oluşturabilirsiniz (ör. Projects, Subscriptions, Events).
+
+### Alanlar
+
+**Alanlar**, her nesneyi tanımlayan özellikler ya da özniteliklerdir. Gerçek bilgiyi depolarlar.
+
+Örneğin, **People** nesnesinde şu gibi alanlar vardır:
+
+* İsim
+* E-posta
+* Telefon
+* İş Unvanı
+* Company (Companies nesnesine bir ilişki)
+
+Alanların farklı **türleri** vardır: metin, sayı, tarih, seçim, çoklu seçim, ilişki ve daha fazlası. Her nesneye özel alanlar ekleyebilirsiniz.
+
+### Kayıtlar
+
+**Kayıtlar**, bir nesne içindeki tekil girdilerdir — oluşturup yönettiğiniz gerçek verilerdir.
+
+Örneğin:
+
+* "John Smith", People nesnesinde bir kayıttır
+* "Acme Corp", Companies nesnesinde bir kayıttır
+
+**Bir benzetme:**
+
+| Veri Modeli Kavramı | Gerçek Dünya Benzetmesi                             |
+| ------------------- | --------------------------------------------------- |
+| **Nesneler**        | Bir kitaptaki bölümler (kategoriler)                |
+| **Alan**            | Bir elektronik tablodaki sütunlar (özellikler)      |
+| **Kayıtlar**        | Bir elektronik tablodaki satırlar (gerçek girdiler) |
+
+Veri modelini (nesneler + alanlar) bir kez tasarlar, ardından bu yapı içinde birçok kayıt oluşturursunuz.
+
+## Veri modelinizi neden özelleştirmelisiniz?
+
+Her iş farklı çalışır. Veri modelinizi özelleştirmek, süreçlerinizi katı bir sisteme uydurmaya çalışmak yerine Twenty'yi **sizin** süreçleriniz etrafında şekillendirebilmeniz demektir.
+
+Twenty tam esneklik sunar:
+
+* Gereksinim duyduğunuz kadar özel nesne oluşturun
+* Sınırsız özel alan ekleyin
+* Fiyat, özelleştirmeye göre değişmez
+
+## Veri Modelinizi Tasarlamak İçin İpuçları
+
+### 1. Önce Temel Nesnelerinizle Başlayın
+
+Üzerinde çalıştığınız temel kavramları belirleyin. Twenty zaten şunları sunar:
+
+* **People** — kişileriniz
+* **Companies** — hesaplarınız
+* **Opportunities** — anlaşmalarınız
+
+Başka nelere ihtiyaç duyabileceğinizi düşünün:
+
+* Stripe'ın bir `Subscriptions` nesnesine ihtiyacı olurdu
+* Airbnb'nin bir `Trips` nesnesine ihtiyacı olurdu
+* Bir hızlandırıcının bir `Batches` nesnesine ihtiyacı olurdu
+
+### 2. Varyasyonlar için yeni nesneler değil, alanlar kullanın
+
+Bir şey mevcut bir nesnenin yalnızca bir özelliğiyse, onu bir **alan** yapın.
+
+**Alanları şunlar için kullanın:**
+
+* Kategoriler ve etiketler (ör. Companies için `Industry`)
+* Durum değerleri (ör. Opportunities için `Stage`)
+* Öznitelikler ve özellikler
+
+### 3. Bağımsız Olduğunda Bir Nesne Oluşturun
+
+Kavramın kendi yaşam döngüsü, özellikleri veya ilişkileri varsa, bir nesneyi hak eder.
+
+**Şunlar için bir nesne oluşturun:**
+
+* **Projects** — son tarihleri, sahipleri ve görevleri olan
+* **Subscriptions** — şirketleri, ürünleri ve faturaları bağlar
+* **Events** — katılımcıları ve takip eylemlerini içerir
+
+Bunlar, kendi verilerini ve ilişkilerini taşıdığından dolayı tek bir alandan daha fazlasıdır.
+
+### 4. Kayıtlar Ucu Açık Olduğunda Bir Nesne Oluşturun
+
+Bir şey birden çok kez ilişkilendirilebiliyorsa ve kaç tane olacağını bilmiyorsanız, bir nesne kullanın.
+
+**Kötü yaklaşım:**
+`Product 1`, `Product 2`, `Product 3` gibi alanlar oluşturmak...
+
+**İyi yaklaşım:**
+Bir `Products` nesnesi oluşturun ve kayıtlarla ilişkilendirin. Bu, modelinizi değiştirmeden bir, iki veya yüz ürünü destekler.
+
+### 5. Önce Basit Tutun
+
+Alanlarla başlayın. Move to new objects only when you feel the limits:
+
+* Too many fields on one object
+* Repeated records that should be separate
+* Relationships that don't fit neatly
+
+## Special Note on People, Companies, and Opportunities
+
+<Warning>
+  **Email and calendar sync only works with People, Companies, and Opportunities.**
+
+  These are the only objects where you can access synchronized emails and meetings from your mailbox/calendar. We recommend using them as much as possible.
+</Warning>
+
+**Best practices:**
+
+* If you need categories of People, use fields (not new objects)
+* Example: Use a `Person Type` field with values "Prospect" and "Partner" instead of creating separate objects
+* Create different **views** to filter: one showing partners, another showing prospects
+
+**It's okay to have fields that don't apply to every record.** For example, a `Referral Link` field on People that only applies when `Person Type = Partner`. Hide this field from views where it's not relevant.
+
+## Questions to Guide Your Choice
+
+Kendinize şunu sorun:
+
+<Check>Is this just a property of something I already have, or does it need its own properties?</Check>
+<Check>Will I ever need to track multiple of these per record, without knowing how many?</Check>
+<Check>Does this concept connect to several different objects, not just one?</Check>
+<Check>Will it have its own lifecycle (stages, start/end dates)?</Check>
+
+If the answer is "yes" to one or more, it's probably time for a new object.
+
+## Accessing Your Data Model
+
+1. Go to **Settings** in the left sidebar
+2. Click **Data Model**
+3. View all your objects (standard and custom)
+4. Click any object to see and edit its fields
+
+<Note>
+  **Don't see Data Model in Settings?**
+
+  Access to the data model is usually restricted to administrators. Contact your workspace admin if you need access.
+</Note>
+
+## Sonraki Adımlar
+
+Once you've planned your data model:
+
+* [How to Create Custom Objects](/l/tr/user-guide/data-model/how-tos/create-custom-objects)
+* [How to Create Custom Fields](/l/tr/user-guide/data-model/how-tos/create-custom-fields)
+* [How to Create Relation Fields](/l/tr/user-guide/data-model/how-tos/create-relation-fields)
+
+## Yardıma mı ihtiyacınız var?
+
+Our team can help you design and create the data model you need. Discover our [Implementation Services](/l/tr/user-guide/getting-started/capabilities/implementation-services).

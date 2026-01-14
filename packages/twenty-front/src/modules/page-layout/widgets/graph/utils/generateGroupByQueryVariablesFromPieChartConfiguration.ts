@@ -1,5 +1,5 @@
 import { type ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
-import { GRAPH_DEFAULT_DATE_GRANULARITY } from '@/page-layout/widgets/graph/constants/GraphDefaultDateGranularity.constant';
+import { GRAPH_DEFAULT_DATE_GRANULARITY } from '@/page-layout/widgets/graph/constants/GraphDefaultDateGranularity';
 import { getGroupByOrderBy } from '@/page-layout/widgets/graph/utils/getGroupByOrderBy';
 import { isRelationNestedFieldDateKind } from '@/page-layout/widgets/graph/utils/isRelationNestedFieldDateKind';
 import {
@@ -23,6 +23,7 @@ export const generateGroupByQueryVariablesFromPieChartConfiguration = ({
   aggregateOperation,
   limit,
   firstDayOfTheWeek,
+  userTimeZone,
 }: {
   objectMetadataItem: ObjectMetadataItem;
   objectMetadataItems: ObjectMetadataItem[];
@@ -30,6 +31,7 @@ export const generateGroupByQueryVariablesFromPieChartConfiguration = ({
   aggregateOperation?: string;
   limit?: number;
   firstDayOfTheWeek?: number;
+  userTimeZone?: string;
 }) => {
   const groupByFieldId = chartConfiguration.groupByFieldMetadataId;
   const groupBySubFieldName =
@@ -65,6 +67,7 @@ export const generateGroupByQueryVariablesFromPieChartConfiguration = ({
         : undefined,
       firstDayOfTheWeek,
       isNestedDateField: isNestedDate,
+      timeZone: userTimeZone,
     }),
   ];
 
@@ -77,17 +80,19 @@ export const generateGroupByQueryVariablesFromPieChartConfiguration = ({
   > = [];
 
   if (isDefined(chartConfiguration.orderBy)) {
-    orderBy.push(
-      getGroupByOrderBy({
-        graphOrderBy: chartConfiguration.orderBy,
-        groupByField,
-        groupBySubFieldName,
-        aggregateOperation,
-        dateGranularity: shouldApplyDateGranularity
-          ? (dateGranularity ?? GRAPH_DEFAULT_DATE_GRANULARITY)
-          : undefined,
-      }),
-    );
+    const orderByItem = getGroupByOrderBy({
+      graphOrderBy: chartConfiguration.orderBy,
+      groupByField,
+      groupBySubFieldName,
+      aggregateOperation,
+      dateGranularity: shouldApplyDateGranularity
+        ? (dateGranularity ?? GRAPH_DEFAULT_DATE_GRANULARITY)
+        : undefined,
+    });
+
+    if (isDefined(orderByItem)) {
+      orderBy.push(orderByItem);
+    }
   }
 
   return {
