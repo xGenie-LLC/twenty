@@ -23,6 +23,7 @@ import { BaseThemeProvider } from '@/ui/theme/components/BaseThemeProvider';
 import { UserThemeProviderEffect } from '@/ui/theme/components/UserThemeProviderEffect';
 import { PageFavicon } from '@/ui/utilities/page-favicon/components/PageFavicon';
 import { PageTitle } from '@/ui/utilities/page-title/components/PageTitle';
+import { WatermarkOverlay } from '@/ui/utilities/watermark/components/watermark-overlay';
 import { UserAndViewsProviderEffect } from '@/users/components/UserAndViewsProviderEffect';
 import { UserProvider } from '@/users/components/UserProvider';
 import { WorkspaceProviderEffect } from '@/workspace/components/WorkspaceProviderEffect';
@@ -63,6 +64,7 @@ export const AppRouterProviders = () => {
                                   <GotoHotkeysEffectsProvider />
                                   <PageTitle title={pageTitle} />
                                   <PageFavicon />
+                                  <WatermarkOverlay />
                                   <Outlet />
                                 </StrictMode>
                               </DialogManager>

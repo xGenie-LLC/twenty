@@ -53,6 +53,7 @@ import { TelemetryModule } from 'src/engine/core-modules/telemetry/telemetry.mod
 import { TwentyConfigModule } from 'src/engine/core-modules/twenty-config/twenty-config.module';
 import { TwentyConfigService } from 'src/engine/core-modules/twenty-config/twenty-config.service';
 import { UserModule } from 'src/engine/core-modules/user/user.module';
+import { WatermarkModule } from 'src/engine/core-modules/watermark/watermark.module';
 import { WebhookModule } from 'src/engine/core-modules/webhook/webhook.module';
 import { WorkflowApiModule } from 'src/engine/core-modules/workflow/workflow-api.module';
 import { WorkspaceInvitationModule } from 'src/engine/core-modules/workspace-invitation/workspace-invitation.module';
@@ -79,6 +80,7 @@ import { FileModule } from './file/file.module';
     HealthModule,
     AuditModule,
     AuthModule,
+    WatermarkModule,
     BillingModule,
     BillingWebhookModule,
     ClientConfigModule,
